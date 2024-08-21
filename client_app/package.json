@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "vite",
-    "build": "npm install --legacy-peer-deps && vite build"
+    "build": "npm install --force && vite build"
   },
   "dependencies": {
     "@balkangraph/orgchart.js": "^8.14.47",
