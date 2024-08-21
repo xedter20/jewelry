@@ -30,7 +30,7 @@ import {
   mdiCreditCardOutline
 } from '@mdi/js';
 
-import MultiStep from 'react-multistep';
+// import MultiStep from 'react-multistep';
 import { usePlacesWidget } from 'react-google-autocomplete';
 import Autocomplete from 'react-google-autocomplete';
 import FormWizard from 'react-form-wizard-component';
@@ -598,7 +598,7 @@ function Register(funcProps) {
                               onBlur={handleBlur}
                               options={addressBarangay}
                               affectedInput=""
-                              functionToCalled={async code => {}}
+                              functionToCalled={async code => { }}
                             />
                           </div>
 
