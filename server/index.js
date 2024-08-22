@@ -55,6 +55,9 @@ app.use(cors());
 app.use(express.json());
 
 //routes
+app.get('/', (req, res, next) => {
+  res.json('Hello from server');
+});
 app.use('/api/user', userRoute);
 
 app.use('/api/auth', authRoute);
@@ -77,6 +80,7 @@ app.use('/static', express.static('public'));
 
 app.listen(config.port, async () => {
   console.log(`Server is live`);
+  console.log(config.port);
 
   // config.mySqlDriver.query(
   //   'SELECT * FROM user_account',
