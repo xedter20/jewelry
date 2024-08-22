@@ -73,7 +73,7 @@ try {
 
   // console.log(serverInfo);
 } catch (err) {
-  console.log(`Connection error\n${err}\nCause: ${err.cause}`);
+  //console.log(`Connection error\n${err}\nCause: ${err.cause}`);
 }
 
 let cypherQuerySession = `1`;
