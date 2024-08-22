@@ -41,11 +41,11 @@ try {
 
   getDbConnection = async () => {
     return await mysql.createConnection({
-      host: 'mysql-225c894d-dextermiranda441-02fb.h.aivencloud.com',
-      user: 'avnadmin',
-      password: 'AVNS_DtYKjOccLDgTUeX9nWL',
-      database: 'defaultdb',
-      port: 18077
+      // host: 'mysql-225c894d-dextermiranda441-02fb.h.aivencloud.com',
+      // user: 'avnadmin',
+      // password: 'AVNS_DtYKjOccLDgTUeX9nWL',
+      // database: 'defaultdb',
+      // port: 18077
     });
   };
 
