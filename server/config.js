@@ -4,7 +4,7 @@ import assert from 'assert';
 import neo4j from 'neo4j-driver';
 // import mysql from 'mysql'
 
-import mysql from 'mysql2/promise';
+import mysql from 'promise-mysql';
 dotenv.config();
 
 const {
