@@ -10,19 +10,19 @@ import transactionRoute from './routes/transactionRoute.js';
 import bodyParser from 'body-parser';
 import codeRoute from './routes/codeRoute.js';
 import featureListRoute from './routes/featureListRoute.js';
-import * as initDBScripts from './scripts/initDB.js';
+// import * as initDBScripts from './scripts/initDB.js';
 
-import { dailyProfitScheduleJob } from './helpers/dailyProfitScheduleJob.js';
-import { codeTypeRepo } from './repository/codeType.js';
+// import { dailyProfitScheduleJob } from './helpers/dailyProfitScheduleJob.js';
+// import { codeTypeRepo } from './repository/codeType.js';
 
 import payoutRoute from './routes/payoutRoute.js';
 import adminPayoutRoute from './routes/admin/payoutRoute.js';
 
 import path from 'path';
 import { fileURLToPath } from 'url';
-const { cypherQuerySession } = config;
-import { mergeUserQuery } from './cypher/child.js';
-import { v4 as uuidv4 } from 'uuid';
+// const { cypherQuerySession } = config;
+// import { mergeUserQuery } from './cypher/child.js';
+// import { v4 as uuidv4 } from 'uuid';
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
