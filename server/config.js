@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import assert from 'assert';
 
 import neo4j from 'neo4j-driver';
-// import mysql from 'mysql'
+//import mysql from 'mysql2/promise';
 
 import mysql from 'promise-mysql';
 dotenv.config();
@@ -41,25 +41,16 @@ try {
 
   getDbConnection = async () => {
     return await mysql.createConnection({
-      // host: 'mysql-225c894d-dextermiranda441-02fb.h.aivencloud.com',
-      // user: 'avnadmin',
-      // password: 'AVNS_DtYKjOccLDgTUeX9nWL',
-      // database: 'defaultdb',
+      host: '127.0.0.1',
+      user: 'root',
+      password: '',
+      database: 'av_de_asis'
       // port: 18077
     });
   };
 
   mySqlDriver = await getDbConnection();
-
-  // console.log({ mySqlDriver });
-
-  // connection = mysql.createConnection({
-  //   host: '127.0.0.1',
-  //   user: 'root',
-  //   password: '',
-  //   database: 'children_health_db'
-  // });
-
+  console.log('MySQL DB Connection established');
   // mySqlDriver = connection.connect(function (err) {
   //   if (err) throw err;
   //   console.log('MySQL DB Connection established');
@@ -73,7 +64,7 @@ try {
 
   // console.log(serverInfo);
 } catch (err) {
-  //console.log(`Connection error\n${err}\nCause: ${err.cause}`);
+  console.log(`Connection error\n${err}\nCause: ${err.cause}`);
 }
 
 let cypherQuerySession = `1`;
