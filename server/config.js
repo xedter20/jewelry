@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import assert from 'assert';
 
 import neo4j from 'neo4j-driver';
-//import mysql from 'mysql2/promise';
+// import mysql from 'mysql'
 
 import mysql from 'promise-mysql';
 dotenv.config();
@@ -45,12 +45,18 @@ try {
       user: 'root',
       password: '',
       database: 'av_de_asis'
-      // port: 18077
     });
   };
 
   mySqlDriver = await getDbConnection();
-  console.log('MySQL DB Connection established');
+
+  // connection = mysql.createConnection({
+  //   host: '127.0.0.1',
+  //   user: 'root',
+  //   password: '',
+  //   database: 'children_health_db'
+  // });
+
   // mySqlDriver = connection.connect(function (err) {
   //   if (err) throw err;
   //   console.log('MySQL DB Connection established');
