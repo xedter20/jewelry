@@ -4,7 +4,7 @@ import assert from 'assert';
 import neo4j from 'neo4j-driver';
 // import mysql from 'mysql'
 
-import mysql from 'promise-mysql';
+import mysql from 'mysql2/promise';
 dotenv.config();
 
 const {
@@ -41,14 +41,17 @@ try {
 
   getDbConnection = async () => {
     return await mysql.createConnection({
-      host: '127.0.0.1',
-      user: 'root',
-      password: '',
-      database: 'av_de_asis'
+      host: 'mysql-225c894d-dextermiranda441-02fb.h.aivencloud.com',
+      user: 'avnadmin',
+      password: 'AVNS_DtYKjOccLDgTUeX9nWL',
+      database: 'defaultdb',
+      port: 18077
     });
   };
 
   mySqlDriver = await getDbConnection();
+
+  // console.log({ mySqlDriver });
 
   // connection = mysql.createConnection({
   //   host: '127.0.0.1',
