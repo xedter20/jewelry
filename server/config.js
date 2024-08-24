@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import assert from 'assert';
 
 import neo4j from 'neo4j-driver';
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 
 //import mysql from 'promise-mysql';
 dotenv.config();
