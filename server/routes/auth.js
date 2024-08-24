@@ -29,7 +29,7 @@ router.post('/login', async (req, res, next) => {
   const password = req.body.password;
 
   try {
-    var result = await mySqlDriver.query(findUserByEmailQuery(email));
+    var result = await mySqlDriver.execute(findUserByEmailQuery(email));
 
     let user = result;
 

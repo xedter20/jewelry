@@ -64,7 +64,7 @@ try {
   //   if (err) throw err;
   //   console.log('MySQL DB Connection established');
 
-  //   return connection;
+  //   // return connection;
   //   // connection.query(sql, function (err, result) {
   //   //   if (err) throw err;
   //   //   console.log('Result: ' + result);
