@@ -13,7 +13,8 @@ INSERT INTO employees
  Phone, 
  Username,
  Password,
- Modified_By
+ Modified_By,
+ Date_Modified
  ) 
  VALUES 
  (
@@ -22,8 +23,8 @@ INSERT INTO employees
  '${Phone}',
  '${Username}',
  '${Password}',
- '${adminFullName}'
- 
+ '${adminFullName}',
+ NOW()
  )
 
   `;
