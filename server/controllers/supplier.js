@@ -79,7 +79,7 @@ export const listSupplierPaymentHistory = async (req, res, next) => {
       data: result.map(({ Proof_Payment, ...data }) => {
         return {
           ...data,
-          Proof_Payment: `http://localhost:5000/static/uploads/${Proof_Payment}`
+          Proof_Payment: `https://av-de-asis-backend-api.onrender.com/static/uploads/${Proof_Payment}`
         };
       })
     });
