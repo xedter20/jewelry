@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 import assert from 'assert';
 
 import neo4j from 'neo4j-driver';
-// import mysql from 'mysql'
+import mysql from 'mysql2';
 
-import mysql from 'promise-mysql';
+//import mysql from 'promise-mysql';
 dotenv.config();
 
 const {
@@ -30,7 +30,7 @@ var connection;
 var getDbConnection;
 
 try {
-  console.log({ NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD });
+  // console.log({ NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD });
   // driver = neo4j.driver(
   //   NEO4J_URI,
   //   neo4j.auth.basic(NEO4J_USER, NEO4J_PASSWORD),
@@ -41,14 +41,17 @@ try {
 
   getDbConnection = async () => {
     return await mysql.createConnection({
-      host: '127.0.0.1',
+      host: 'junction.proxy.rlwy.net',
       user: 'root',
-      password: '',
-      database: 'av_de_asis'
+      password: 'VWMwIQdNYrLnjBGoYbkLvvpzRwjVczSp',
+      database: 'railway',
+      port: 34231
     });
   };
 
   mySqlDriver = await getDbConnection();
+
+  // console.log(mySqlDriver.query);
 
   // connection = mysql.createConnection({
   //   host: '127.0.0.1',
@@ -68,7 +71,7 @@ try {
   //   // });
   // });
 
-  // console.log(serverInfo);
+  console.log('DB Connected');
 } catch (err) {
   console.log(`Connection error\n${err}\nCause: ${err.cause}`);
 }
