@@ -82,7 +82,7 @@ app.listen(config.port, async () => {
   console.log(`Server is live`);
   console.log(config.port);
 
-  // config.mySqlDriver.query(
+  // config.mySqlDriver.execute(
   //   'SELECT * FROM user_account',
   //   function (err, result, fields) {
   //     if (err) throw err;

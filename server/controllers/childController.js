@@ -36,7 +36,7 @@ export const getChildrenList = async (req, res, next) => {
   try {
     let loggedInUser = req.user;
 
-    let userList = await mySqlDriver.query(getAllChildren());
+    let [userList] = await mySqlDriver.execute(getAllChildren());
 
     let result = transformIntegers(
       userList.map(member => {
@@ -62,9 +62,9 @@ export const getChildrenList = async (req, res, next) => {
 
 export const getBarangayList = async (req, res, next) => {
   try {
-    let barangays = [];
+    //let barangays = [];
 
-    barangays = await mySqlDriver.query(getBrgyList());
+    let [barangays] = await mySqlDriver.execute(getBrgyList());
 
     res.json({
       success: true,
@@ -82,11 +82,11 @@ export const getDashboardDatePerBarangay = async (req, res, next) => {
 
     let children = [];
     if (barangay) {
-      children = await mySqlDriver.query(
+      children = await mySqlDriver.execute(
         getAllChildrenPerBarangay(barangay, report_type)
       );
     } else {
-      children = await mySqlDriver.query(getAllChildren(barangay));
+      children = await mySqlDriver.execute(getAllChildren(barangay));
     }
 
     let totalNumOfChildren = children.length;
@@ -166,7 +166,7 @@ export const getReportPerBarangay = async (req, res, next) => {
     let report_type = req.body.report_type;
 
     let children = [];
-    children = await mySqlDriver.query(
+    children = await mySqlDriver.execute(
       getAllChildrenPerBarangay(barangay, report_type)
     );
 
@@ -213,7 +213,7 @@ export const createChildren = async (req, res, next) => {
       'Weight for Lt/Ht Status': 'Weight_for_Lt_or_Ht_Status'
     };
 
-    var countResult = await mySqlDriver.query(
+    var countResult = await mySqlDriver.execute(
       checkIfChildrenAlreadyExists(
         childInfoProps.Address_or_Location,
         childInfoProps.Full_Name_of_Child
@@ -224,7 +224,7 @@ export const createChildren = async (req, res, next) => {
 
     console.log({ childInfoProps });
     if (total === 0) {
-      await mySqlDriver.query(createOrMergeChild(childInfoProps));
+      await mySqlDriver.execute(createOrMergeChild(childInfoProps));
     }
 
     res.json({ success: true });
@@ -341,7 +341,7 @@ export const getUser = async (req, res, next) => {
 
     console.log({ ID });
 
-    var result = await mySqlDriver.query(findUserQuery(ID));
+    var result = await mySqlDriver.execute(findUserQuery(ID));
 
     let user = result;
 
@@ -358,7 +358,7 @@ export const getChildInfo = async (req, res, next) => {
 
     // console.log({ ID });
 
-    let data = await mySqlDriver.query(getChildInfoDetails(ID));
+    let data = await mySqlDriver.execute(getChildInfoDetails(ID));
 
     res.json({ success: true, data: data[0] });
   } catch (error) {
@@ -375,7 +375,7 @@ export const updateChildInfo = async (req, res, next) => {
 
     // console.log({ ID, childUpdatedData });
 
-    let data = await mySqlDriver.query(
+    let data = await mySqlDriver.execute(
       updateChildInfoDetails(ID, childUpdatedData),
       [childUpdatedData, ID]
     );
@@ -395,7 +395,7 @@ export const deleteChildRecord = async (req, res, next) => {
 
     // console.log({ ID, childUpdatedData });
 
-    let data = await mySqlDriver.query(deleteChildRecordInfo(ID));
+    let data = await mySqlDriver.execute(deleteChildRecordInfo(ID));
 
     res.json({ success: true });
   } catch (error) {

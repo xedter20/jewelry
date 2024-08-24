@@ -43,10 +43,10 @@ export const createCustomerController = async (req, res, next) => {
 
     let adminEmail = req.user.email;
 
-    var [result] = await mySqlDriver.query(findUserByEmailQuery(adminEmail));
+    var [result] = await mySqlDriver.execute(findUserByEmailQuery(adminEmail));
 
     data.adminFullName = `${result.Fname} ${result.Lname}`;
-    await mySqlDriver.query(createOrMergeCustomer(data));
+    await mySqlDriver.execute(createOrMergeCustomer(data));
 
     res.json({ success: true });
   } catch (error) {
@@ -59,7 +59,7 @@ export const listCustomer = async (req, res, next) => {
   try {
     let ID = req.params.ID;
 
-    var result = await mySqlDriver.query(getCustomerList(ID));
+    var [result] = await mySqlDriver.execute(getCustomerList(ID));
 
     res.json({ success: true, data: result });
   } catch (error) {
@@ -74,7 +74,7 @@ export const getChildInfo = async (req, res, next) => {
 
     // console.log({ ID });
 
-    let data = await mySqlDriver.query(getChildInfoDetails(ID));
+    let [data] = await mySqlDriver.execute(getChildInfoDetails(ID));
 
     res.json({ success: true, data: data[0] });
   } catch (error) {
@@ -91,7 +91,7 @@ export const updateChildInfo = async (req, res, next) => {
 
     // console.log({ ID, childUpdatedData });
 
-    let data = await mySqlDriver.query(
+    let data = await mySqlDriver.execute(
       updateChildInfoDetails(ID, childUpdatedData),
       [childUpdatedData, ID]
     );
@@ -111,7 +111,7 @@ export const deleteChildRecord = async (req, res, next) => {
 
     // console.log({ ID, childUpdatedData });
 
-    let data = await mySqlDriver.query(deleteChildRecordInfo(ID));
+    let data = await mySqlDriver.execute(deleteChildRecordInfo(ID));
 
     res.json({ success: true });
   } catch (error) {

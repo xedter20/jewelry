@@ -23,7 +23,7 @@ export const addOrder = async (req, res, next) => {
     let adminUserID = req.user.email;
 
     data.adminUserID = adminUserID;
-    await mySqlDriver.query(createOrder(data));
+    await mySqlDriver.execute(createOrder(data));
 
     res.json({ success: true });
   } catch (error) {
@@ -35,7 +35,7 @@ export const listOrder = async (req, res, next) => {
   try {
     // let ID = req.params.ID;
 
-    var result = await mySqlDriver.query(getOrderList());
+    var [result] = await mySqlDriver.execute(getOrderList());
 
     res.json({ success: true, data: result });
   } catch (error) {

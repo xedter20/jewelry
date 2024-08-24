@@ -41,10 +41,10 @@ export const createemployeeController = async (req, res, next) => {
 
     let adminEmail = req.user.email;
 
-    var [result] = await mySqlDriver.query(findUserByEmailQuery(adminEmail));
+    var [result] = await mySqlDriver.execute(findUserByEmailQuery(adminEmail));
 
     data.adminFullName = `${result.Admin_Fname} ${result.Admin_Lname}`;
-    await mySqlDriver.query(createOrMergeEmployee(data));
+    await mySqlDriver.execute(createOrMergeEmployee(data));
 
     res.json({ success: true });
   } catch (error) {
@@ -61,10 +61,10 @@ export const editEmployeeController = async (req, res, next) => {
 
     // let adminEmail = req.user.email;
 
-    // var [result] = await mySqlDriver.query(findUserByEmailQuery(adminEmail));
+    // var [result] = await mySqlDriver.execute(findUserByEmailQuery(adminEmail));
 
     // data.adminFullName = `${result.Fname} ${result.Lname}`;
-    await mySqlDriver.query(updateEmployee(data.EmployeeID, data), [
+    await mySqlDriver.execute(updateEmployee(data.EmployeeID, data), [
       data,
       data.EmployeeID
     ]);
@@ -80,7 +80,7 @@ export const listEmployeeController = async (req, res, next) => {
   try {
     let ID = req.params.ID;
 
-    var result = await mySqlDriver.query(getEmployeeList());
+    var [result] = await mySqlDriver.execute(getEmployeeList());
 
     res.json({ success: true, data: result });
   } catch (error) {

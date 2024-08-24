@@ -76,7 +76,7 @@ router.post('/forgetPassword', async (req, res, next) => {
 
     let email = req.body.email;
 
-    var user = await mySqlDriver.query(findUserByEmailQuery(email));
+    var [user] = await mySqlDriver.execute(findUserByEmailQuery(email));
 
     console.log({ user });
     const foundUserByEmail = user.find(u => {
@@ -143,7 +143,7 @@ router.post('/reset-password/:token', async (req, res, next) => {
 
     console.log(decodedToken.email);
 
-    var user = await mySqlDriver.query(
+    var [user] = await mySqlDriver.execute(
       findUserByEmailQuery(decodedToken.email)
     );
     const foundUserByEmail = user.find(u => {
@@ -158,7 +158,7 @@ router.post('/reset-password/:token', async (req, res, next) => {
         message: 'Email is not registered in our system.'
       });
     } else {
-      var user = await mySqlDriver.query(
+      var [user] = await mySqlDriver.execute(
         updatePassword(foundUserByEmail.email, newPassword)
       );
       res.status(200).send({ message: 'Password updated' });

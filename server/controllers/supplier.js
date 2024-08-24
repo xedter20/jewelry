@@ -39,11 +39,11 @@ export const createSupplierController = async (req, res, next) => {
   try {
     let data = req.body;
     let adminEmail = req.user.email;
-    var [result] = await mySqlDriver.query(findUserByEmailQuery(adminEmail));
+    var [result] = await mySqlDriver.execute(findUserByEmailQuery(adminEmail));
 
     data.adminFullName = `${result.Admin_Fname} ${result.Admin_Lname}`;
 
-    var result = await mySqlDriver.query(createSupplier(data));
+    var [result] = await mySqlDriver.execute(createSupplier(data));
 
     res.json({ success: true });
   } catch (error) {
@@ -56,7 +56,7 @@ export const listSupplierController = async (req, res, next) => {
   try {
     let ID = req.params.ID;
 
-    var result = await mySqlDriver.query(getSupplierList());
+    var [result] = await mySqlDriver.execute(getSupplierList());
 
     res.json({ success: true, data: result });
   } catch (error) {
@@ -69,7 +69,9 @@ export const listSupplierPaymentHistory = async (req, res, next) => {
   try {
     let { SupplierID } = req.body;
 
-    var result = await mySqlDriver.query(getSupplierPaymentHistory(SupplierID));
+    var [result] = await mySqlDriver.execute(
+      getSupplierPaymentHistory(SupplierID)
+    );
     //http://localhost:5000/static/uploads/Log%20In%20Page.png.png
     console.log({ result });
     res.json({
@@ -95,11 +97,11 @@ export const uploadFile = async (req, res, next) => {
     let data = req.body;
 
     let adminEmail = req.user.email;
-    var [result] = await mySqlDriver.query(findUserByEmailQuery(adminEmail));
+    var [result] = await mySqlDriver.execute(findUserByEmailQuery(adminEmail));
 
     data.Admin_Fname = `${result.Admin_Fname} ${result.Admin_Lname}`;
     data.Proof_Payment = file.filename;
-    await mySqlDriver.query(createSupplierPayment(data));
+    await mySqlDriver.execute(createSupplierPayment(data));
 
     res.json({ success: true });
   } catch (error) {
