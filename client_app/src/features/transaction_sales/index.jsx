@@ -278,6 +278,23 @@ function Transactions() {
         }
       },
       {
+        Header: 'Customer Name',
+        accessor: 'CustomerName',
+
+        Cell: ({ row, value }) => {
+          // let date_modified = format(value, 'MMM dd, yyyy');
+          return (
+            <div className="flex items-center space-x-3">
+
+
+              <div>
+                <div className="font-bold text-neutral-500">{value}</div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
         Header: 'Facebook Link',
         accessor: 'Facebook',
 
@@ -417,7 +434,7 @@ function Transactions() {
 
 
 
-                  <i class="fa-regular fa-eye"></i>
+                  <i class="fa-regular fa-eye"></i> View
                 </button>
                 <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
 
@@ -431,7 +448,7 @@ function Transactions() {
 
 
 
-                  <i class="fa-solid fa-barcode"></i>
+                  <i class="fa-solid fa-barcode"></i> QR
                 </button>
 
 
@@ -506,12 +523,6 @@ function Transactions() {
 
 
   const formikConfig = (selectedSupplier) => {
-
-    // console.log({ selectedSupplier })
-
-    // console.log({ isAddPaymentOpen })
-
-    // console.log(selectedSupplier.Admin_Fname)
 
 
 
@@ -589,7 +600,7 @@ function Transactions() {
           await fetchAll();
           document.getElementById('addOrder').close();
           // await fetchSuppliers();
-          toast.success('Supplier successfully added!', {
+          toast.success('Added Successfully!', {
             onClose: () => {
               setSubmitting(false);
               navigate('/app/transactions');
@@ -616,6 +627,80 @@ function Transactions() {
   };
 
 
+
+  const formikConfigViewReciept = (selectedOrder) => {
+
+    let validation = {
+      Comments: Yup.string().required('Required'),
+      Status: Yup.string().required('Required')
+    };
+
+    let initialValues = {
+
+
+      Comments: '',
+      Status: ''
+    }
+
+
+
+
+
+    return {
+      initialValues: initialValues,
+      validationSchema: Yup.object(validation),
+      // validateOnMount: true,
+      // validateOnChange: false,
+      onSubmit: async (values, { setFieldError, setSubmitting }) => {
+        setSubmitting(true);
+
+
+
+        try {
+
+
+
+
+
+
+
+          let res = await axios({
+            method: 'POST',
+            url: 'admin/transactions/updateOrder',
+            data: {
+              ...values,
+              transactionId: selectedOrder.TransactionID
+            }
+          })
+          // await fetchAll();
+          // document.getElementById('addOrder').close();
+          // // await fetchSuppliers();
+          document.getElementById('viewReceipt').close();
+          toast.success('Updated successfully!', {
+            // onClose: () => {
+            //   setSubmitting(false);
+            //   navigate('/app/transactions');
+            // },
+            position: 'top-right',
+            autoClose: 500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light'
+          });
+
+          fetchAll();
+
+
+        } catch (error) {
+          console.log({ error });
+        } finally {
+        }
+      }
+    };
+  };
 
 
   return (
@@ -753,7 +838,13 @@ function Transactions() {
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
             <h1 className="font-bold text-lg">Fill Out Form</h1>
+
             <p className="text-sm text-gray-500 mt-1 font-bold">Order Details</p>
+
+            <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4" role="alert">
+              <p class="font-bold">Note</p>
+              <p>Information will be recorded and cannot be changed</p>
+            </div>
             <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
               <Formik {...formikConfig(selectedSupplier)}>
                 {({
@@ -924,8 +1015,8 @@ function Transactions() {
 
 
 
-        <dialog id="viewReceipt" className="modal">
-          <div className="modal-box w-11/12 max-w-3xl">
+        {selectedOrder.TransactionID && <dialog id="viewReceipt" className="modal">
+          <div className="modal-box w-full max-w-none">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 bg-white"
@@ -933,14 +1024,14 @@ function Transactions() {
                   //  setisEditModalOpen(false)
                 }}>✕</button>
             </form>
-            <h1 className="font-bold text-lg text-center">Order Summary</h1>
+            {/* <h1 className="font-bold text-lg text-center">Order Summary</h1> */}
             {/* <div className=' flex justify-center items-center mt-4'>
               <QRCodeSVG value={
                 JSON.stringify({ dex: 1 })
               } />,
             </div> */}
             <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-              <Formik {...formikConfig(selectedSupplier)}>
+              <Formik {...formikConfigViewReciept(selectedOrder)}>
                 {({
                   handleSubmit,
                   handleChange,
@@ -966,138 +1057,174 @@ function Transactions() {
 
                   // console.log({ values })
 
-                  console.log({ selectedOrder })
+                  // console.log({ selectedOrder })
 
                   return (
                     <Form className="">
-                      {/* <label
-                        className={`block mb-2 text-green-400 text-left font-bold`}>
-                        Child
-                      </label> */}
-                      <div className="overflow-x-auto">
-                        <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
-                          <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center">
-                              {/* <!-- <img className="h-8 w-8 mr-2" src="https://tailwindflex.com/public/images/logos/favicon-32x32.png"
+
+
+                      <div className={
+                        `grid md: grid-cols-3 grid-cols-1  bg-base-100 rounded-xl`}>
+                        <div className=''>
+
+                          <div className="bg-gray-100 p-2 bg-base-100 rounded-xl">
+                            <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
+                              <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center">
+                                  {/* <!-- <img className="h-8 w-8 mr-2" src="https://tailwindflex.com/public/images/logos/favicon-32x32.png"
                                 alt="Logo" /> --> */}
-                              <div className="text-gray-700 font-semibold text-lg"> Company Name</div>
-                            </div>
-                            <div className="text-gray-700">
-                              <div className="font-bold text-xl mb-2">INVOICE</div>
-                              <div className="text-sm">Date: {selectedOrder.Date_Created}</div>
-                              <div className="text-sm">Invoice #: INV-{selectedOrder.TransactionID}</div>
-                            </div>
-                          </div>
-                          <div className="border-b-2 border-gray-300 pb-8 mb-8">
-                            <h2 className="text-2xl font-bold mb-4">Bill To:</h2>
-                            <div className="text-gray-700 mb-2">{selectedOrder.CustomerName}</div>
-                            <div className="text-gray-700 mb-2">{selectedOrder.Address}</div>
-                            <div className="text-gray-700 mb-2">{selectedOrder.Contact}</div>
-                            <div className="text-gray-700">{selectedOrder.Email}</div>
-                          </div>
-                          <table className="w-full text-left mb-8">
-                            <thead>
-                              <tr>
-                                <th className="text-gray-700 font-bold uppercase py-2">Description</th>
-                                <th className="text-gray-700 font-bold uppercase py-2">Quantity</th>
-                                <th className="text-gray-700 font-bold uppercase py-2">Price</th>
-                                <th className="text-gray-700 font-bold uppercase py-2">Total</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td className="py-4 text-gray-700">{selectedOrder.ItemName}</td>
-                                <td className="py-4 text-gray-700">{selectedOrder.Grams}</td>
-                                <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
-                                <td className="py-4 text-gray-700">
+                                  <div className="text-gray-700 font-semibold text-lg"> A.V De Asis</div>
+                                </div>
+                                <div className="text-gray-700">
+                                  <div className="font-bold text-xl mb-2">INVOICE</div>
+                                  <div className="text-sm">Date: {selectedOrder.Date_Created}</div>
+                                  <div className="text-sm">Invoice #: INV-{selectedOrder.TransactionID}</div>
+                                </div>
+                              </div>
+                              <div className="border-b-2 border-gray-300 pb-8 mb-8">
+                                <h2 className="text-2xl font-bold mb-4">Bill To:</h2>
+                                <div className="text-gray-700 mb-2">{selectedOrder.CustomerName}</div>
+                                <div className="text-gray-700 mb-2">{selectedOrder.Address}</div>
+                                <div className="text-gray-700 mb-2">{selectedOrder.Contact}</div>
+                                <div className="text-gray-700">{selectedOrder.Email}</div>
+                              </div>
+                              <table className="w-full text-left mb-8">
+                                <thead>
+                                  <tr>
+                                    <th className="text-gray-700 font-bold uppercase py-2">Description</th>
+                                    <th className="text-gray-700 font-bold uppercase py-2">Quantity</th>
+                                    <th className="text-gray-700 font-bold uppercase py-2">Price</th>
+                                    <th className="text-gray-700 font-bold uppercase py-2">Total</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td className="py-4 text-gray-700">{selectedOrder.ItemName}</td>
+                                    <td className="py-4 text-gray-700">{selectedOrder.Grams}</td>
+                                    <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
+                                    <td className="py-4 text-gray-700">
 
-                                  <span className='font-bold'>
-                                    {formatAmount(selectedOrder.Price * selectedOrder.Price)}
-                                  </span>
-                                </td>
-                              </tr>
+                                      <span className='font-bold'>
+                                        {formatAmount(selectedOrder.Grams * selectedOrder.Price)}
+                                      </span>
+                                    </td>
+                                  </tr>
 
-                            </tbody>
-                          </table>
-                          {/* <div className="flex justify-end mb-8">
+                                </tbody>
+                              </table>
+                              {/* <div className="flex justify-end mb-8">
                             <div className="text-gray-700 mr-2">Subtotal:</div>
                             <div className="text-gray-700">$425.00</div>
                           </div> */}
-                          {/* <div className="text-right mb-8">
+                              {/* <div className="text-right mb-8">
                             <div className="text-gray-700 mr-2">Tax:</div>
                             <div className="text-gray-700">$25.50</div>
 
                           </div> */}
-                          <div className="flex justify-end mb-8">
-                            <div className="text-gray-700 mr-2">Grand Total:</div>
-                            <div className="text-gray-700 font-bold text-xl"> <span className='font-bold text-green-500'>
-                              {formatAmount(selectedOrder.Price * selectedOrder.Price)}
-                            </span></div>
-                          </div>
-                          <div className="border-t-2 border-gray-300 pt-8 mb-8">
+                              <div className="flex justify-end mb-8">
+                                <div className="text-gray-700 mr-2">Grand Total:</div>
+                                <div className="text-gray-700 font-bold text-xl"> <span className='font-bold text-green-500'>
+                                  {formatAmount(selectedOrder.Grams * selectedOrder.Price)}
+                                </span></div>
+                              </div>
+                              {/* <div className="border-t-2 border-gray-300 pt-8 mb-8">
                             <div className="text-gray-700 mb-2">Payment is due within 30 days. Late payments are subject to fees.</div>
                             <div className="text-gray-700 mb-2">Please make checks payable to Your Company Name and mail to:</div>
                             <div className="text-gray-700"></div>
+                          </div> */}
+                            </div>
+
+                          </div>
+
+
+
+                        </div>
+                        <div className="">
+                          {/* Profile Header */}
+                          <div className="flex items-center justify-center">
+                            {/* <h2 className='text-2xl font-bold mb-4'>
+                                TO PAY</h2> */}
+
+
+                            <div className={`px-2 py-1  font-normal text-white bg-blue-600 `}>
+                              Proof of Payment
+                            </div>
+                          </div>
+                          <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
+                            <div className="overflow-x-auto">
+                              <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
+
+                                <div class="max-w-sm mx-auto">
+                                  <img src={
+                                    selectedOrder.proof_of_payment
+                                  } alt="Responsive Image" class="w-full h-90 object-fit" />
+
+                                </div>
+
+
+                              </div>
+
+                            </div>
+
+
+
+
                           </div>
                         </div>
+                        <div className='mt-2'>
 
+
+                          <Dropdown
+                            // icons={mdiAccount}
+                            label="Status"
+                            name="Status"
+                            placeholder=""
+                            value={values.Status}
+                            setFieldValue={setFieldValue}
+                            onBlur={handleBlur}
+                            v
+                            options={[
+                              { value: 'PAID', label: 'PAID' },
+                              { value: 'CANCELLED', label: 'CANCELLED' },
+                              { value: 'IN_PROGRESS', label: 'IN_PROGRESS' },
+                              { value: 'COMPLETED', label: 'COMPLETED' }
+                            ]}
+                          />
+                          <InputText
+
+                            label="Comments"
+                            name="Comments"
+                            type="text"
+                            placeholder=""
+                            value={values.Comments}
+
+                            onBlur={handleBlur} // This apparently updates `touched`?
+                          />
+
+                          <button
+                            type="submits"
+                            // onClick={(e) => {
+                            //   console.log("dex")
+
+
+                            // }}
+                            // type="submit"
+                            className={
+                              'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
+                              (loading ? ' loading' : '')
+                            }>
+                            Update
+                          </button>
+                        </div>
                       </div>
 
-                      <div className='mt-4'>
-
-                        <InputText
-
-                          label="Proof of Payment"
-                          name="Proof_Payment"
-                          type="file"
-                          accept="image/*"
-                          placeholder=""
-                          value={values.Proof_Payment}
-                          onChange={(e) => {
-                            let file = e.target.files[0];
-                            setFile(file);
-                            //setFieldValue('Proof_Payment', 'dex')
-                            // console.log(file.name)
-                            if (file) {
-                              blah.src = URL.createObjectURL(file)
-                            }
-
-                          }}
-                          onBlur={handleBlur} // This apparently updates `touched`?
-                        />
-                      </div>
-                      <div className='mt-2'>
-                        <Dropdown
-                          // icons={mdiAccount}
-                          label="Status"
-                          name="Status"
-                          placeholder=""
-                          // value={values.OrderID}
-                          setFieldValue={setFieldValue}
-                          onBlur={handleBlur}
-                          options={[
-                            { value: 'PAID', label: 'PAID' },
-                            { value: 'CANCELLED', label: 'CANCELLED' },
-                            { value: 'IN_PROGRESS', label: 'IN_PROGRESS' },
-                            { value: 'COMPLETED', label: 'COMPLETED' }
-                          ]}
-                        />
-                        <button
-                          // type="button"
-                          type="submit"
-                          className={
-                            'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
-                            (loading ? ' loading' : '')
-                          }>
-                          UPDATE
-                        </button>
-                      </div>
                     </Form>
                   );
                 }}
               </Formik> </div>
           </div>
         </dialog>
+        }
 
 
 
@@ -1127,11 +1254,10 @@ function Transactions() {
 
                   </h2>
 
-                  {
-                    console.log({ selectedOrder })
-                  }
                   <QRCodeSVG value={
-                    JSON.stringify(selectedOrder)
+                    JSON.stringify({
+                      url: `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.TransactionID}`
+                    })
                   }
 
                     size={200} />,

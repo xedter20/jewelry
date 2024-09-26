@@ -35,7 +35,7 @@ import InputText from '../../components/Input/InputText';
 import Dropdown from '../../components/Input/Dropdown';
 import { Formik, useField, useFormik, Form } from 'formik';
 import * as Yup from 'yup';
-
+import { QRCodeSVG } from 'qrcode.react';
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
   const [filterParam, setFilterParam] = useState('');
   const [searchText, setSearchText] = useState('');
@@ -194,6 +194,19 @@ function Transactions() {
         accessor: '',
         Cell: ({ row }) => {
           return <span className="">{row.index + 1}</span>;
+        }
+      },
+      {
+        Header: 'QR Code',
+        accessor: '',
+        Cell: ({ row }) => {
+          const url = `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${row.original.CustomerID}`;
+          console.log({ row: url })
+          return <div className=' flex justify-center items-center mt-4 h-20 w-20'>
+            <QRCodeSVG value={
+              JSON.stringify({ website_url: url })
+            } />,
+          </div>
         }
       },
       {

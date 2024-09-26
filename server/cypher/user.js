@@ -19,6 +19,13 @@ export const findUserQuery = ID => {
   return queryText;
 };
 
+export const findCustomerDetails = ID => {
+  const queryText = `
+  SELECT * FROM customer_record WHERE CustomerID  = '${ID}'`;
+
+  return queryText;
+};
+
 export const findUserByEmailQuery = email => {
   // const queryText = `
   // MATCH (n:User {

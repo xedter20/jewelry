@@ -18,6 +18,10 @@ const Login = lazy(() => import('./pages/Login'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Register = lazy(() => import('./pages/Register'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+
+const MyProfile = lazy(() => import('./pages/MyProfile'));
+const PaymentOrder = lazy(() => import('./pages/PaymentOrder'));
+
 // Initializing different libraries
 initializeApp();
 
@@ -46,6 +50,8 @@ function App() {
     <>
       <Router>
         <Routes>
+          <Route path="/myProfile/:userId" element={<MyProfile />} />
+          <Route path="/myProfile/:userId/order/:transactionId" element={<PaymentOrder />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* <Route path="/register" element={<Register />} /> */}

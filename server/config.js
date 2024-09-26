@@ -4,6 +4,9 @@ import assert from 'assert';
 import neo4j from 'neo4j-driver';
 import mysql from 'mysql2/promise';
 
+import { initializeApp } from 'firebase/app';
+import { getStorage } from 'firebase/storage';
+
 //import mysql from 'promise-mysql';
 dotenv.config();
 
@@ -29,6 +32,8 @@ let driver;
 var connection;
 var getDbConnection;
 
+let firebaseStorage;
+
 try {
   // console.log({ NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD });
   // driver = neo4j.driver(
@@ -39,39 +44,51 @@ try {
   //   }
   // );
 
+  // getDbConnection = async () => {
+  //   return await mysql.createConnection({
+  //     host: 'junction.proxy.rlwy.net',
+  //     user: 'root',
+  //     password: 'VWMwIQdNYrLnjBGoYbkLvvpzRwjVczSp',
+  //     database: 'railway',
+  //     port: 34231
+  //   });
+  // };
+
   getDbConnection = async () => {
     return await mysql.createConnection({
-      host: 'junction.proxy.rlwy.net',
-      user: 'root',
-      password: 'VWMwIQdNYrLnjBGoYbkLvvpzRwjVczSp',
-      database: 'railway',
-      port: 34231
+      host: 'us-cluster-east-01.k8s.cleardb.net',
+      user: 'b828180a13a6f7',
+      password: '4c4f1b87',
+      database: 'heroku_2f0733fc1ed4d7a',
+      port: 3306
     });
   };
 
   mySqlDriver = await getDbConnection();
 
-  // console.log(mySqlDriver.query);
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: 'AIzaSyAln9KogkLpr_eMbBLlnQfMae7Ji380phQ',
+    authDomain: 'avdeasis-4b5c7.firebaseapp.com',
+    projectId: 'avdeasis-4b5c7',
+    storageBucket: 'avdeasis-4b5c7.appspot.com',
+    messagingSenderId: '563212793374',
+    appId: '1:563212793374:web:4a5f5dd187e0304661a00f',
+    measurementId: 'G-5LTWLEWR22'
+  };
 
-  // connection = mysql.createConnection({
-  //   host: '127.0.0.1',
-  //   user: 'root',
-  //   password: '',
-  //   database: 'children_health_db'
-  // });
+  //mysql://b828180a13a6f7:4c4f1b87@us-cluster-east-01.k8s.cleardb.net/heroku_2f0733fc1ed4d7a?reconnect=true
+  // Username: b828180a13a6f7
+  // Password: 4c4f1b87
+  // Host: us-cluster-east-01.k8s.cleardb.net
+  // change date NOT NULL DEFAULT current_timestamp() to TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-  // mySqlDriver = connection.connect(function (err) {
-  //   if (err) throw err;
-  //   console.log('MySQL DB Connection established');
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  firebaseStorage = getStorage(app);
 
-  //   // return connection;
-  //   // connection.query(sql, function (err, result) {
-  //   //   if (err) throw err;
-  //   //   console.log('Result: ' + result);
-  //   // });
-  // });
-
-  console.log('DB Connected');
+  // console.log({ firebaseStorage });
+  console.log('DBs Connected');
 } catch (err) {
   console.log(`Connection error\n${err}\nCause: ${err.cause}`);
 }
@@ -104,5 +121,6 @@ export default {
   SENDGRID_API_KEY,
   cypherQuerySessionDriver: '',
   defaultDBName: 'neo4j',
-  mySqlDriver: mySqlDriver
+  mySqlDriver: mySqlDriver,
+  firebaseStorage
 };

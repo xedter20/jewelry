@@ -650,6 +650,17 @@ function Table({ columns, data, searchField }) {
                 <tbody
                   {...getTableBodyProps()}
                   className="bg-white divide-y divide-gray-200">
+
+                  {
+                    page.length === 0 && <tr>
+                      <td colSpan="5" className="text-center py-4">
+                        <span>
+                          No data available
+                        </span>
+
+                      </td>
+                    </tr>
+                  }
                   {page.map((row, i) => {
                     // new
                     prepareRow(row);

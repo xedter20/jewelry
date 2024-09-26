@@ -25,7 +25,7 @@ function LeftSidebar() {
 
     console.log({ user });
 
-    setSelectedUser(user);
+    setSelectedUser(user[0]);
     setIsLoaded(true);
   };
 
@@ -38,7 +38,8 @@ function LeftSidebar() {
     document.getElementById('left-sidebar-drawer').click();
   };
 
-  return (
+  return isLoaded && (
+
     <div className="drawer-side text-white bg-customBlue h-screen w-60">
       <label htmlFor="left-sidebar-drawer" className="drawer-overlay"></label>
       <div className="flex items-center justify-center mb-8 mt-4">
@@ -73,6 +74,8 @@ function LeftSidebar() {
           {selectedUser && (
             <label className=" text-white">
               Hello,{' '}
+
+
               <span className="font-bold">
                 {selectedUser.Admin_Fname} {selectedUser.Admin_Lname}
               </span>

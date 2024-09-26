@@ -7,6 +7,8 @@ import userRoute from './routes/userRoute.js';
 import authRoute from './routes/auth.js';
 import supplierRoute from './routes/supplier.js';
 import transactionRoute from './routes/transactionRoute.js';
+
+import admintransactionRoute from './routes/admin/transactionRoute.js';
 import bodyParser from 'body-parser';
 import codeRoute from './routes/codeRoute.js';
 import featureListRoute from './routes/featureListRoute.js';
@@ -65,6 +67,8 @@ app.use('/api/auth', authRoute);
 app.use('/api/supplier', supplierRoute);
 
 app.use('/api/transactions', transactionRoute);
+
+app.use('/api/admin/transactions', admintransactionRoute);
 app.use('/api/code', codeRoute);
 app.use('/api/featureList', featureListRoute);
 app.use('/api/payout', payoutRoute);

@@ -35,6 +35,8 @@ const decoded = jwtDecode(token);
 
 let routes = [];
 
+console.log({ decoded })
+
 if (decoded && decoded.role === 'ADMIN') {
   routes = [
     {
@@ -144,6 +146,10 @@ if (decoded && decoded.role === 'ADMIN') {
     },
     {
       path: '/suppliers',
+      component: Suppliers
+    },
+    {
+      path: '/myProfile',
       component: Suppliers
     },
   ];

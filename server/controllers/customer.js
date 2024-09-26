@@ -14,7 +14,8 @@ import {
   // getChildren,
   findUserByEmailQuery,
   findUserByUserNameQuery,
-  findUserQuery
+  findUserQuery,
+  findCustomerDetails
 } from '../cypher/user.js';
 
 import ShortUniqueId from 'short-unique-id';
@@ -60,6 +61,19 @@ export const listCustomer = async (req, res, next) => {
     let ID = req.params.ID;
 
     var [result] = await mySqlDriver.execute(getCustomerList(ID));
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error.message);
+  }
+};
+
+export const findCustomer = async (req, res, next) => {
+  try {
+    let ID = req.params.ID;
+
+    var [result] = await mySqlDriver.execute(findCustomerDetails(ID));
 
     res.json({ success: true, data: result });
   } catch (error) {

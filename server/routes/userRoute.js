@@ -28,7 +28,8 @@ import {
 
 import {
   listCustomer,
-  createCustomerController
+  createCustomerController,
+  findCustomer
 } from '../controllers/customer.js';
 
 import {
@@ -46,6 +47,7 @@ import config from '../config.js';
 
 const { cypherQuerySession } = config;
 
+router.get('/:ID/findCustomer', findCustomer);
 router.get('/:ID/details', authenticateUserMiddleware, getUser);
 
 router.get('/:ID/childDetails', authenticateUserMiddleware, getChildInfo);
@@ -75,13 +77,6 @@ router.post(
   '/getReportPerBarangay',
   authenticateUserMiddleware,
   getReportPerBarangay
-);
-
-router.post(
-  '/uploadFile',
-  authenticateUserMiddleware,
-  upload.single('file'),
-  uploadFile
 );
 
 router.post('/create', authenticateUserMiddleware, createCustomerController);

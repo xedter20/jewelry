@@ -33,11 +33,47 @@ export const addOrder = async (req, res, next) => {
 };
 export const listOrder = async (req, res, next) => {
   try {
-    // let ID = req.params.ID;
+    let customerId = req.body.customerId;
+    let transactionId = req.body.transactionId;
 
-    var [result] = await mySqlDriver.execute(getOrderList());
+    var [result] = await mySqlDriver.execute(
+      getOrderList(customerId, transactionId)
+    );
 
     res.json({ success: true, data: result });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error.message);
+  }
+};
+
+export const makePayment = async (req, res, next) => {
+  try {
+    // let customerId = req.body.customerId;
+    let transactionId = req.body.TransactionID;
+
+    let uploadPath = req.body.data;
+    let filename = req.file.filename;
+
+    // fs.move('../tempDir/' + fileName, '../tempDir/' + dir + '/' + fileName, function (err) {
+    //     if (err) {
+    //         return console.error(err);
+    //     }
+
+    //     res.json({});
+    // });
+
+    console.log({
+      transactionId,
+      uploadPath,
+      filename
+    });
+
+    // var [result] = await mySqlDriver.execute(
+    //   getOrderList(customerId, transactionId)
+    // );
+
+    // res.json({ success: true, data: result });
   } catch (error) {
     console.log(error);
     res.status(400).send(error.message);
