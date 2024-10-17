@@ -819,7 +819,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
 
                         <InputText
-
+                          className="border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
                           label="Facebook Link"
                           name="Facebook"
                           type="text"
