@@ -956,12 +956,12 @@ function Transactions() {
                             setFieldValue={setFieldValue}
                             onBlur={handleBlur}
                             options={[
-                              { value: 'Pendant', label: 'Pendant' },
-                              { value: 'Bangle', label: 'Bangle' },
-                              { value: 'Earrings', label: 'Earrings' },
-                              { value: 'Bracelet', label: 'Bracelet' },
-                              { value: 'Necklace', label: 'Necklace' },
-                              { value: 'Rings', label: 'Rings' },
+                              // { value: 'Pendant', label: 'Pendant' },
+                              // { value: 'Bangle', label: 'Bangle' },
+                              // { value: 'Earrings', label: 'Earrings' },
+                              // { value: 'Bracelet', label: 'Bracelet' },
+                              // { value: 'Necklace', label: 'Necklace' },
+                              // { value: 'Rings', label: 'Rings' },
                               { value: 'BRAND NEW', label: 'BRAND NEW' },
                               { value: 'SUBASTA', label: 'SUBASTA' },
                             ]}
