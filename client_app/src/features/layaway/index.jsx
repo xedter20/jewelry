@@ -1099,15 +1099,23 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
 
 
-                        <InputText
 
+                        <Dropdown
+                          // icons={mdiAccount}
                           label="Item Name"
                           name="ItemName"
-                          type="text"
                           placeholder=""
                           value={values.ItemName}
-
-                          onBlur={handleBlur} // This apparently updates `touched`?
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            { value: 'Pendant', label: 'Pendant' },
+                            { value: 'Bangle', label: 'Bangle' },
+                            { value: 'Earrings', label: 'Earrings' },
+                            { value: 'Bracelet', label: 'Bracelet' },
+                            { value: 'Necklace', label: 'Necklace' },
+                            { value: 'Rings', label: 'Rings' }
+                          ]}
                         />
 
                       </div>
@@ -1124,12 +1132,12 @@ function Transactions() {
                             setFieldValue={setFieldValue}
                             onBlur={handleBlur}
                             options={[
-                              { value: 'Pendant', label: 'Pendant' },
-                              { value: 'Bangle', label: 'Bangle' },
-                              { value: 'Earrings', label: 'Earrings' },
-                              { value: 'Bracelet', label: 'Bracelet' },
-                              { value: 'Necklace', label: 'Necklace' },
-                              { value: 'Rings', label: 'Rings' },
+                              // { value: 'Pendant', label: 'Pendant' },
+                              // { value: 'Bangle', label: 'Bangle' },
+                              // { value: 'Earrings', label: 'Earrings' },
+                              // { value: 'Bracelet', label: 'Bracelet' },
+                              // { value: 'Necklace', label: 'Necklace' },
+                              // { value: 'Rings', label: 'Rings' },
                               { value: 'BRAND NEW', label: 'BRAND NEW' },
                               { value: 'SUBASTA', label: 'SUBASTA' },
                             ]}

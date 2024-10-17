@@ -83,8 +83,8 @@ app.use('/static', express.static('public'));
 // app.use('/', async (req, res, next) => {
 //   res.json('Hello from server');
 // });
-
-app.listen(config.port, async () => {
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, async () => {
   console.log(`Server is live`);
   console.log(config.port);
 
