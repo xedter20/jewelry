@@ -287,9 +287,12 @@ function Transactions() {
             <div className="flex items-center space-x-3">
 
 
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
+              {
+                value !== 'undefined undefined' && <div>
+                  <div className="font-bold text-neutral-500">{value}</div>
+                </div>
+              }
+
             </div>
           );
         }

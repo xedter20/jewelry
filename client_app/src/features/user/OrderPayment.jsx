@@ -608,12 +608,7 @@ function ForgotPassword() {
                                 //  setisEditModalOpen(false)
                             }}>✕</button>
                     </form>
-                    {/* <h1 className="font-bold text-lg text-center">RECEIPT</h1> */}
-                    {/* <div className=' flex justify-center items-center mt-4'>
-              <QRCodeSVG value={
-                JSON.stringify({ dex: 1 })
-              } />,
-            </div> */}
+
                     <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
 
 

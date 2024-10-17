@@ -80,7 +80,7 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
           <XMarkIcon className="w-4 ml-2" />
         </button>
       )} */}
-      <div className="badge badge-neutral mr-2 px-2 p-4">Total Orders: {users.length}</div>
+      <div className="badge badge-neutral mr-2 px-2 p-4">Total: {users.length}</div>
 
       <button className="btn btn-outline btn-sm" onClick={() => document.getElementById('addOrder').showModal()}>
         Add Order
@@ -137,10 +137,46 @@ function Transactions() {
   const [suppliers, setSupplierList] = useState([]);
 
 
+  const [payments, setPayments] = useState([]);
+  const [totalPaid, setTotalPaid] = useState(0);
+  const [remainingBalance, setRemainingBalance] = useState(8000); // Adjust based on your data
+
+  // Sample function to fetch payment data (replace with your API call)
+  const fetchPayments = async () => {
+    // Example data: replace with your API call
+
+    console.log({ selectedOrder })
+
+    let res = await axios({
+      method: 'POST',
+      url: 'layaway/payment/list',
+      data: {
+        LayawayID: selectedOrder.OrderID
+      }
+    });
+
+    let list = res.data.data;
+
+
+    setPayments(list);
+    // calculateTotalPaid(samplePayments);
+  };
+
+  // Calculate total paid
+  const calculateTotalPaid = (payments) => {
+    const total = payments.reduce((acc, payment) => acc + payment.amount, 0);
+    setTotalPaid(total);
+  };
+
+  useEffect(() => {
+    fetchPayments();
+  }, [selectedOrder]);
+
+
   const fetchOrders = async () => {
     let res = await axios({
       method: 'POST',
-      url: 'transactions/listOrder',
+      url: 'layaway/list',
       data: {
 
       }
@@ -253,162 +289,6 @@ function Transactions() {
     () => [
 
       {
-        Header: 'Transaction ID',
-        accessor: 'uuid',
-        Cell: ({ row, value }) => {
-          return <span className="">{value}</span>;
-        }
-      },
-
-      {
-        Header: 'Customer ID',
-        accessor: 'CustomerID',
-
-        Cell: ({ row, value }) => {
-          // let date_modified = format(value, 'MMM dd, yyyy');
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'Customer Name',
-        accessor: 'CustomerName',
-
-        Cell: ({ row, value }) => {
-          // let date_modified = format(value, 'MMM dd, yyyy');
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'Facebook Link',
-        accessor: 'Facebook',
-
-        Cell: ({ row, value }) => {
-          // let date_modified = format(value, 'MMM dd, yyyy');
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'Grams',
-        accessor: 'Grams',
-
-        Cell: ({ row, value }) => {
-          // let date_modified = format(value, 'MMM dd, yyyy');
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'Price',
-        accessor: 'Price',
-
-        Cell: ({ row, value }) => {
-          // let date_modified = format(value, 'MMM dd, yyyy');
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'Supplier',
-        accessor: 'SupplierID',
-
-        Cell: ({ row, value }) => {
-
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'Category',
-        accessor: 'Category',
-        Cell: ({ row, value }) => {
-
-
-
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
-            </div>
-          );
-
-
-        }
-      },
-      {
-        Header: 'Status',
-        accessor: 'Status',
-        Cell: ({ row, value }) => {
-          let colors = {
-            'IN_PROGRESS': 'bg-yellow-500',
-            'PAID': 'bg-green-500',
-            'COMPLETED': 'bg-blue-500',
-            'CANCELLED': 'bg-red-500'
-          }
-
-          console.log(value)
-          return (
-            <div className="flex items-center space-x-3">
-
-
-              <div className={`px-4 py-2 rounded-full font-bold text-white ${colors[value]}`}>
-                {value}
-              </div>
-            </div>
-          );
-
-
-
-        }
-      },
-      {
         Header: 'Action',
         accessor: '',
         Cell: ({ row }) => {
@@ -425,47 +305,114 @@ function Transactions() {
                 <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
 
 
+                  // console.log("Dex")
+                  // setisEditModalOpen(true)
+                  // console.log({ l })
                   setSelectedOrder(l);
 
-                  document.getElementById('viewReceipt').showModal();
+                  document.getElementById('viewProofPaymentImage').showModal();
+
 
 
                 }}>
 
 
 
-                  <i class="fa-regular fa-eye"></i> View
-                </button>
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  setSelectedOrder(l);
-
-                  document.getElementById('viewTransactionHistory').showModal();
-
-
-                }}>
-
-
-
-                  <i class="fa-solid fa-barcode"></i> QR
+                  <i class="fa-regular fa-eye"></i>
                 </button>
 
 
 
-                {/* <button
-                  className="btn btn-outline btn-sm ml-0"
-                  onClick={() => {
-                    // setactiveChildID(l.ID);
-                    // document.getElementById('deleteModal').showModal();
-                  }}>
-                  <i class="fa-solid fa-download"></i>
-                </button> */}
-              </div >
+
+
+              </div>
             )
           );
         }
-      }
+      },
+      {
+        Header: 'Layaway IDs',
+        accessor: 'OrderID',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
+        Header: 'Customer ID',
+        accessor: 'CustomerID',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
+        Header: 'Customer Name',
+        accessor: 'CustomerName',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
+        Header: 'Grams',
+        accessor: 'Grams',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
+        Header: 'Category',
+        accessor: 'Category',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
+        Header: 'Price',
+        accessor: 'Price',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
+        Header: 'Months to Pay',
+        accessor: 'MonthsToPay',
+        Cell: ({ row, value }) => {
+          return <span className="">{value} Month(s)</span>;
+        }
+      },
+      {
+        Header: 'Start Date',
+        accessor: 'Start_Date',
+        Cell: ({ row, value }) => {
+          let date = format(value, 'MMM dd, yyyy');
+          return <span className="">{date}</span>;
+        }
+      },
+      {
+        Header: 'Due Date',
+        accessor: 'Due_Date',
+        Cell: ({ row, value }) => {
+          let date = format(value, 'MMM dd, yyyy');
+          return <span className="">{date}</span>;
+        }
+      },
+      {
+        Header: 'Status',
+        accessor: 'status',
+        Cell: ({ row, value }) => {
+
+          let dueDate = row.original.Due_Date;
+
+
+          const targetDate = new Date(dueDate);
+          const now = new Date(); // Gets the current date and time
+
+          // Check if the current date matches the target date
+          const isMatchingDate = now.toISOString() === targetDate.toISOString();
+          // const isPastDueDate = now > dueDate;
+
+          return <StatusPill value={value} />
+        }
+      },
     ],
     []
   );
@@ -473,7 +420,7 @@ function Transactions() {
 
 
   const handleOnChange = e => {
-    console.log(e.target.files[0]);
+
     setFile(e.target.files[0]);
   };
 
@@ -528,24 +475,34 @@ function Transactions() {
 
 
     let validation = {
+      MonthsToPay: Yup.number().required('Required'),
+      Start_Date: Yup.date().required('Required'),
       CustomerID: Yup.string().required('Required'),
       Facebook: Yup.string().required('Required'),
       ItemName: Yup.string().required('Required'),
       Category: Yup.string().required('Required'),
       SupplierID: Yup.string().required('Required'),
       Grams: Yup.number().required('Required'),
-      Price: Yup.number().required('Required')
+      Price: Yup.number().required('Required'),
+      Downpayment: Yup.number()
+        .required('Required')
+        .moreThan(0, 'Downpayment must be greater than 0') // Downpayment must be greater than 0
+        .lessThan(Yup.ref('Price'), 'Downpayment must be less than Price'), // Downpayment must be less than Price
 
     };
 
     let initialValues = {
+      MonthsToPay: '',
+      Start_Date: '',
+      Due_Date: '',
       CustomerID: '',
       Facebook: '',
       Category: '',
       SupplierID: '',
       Grams: '',
       Price: '',
-      ItemName: ''
+      ItemName: '',
+      Downpayment: ''
     }
 
 
@@ -591,29 +548,37 @@ function Transactions() {
 
 
 
-
           let res = await axios({
             method: 'POST',
-            url: 'transactions/addOrder',
-            data: values
+            url: 'layaway/create',
+            data: { ...values, Due_Date: endDate }
           })
-          await fetchAll();
+          fetchOrders()
           document.getElementById('addOrder').close();
-          // await fetchSuppliers();
           toast.success('Added Successfully!', {
             onClose: () => {
               setSubmitting(false);
-              navigate('/app/transactions');
-            },
-            position: 'top-right',
-            autoClose: 500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'light'
-          });
+              // navigate('/app/transactions');
+            }
+          })
+
+          // await fetchAll();
+
+          // // await fetchSuppliers();
+          // toast.success('Added Successfully!', {
+          //   onClose: () => {
+          //     setSubmitting(false);
+          //     navigate('/app/transactions');
+          //   },
+          //   position: 'top-right',
+          //   autoClose: 500,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined,
+          //   theme: 'light'
+          // });
 
 
 
@@ -627,19 +592,30 @@ function Transactions() {
   };
 
 
+  const totalAmountPaid = selectedOrder ? payments.reduce((acc, current) => {
+    return acc + parseInt(current.amount)
+  }, 0) : 0;
+  console.log({ totalAmountPaid })
 
-  const formikConfigViewReciept = (selectedOrder) => {
+
+  const formikConfigAddPayment = () => {
+
+    let remainingBalance = parseInt(selectedOrder?.Price) - totalAmountPaid;
+
 
     let validation = {
-      Comments: Yup.string().required('Required'),
-      Status: Yup.string().required('Required')
+      amount: Yup.number()
+        .required('Required')
+        .moreThan(0, 'Amount must be greater than 0') // Downpayment must be greater than 0
+        .max(remainingBalance, `Amount must be less than remaining balance of ₱${remainingBalance.toFixed(2)}`), // Downpayment must be less than Price
+      payment_method: Yup.string().required('Required')
     };
 
     let initialValues = {
 
-
-      Comments: '',
-      Status: ''
+      proof_of_payment: '',
+      amount: '',
+      payment_method: ''
     }
 
 
@@ -659,24 +635,42 @@ function Transactions() {
         try {
 
 
+          console.log({ dex: 1 })
+
+
+          const data = new FormData();
 
 
 
+          data.append('Proof_Payment', file);
+          data.append('payment_method', values.payment_method);
+          data.append('amount', values.amount);
+          data.append('customer_id', selectedOrder.CustomerID);
+          data.append('layAwayID', selectedOrder.OrderID);
 
 
-          let res = await axios({
+          let updatedStatus = remainingBalance - values.amount === 0 ? 'PAID' : 'PARTIALLY_PAID';
+
+
+
+          data.append('status', updatedStatus);
+
+          let result = await axios({
+            // headers: {
+            //   'content-type': 'multipart/form-data'
+            // },
             method: 'POST',
-            url: 'admin/transactions/updateOrder',
-            data: {
-              ...values,
-              transactionId: selectedOrder.TransactionID
-            }
-          })
-          // await fetchAll();
+            url: 'layaway/makePayment',
+            data
+          });
+
+          fetchPayments()
+          document.getElementById('addPayment').close();
+          await fetchAll();
           // document.getElementById('addOrder').close();
           // // await fetchSuppliers();
           document.getElementById('viewReceipt').close();
-          toast.success('Updated successfully!', {
+          toast.success('Payment added successfully!', {
             // onClose: () => {
             //   setSubmitting(false);
             //   navigate('/app/transactions');
@@ -703,10 +697,29 @@ function Transactions() {
   };
 
 
+
+  const [plan, setPlan] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // Calculate end date based on plan selection and start date
+  useEffect(() => {
+    if (plan && startDate) {
+      const monthsToAdd = parseInt(plan);
+      const start = new Date(startDate);
+      const calculatedEndDate = new Date(start.setMonth(start.getMonth() + monthsToAdd));
+      setEndDate(calculatedEndDate.toISOString().split('T')[0]);
+    } else {
+      setEndDate('');
+    }
+  }, [plan, startDate]);
+
+
+
   return (
     isLoaded && (
       <TitleCard
-        title="Orders"
+        title="List"
         topMargin="mt-2"
         TopSideButtons={
           <TopSideButtons
@@ -735,51 +748,141 @@ function Transactions() {
             searchField="lastName"
           />
         </div>
-        <form >
-          <dialog id="my_modal_1" className="modal">
-            <div className="modal-box">
-              <h3 className="font-bold text-lg">Upload Excel File</h3>
-              {/* <p className="py-4">Pick a file</p> */}
 
-              {isSubmitting && (
-                <div
-                  class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-2"
-                  role="alert">
-                  <p class="font-bold">Please wait</p>
-                  <p>Uploading ...</p>
+        <Formik {...formikConfigAddPayment()}>
+          {({
+            handleSubmit,
+            handleChange,
+            handleBlur, // handler for onBlur event of form elements
+            values,
+            touched,
+            errors,
+            submitForm,
+            setFieldTouched,
+            setFieldValue,
+            setFieldError,
+            setErrors,
+            isSubmitting,
+
+          }) => {
+            return <dialog id="addPayment" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg">Add Payment</h3>
+                {/* <p className="py-4">Pick a file</p> */}
+                {/* 
+                {isSubmitting && (
+                  <div
+                    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-2"
+                    role="alert">
+                    <p class="font-bold">Please wait</p>
+                    <p>Uploading ...</p>
+                  </div>
+                )} */}
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                  <InputText
+
+                    label="Customer Name"
+                    name="CustomerName"
+                    type="text"
+                    placeholder=""
+                    value={selectedOrder.CustomerName}
+
+                    onBlur={handleBlur} // This apparently updates `touched`?
+                    disabled
+
+
+                  /></div>
+
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 mt-2">
+                  <Dropdown
+
+                    // icons={mdiAccount}
+                    label="Payment Method"
+                    name="payment_method"
+                    placeholder=""
+                    value={"Gcash"}
+                    setFieldValue={setFieldValue}
+                    onBlur={handleBlur}
+                    options={[
+                      {
+                        label: "Gcash",
+                        value: "Gcash"
+                      },
+                      {
+                        label: "BDO",
+                        value: "BDO"
+                      },
+                      {
+                        label: "BPI",
+                        value: "BPI"
+                      }
+                    ]}
+                    functionToCalled={(value) => {
+
+                      // setPlan();
+                      // let user = users.find(u => {
+                      //   return u.value === value
+                      // })
+                      setPlan(value)
+                      setFieldValue('MonthsToPay', value)
+                    }}
+
+                  />
+                  <InputText
+
+                    label="Amount"
+                    name="amount"
+                    type="number"
+                    placeholder=""
+
+
+                    onBlur={handleBlur} // This apparently updates `touched`?
+
+
+                  />
+
                 </div>
-              )}
+                <label className="form-control w-full">
+                  <div className="label font-bold">
+                    Proof of Payment
+                    {/* <span className="label-text">Pick a file</span> */}
+                  </div>
+                  <input
+                    name="proof_of_payment"
+                    type="file"
+                    className="file-input file-input-bordered w-full max-w-xs w-full"
+                    onChange={handleOnChange}
+                  />
+                </label>
 
-              <label className="form-control w-full">
-                <div className="label">
-                  {/* <span className="label-text">Pick a file</span> */}
-                </div>
-                <input
-                  type="file"
-                  className="file-input file-input-bordered w-full max-w-xs w-full"
-                  onChange={handleOnChange}
-                />
-              </label>
-
-              <div className="modal-action">
-                {/* if there is a button in form, it will close the modal */}
-                <button
-                  className="btn mr-2 btn-primary"
-                  disabled={isSubmitting || !file}
-                  onClick={async e => {
-                    if (!isSubmitting && file) {
-                      await handleSubmit(e);
-                    }
+                <div className="modal-action">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button
+                    className="btn mr-2 bg-green-500"
+                    disabled={isSubmitting || !file}
+                    type='submit'
+                    onClick={e => {
+                      e.preventDefault();
+                      if (!isSubmitting && file) {
+                        handleSubmit(e);
+                      }
+                    }}
+                  >
+                    Submit
+                  </button>
+                  <button className="btn" onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('addPayment').close();
                   }}>
-                  Upload
-                </button>
-                <button className="btn" disabled={isSubmitting || !file}>
-                  Close
-                </button>
+                    Close
+                  </button>
+                </div>
               </div>
-            </div>
-          </dialog>
-        </form>
+            </dialog>
+          }}
+        </Formik>
+
+
         <ToastContainer />
 
         <dialog id="deleteModal" className="modal">
@@ -839,7 +942,7 @@ function Transactions() {
             </form>
             <h1 className="font-bold text-lg">Fill Out Form</h1>
 
-            <p className="text-sm text-gray-500 mt-1 font-bold">Order Details</p>
+            <p className="text-sm text-gray-500 mt-1 font-bold">Lay-Away Order Details</p>
 
             <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4" role="alert">
               <p class="font-bold">Note</p>
@@ -878,11 +981,84 @@ function Transactions() {
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
-
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
 
                         <div className='mt-2'>
+                          <Dropdown
+                            // icons={mdiAccount}
+                            label="Lay-away Plan"
+                            name="MonthsToPay"
+                            placeholder=""
+                            value={1}
+                            setFieldValue={setFieldValue}
+                            onBlur={handleBlur}
+                            options={[
+                              {
+                                label: "1 Month",
+                                value: 1
+                              },
+                              {
+                                label: "2 Months",
+                                value: 2
+                              },
+                              {
+                                label: "3 Months",
+                                value: 3
+                              }
+                            ]}
+                            functionToCalled={(value) => {
+
+                              // setPlan();
+                              // let user = users.find(u => {
+                              //   return u.value === value
+                              // })
+                              setPlan(value)
+                              setFieldValue('MonthsToPay', value)
+                            }}
+                          />
+                        </div>
+
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+
+
+                        <InputText
+
+                          label="Start Date"
+                          name="Start_Date"
+                          type="date"
+                          placeholder=""
+                          value={values.Start_Date}
+
+                          onChange={(e) => {
+                            setFieldValue('Start_Date', e.target.value);
+                            setFieldValue('Due_Date', endDate);
+                            setStartDate(e.target.value)
+
+                          }}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+
+
+                        <InputText
+
+                          label="Due Date"
+                          name="Due_Date"
+                          type="date"
+                          placeholder=""
+                          value={endDate}
+                          disabled
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+
+
+
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+                        <div className='mt-1'>
                           <Dropdown
                             // icons={mdiAccount}
                             label="Customer"
@@ -1001,7 +1177,15 @@ function Transactions() {
                         />
                       </div>
 
+                      <InputText
 
+                        label="Initial Downpayment"
+                        name="Downpayment"
+                        type="number"
+                        placeholder=""
+                        value={values.Downpayment}
+                        onBlur={handleBlur} // This apparently updates `touched`?
+                      />
 
                       <button
                         // type="button"
@@ -1021,284 +1205,97 @@ function Transactions() {
 
 
 
-        {selectedOrder.TransactionID && <dialog id="viewReceipt" className="modal">
-          <div className="modal-box w-full max-w-none">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 bg-white"
-                onClick={() => {
-                  //  setisEditModalOpen(false)
-                }}>✕</button>
-            </form>
-            {/* <h1 className="font-bold text-lg text-center">Order Summary</h1> */}
-            {/* <div className=' flex justify-center items-center mt-4'>
-              <QRCodeSVG value={
-                JSON.stringify({ dex: 1 })
-              } />,
-            </div> */}
-            <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-              <Formik {...formikConfigViewReciept(selectedOrder)}>
-                {({
-                  handleSubmit,
-                  handleChange,
-                  handleBlur, // handler for onBlur event of form elements
-                  values,
-                  touched,
-                  errors,
-                  submitForm,
-                  setFieldTouched,
-                  setFieldValue,
-                  setFieldError,
-                  setErrors,
-                  isSubmitting,
-
-                }) => {
-                  const checkValidateTab = () => {
-                    // submitForm();
-                  };
-                  const errorMessages = () => {
-                    // you can add alert or console.log or any thing you want
-                    alert('Please fill in the required fields');
-                  };
-
-                  // console.log({ values })
-
-                  // console.log({ selectedOrder })
-
-                  return (
-                    <Form className="">
-
-
-                      <div className={
-                        `grid md: grid-cols-3 grid-cols-1  bg-base-100 rounded-xl`}>
-                        <div className=''>
-
-                          <div className="bg-gray-100 p-2 bg-base-100 rounded-xl">
-                            <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
-                              <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center">
-                                  {/* <!-- <img className="h-8 w-8 mr-2" src="https://tailwindflex.com/public/images/logos/favicon-32x32.png"
-                                alt="Logo" /> --> */}
-                                  <div className="text-gray-700 font-semibold text-lg"> A.V De Asis</div>
-                                </div>
-                                <div className="text-gray-700">
-                                  <div className="font-bold text-xl mb-2">INVOICE</div>
-                                  <div className="text-sm">Date: {selectedOrder.Date_Created}</div>
-                                  <div className="text-sm">Invoice #: INV-{selectedOrder.TransactionID}</div>
-                                </div>
-                              </div>
-                              <div className="border-b-2 border-gray-300 pb-8 mb-8">
-                                <h2 className="text-2xl font-bold mb-4">Bill To:</h2>
-                                <div className="text-gray-700 mb-2">{selectedOrder.CustomerName}</div>
-                                <div className="text-gray-700 mb-2">{selectedOrder.Address}</div>
-                                <div className="text-gray-700 mb-2">{selectedOrder.Contact}</div>
-                                <div className="text-gray-700">{selectedOrder.Email}</div>
-                              </div>
-                              <table className="w-full text-left mb-8">
-                                <thead>
-                                  <tr>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Description</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Quantity</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Price</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Total</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td className="py-4 text-gray-700">{selectedOrder.ItemName}</td>
-                                    <td className="py-4 text-gray-700">{selectedOrder.Grams}</td>
-                                    <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
-                                    <td className="py-4 text-gray-700">
-
-                                      <span className='font-bold'>
-                                        {formatAmount(selectedOrder.Grams * selectedOrder.Price)}
-                                      </span>
-                                    </td>
-                                  </tr>
-
-                                </tbody>
-                              </table>
-                              {/* <div className="flex justify-end mb-8">
-                            <div className="text-gray-700 mr-2">Subtotal:</div>
-                            <div className="text-gray-700">$425.00</div>
-                          </div> */}
-                              {/* <div className="text-right mb-8">
-                            <div className="text-gray-700 mr-2">Tax:</div>
-                            <div className="text-gray-700">$25.50</div>
-
-                          </div> */}
-                              <div className="flex justify-end mb-8">
-                                <div className="text-gray-700 mr-2">Grand Total:</div>
-                                <div className="text-gray-700 font-bold text-xl"> <span className='font-bold text-green-500'>
-                                  {formatAmount(selectedOrder.Grams * selectedOrder.Price)}
-                                </span></div>
-                              </div>
-                              {/* <div className="border-t-2 border-gray-300 pt-8 mb-8">
-                            <div className="text-gray-700 mb-2">Payment is due within 30 days. Late payments are subject to fees.</div>
-                            <div className="text-gray-700 mb-2">Please make checks payable to Your Company Name and mail to:</div>
-                            <div className="text-gray-700"></div>
-                          </div> */}
-                            </div>
-
-                          </div>
-
-
-
-                        </div>
-                        <div className="">
-                          {/* Profile Header */}
-                          <div className="flex items-center justify-center">
-                            {/* <h2 className='text-2xl font-bold mb-4'>
-                                TO PAY</h2> */}
-
-
-                            <div className={`px-2 py-1  font-normal text-white bg-blue-600 `}>
-                              Proof of Payment
-                            </div>
-                          </div>
-                          <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-                            <div className="overflow-x-auto">
-                              <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
-
-                                <div class="max-w-sm mx-auto">
-                                  <img src={
-                                    selectedOrder.proof_of_payment
-                                  } alt="Responsive Image" class="w-full h-90 object-fit" />
-
-                                </div>
-
-
-                              </div>
-
-                            </div>
 
 
 
 
-                          </div>
-                        </div>
-                        <div className='mt-2'>
-
-
-                          <Dropdown
-                            // icons={mdiAccount}
-                            label="Status"
-                            name="Status"
-                            placeholder=""
-                            value={values.Status}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            v
-                            options={[
-                              { value: 'PAID', label: 'PAID' },
-                              { value: 'CANCELLED', label: 'CANCELLED' },
-                              { value: 'IN_PROGRESS', label: 'IN_PROGRESS' },
-                              { value: 'COMPLETED', label: 'COMPLETED' }
-                            ]}
-                          />
-                          <InputText
-
-                            label="Comments"
-                            name="Comments"
-                            type="text"
-                            placeholder=""
-                            value={values.Comments}
-
-                            onBlur={handleBlur} // This apparently updates `touched`?
-                          />
-
-                          <button
-                            type="submits"
-                            // onClick={(e) => {
-                            //   console.log("dex")
-
-
-                            // }}
-                            // type="submit"
-                            className={
-                              'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
-                              (loading ? ' loading' : '')
-                            }>
-                            Update
-                          </button>
-                        </div>
-                      </div>
-
-                    </Form>
-                  );
-                }}
-              </Formik> </div>
-          </div>
-        </dialog>
-        }
-
-
-
-        <dialog id="viewTransactionHistory" className="modal">
-          <div className="modal-box  bg-customBlue ">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 bg-white"
-                onClick={() => {
-                  //  setisEditModalOpen(false)
-                }}>✕</button>
-            </form>
-            <h1 className="font-bold text-lg text-center">QR CODE</h1>
-            {/* <div className=' flex justify-center items-center mt-4'>
-              <QRCodeSVG value={
-                JSON.stringify({ dex: 1 })
-              } />,
-            </div> */}
-            <div className=' flex justify-center items-center mt-4'>
-              <div className="card bg-base-100 w-80 shadow-xl">
-                {/* <figure>
-                
-                </figure> */}
-                <div className="card-body justify-center items-center">
-                  <h2 className="card-title text-center mt-4 font-bold">
-                    QR CODE
-
-                  </h2>
-
-                  <QRCodeSVG value={
-                    JSON.stringify({
-                      url: `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.TransactionID}`
-                    })
-                  }
-
-                    size={200} />,
-
-
-                  <div className="card-actions justify-end">
-                    <button
-                      // type="button"
-                      size="sm"
-                      type="submit"
-                      className={
-                        'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
-                        (loading ? ' loading' : '')
-                      }>
-                      Download
-                    </button>
-
-                  </div>
-                </div>
-              </div></div>
-          </div>
-        </dialog>
 
         <dialog id="viewProofPaymentImage" className="modal">
-          <div className="modal-box">
-            <div class="flex justify-center items-center">
-              <img id="Proof_Payment" alt="" preview className='object-cover h-120 w-100 ' />
+          <div className="modal-box w-11/12 max-w-5xl">
+
+            <div className="container mx-auto p-4">
+              <h1 className="text-2xl font-bold mb-4">Payment Summary</h1>
+              <div className="p-4">
+                <div className="flex justify-between font-bold">
+                  <span>Customer Name:</span>
+                  <span>{selectedOrder.CustomerName}</span>
+                </div>
+                <div className="flex justify-between font-bold">
+                  <span>Customer ID</span>
+                  <span>{selectedOrder.CustomerID}</span>
+                </div>
+              </div>
+              <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                <table className="min-w-full">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="py-2 px-4 text-left">Layaway ID</th>
+                      <th className="py-2 px-4 text-left">Amount Paid</th>
+                      <th className="py-2 px-4 text-left">Payment Method</th>
+                      <th className="py-2 px-4 text-left">Payment Date</th>
+                      <th className="py-2 px-4 text-left">View</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map(payment => (
+                      <tr key={payment.layAwayID} className="border-b">
+                        <td className="py-2 px-4">{payment.layAwayID}</td>
+                        <td className="py-2 px-4">₱{payment.amount}</td>
+                        <td className="py-2 px-4">{payment.payment_method}</td>
+                        <td className="py-2 px-4">{format(payment.payment_date, 'MMM dd, yyyy')}</td>
+                        <td className="py-2 px-4">
+
+                          <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+                            window.open(payment.proof_of_payment, '_blank'); // Opens the image in a new tab
+
+
+
+                          }}>
+
+
+
+                            <i class="fa-regular fa-eye"></i>
+                          </button>
+
+
+                        </td>
+
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="p-4">
+                  <div className="flex justify-between font-bold">
+                    <span className=''>Order Amount:</span>
+                    <span className='text-green-500'>₱{selectedOrder.Price}</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span>Total Amount Paid:</span>
+                    <span>₱{totalAmountPaid}</span>
+                  </div>
+                  <div className="flex justify-between font-bold">
+                    <span>Remaining Balance:</span>
+                    <span className='text-yellow-500'>₱{selectedOrder.Price - totalAmountPaid}</span>
+                  </div>
+                </div>
+              </div>
             </div>
+
             <div className="modal-action">
 
 
-              <form method="dialog">
-                {/* if there is a button in form, it will close the modal */}
-                <button className="btn">Close</button>
-              </form>
+
+              {/* if there is a button in form, it will close the modal */}
+              <div className='flex'>
+                <button className="btn mr-2 bg-green-500" onClick={() => document.getElementById('addPayment').showModal()}>Add Payment</button>
+
+                <button className="btn"
+                  onClick={() => document.getElementById('viewProofPaymentImage').close()}
+                >Close</button>
+              </div>
+
+
             </div>
           </div>
         </dialog>

@@ -278,13 +278,19 @@ function Transactions() {
         accessor: 'Admin_Fname',
 
         Cell: ({ row, value }) => {
+
+
+
+          console.log({ value })
           return (
             <div className="flex items-center space-x-3">
 
+              {
+                (!value || value !== 'undefined undefined') && <div>
+                  <div className="font-bold text-neutral-500">{value}</div>
+                </div>
+              }
 
-              <div>
-                <div className="font-bold text-neutral-500">{value}</div>
-              </div>
             </div>
           );
         }

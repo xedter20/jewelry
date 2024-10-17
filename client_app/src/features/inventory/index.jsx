@@ -76,10 +76,10 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
           <XMarkIcon className="w-4 ml-2" />
         </button>
       )} */}
-      <div className="badge badge-neutral mr-2 px-2 p-4">Total Supplier: {users.length}</div>
+      <div className="badge badge-neutral mr-2 px-2 p-4">Total: {users.length}</div>
 
       <button className="btn btn-outline btn-sm" onClick={() => document.getElementById('addSupplier').showModal()}>
-        Add Supplier
+        Add
         <PlusCircleIcon className="h-6 w-6 text-white-500" />
       </button>
 
@@ -129,6 +129,28 @@ function Transactions() {
   const [isAddPaymentOpen, setisAddPaymentOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [suppliers, setSupplierList] = useState([]);
+  const [inventoryList, setInventoryList] = useState([]);
+  const fetchInventoryList = async (SupplierID) => {
+    let res = await axios({
+      method: 'post',
+      url: 'inventory/list',
+      data: {
+        SupplierID: SupplierID
+      }
+    });
+
+    let list = res.data.data;
+    setInventoryList(list);
+  };
+  useEffect(() => {
+
+    fetchSuppliers();
+    setIsLoaded(true);
+
+  }, []);
+
   const fetchSuppliers = async () => {
     let res = await axios({
       method: 'POST',
@@ -139,13 +161,20 @@ function Transactions() {
     });
 
     let list = res.data.data;
-    setUser(list);
+    setSupplierList(list.map((s) => {
+      return {
+        label: s.SupplierName,
+        value: s.SupplierID,
+
+      }
+    }));
   };
   useEffect(() => {
-    dispatch(getFeatureList()).then(result => {
-      fetchSuppliers();
-      setIsLoaded(true);
-    });
+
+    fetchSuppliers();
+    fetchInventoryList()
+    setIsLoaded(true);
+
   }, []);
 
   const appSettings = useSelector(state => state.appSettings);
@@ -192,7 +221,13 @@ function Transactions() {
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   const columns = useMemo(
     () => [
-
+      {
+        Header: 'Order ID',
+        accessor: 'OrderID',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
       {
         Header: 'Supplier ID',
         accessor: '',
@@ -219,8 +254,8 @@ function Transactions() {
         }
       },
       {
-        Header: 'Phone Number',
-        accessor: 'PhoneNo',
+        Header: 'Grams',
+        accessor: 'Grams',
 
         Cell: ({ row, value }) => {
           // let date_modified = format(value, 'MMM dd, yyyy');
@@ -236,8 +271,42 @@ function Transactions() {
         }
       },
       {
-        Header: 'Email',
-        accessor: 'Email',
+        Header: 'Category',
+        accessor: 'Category',
+
+        Cell: ({ row, value }) => {
+          // let date_modified = format(value, 'MMM dd, yyyy');
+          return (
+            <div className="flex items-center space-x-3">
+
+
+              <div>
+                <div className="font-bold text-neutral-500">{value}</div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'Price',
+        accessor: 'Price',
+
+        Cell: ({ row, value }) => {
+          // let date_modified = format(value, 'MMM dd, yyyy');
+          return (
+            <div className="flex items-center space-x-3">
+
+
+              <div>
+                <div className="font-bold text-neutral-500">{value}</div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'Amount',
+        accessor: 'Amount',
 
         Cell: ({ row, value }) => {
           // let date_modified = format(value, 'MMM dd, yyyy');
@@ -271,7 +340,7 @@ function Transactions() {
       },
       {
         Header: 'Date Modified',
-        accessor: 'Date_Modified',
+        accessor: 'DateModified',
 
         Cell: ({ row, value }) => {
           let date_modified = format(value, 'MMM dd, yyyy');
@@ -305,44 +374,8 @@ function Transactions() {
 
 
 
-                  document.getElementById('createSupplierPayment').showModal();
+                  document.getElementById('inventoryDetails').showModal();
                   // setFieldValue('Admin_Fname', 'dex');
-                }}>
-
-
-
-                  <i class="fa-regular fa-credit-card"></i>
-                </button>
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  console.log("Dex")
-                  // setisEditModalOpen(true)
-                  setSelectedSupplier(l);
-
-                  if (l.SupplierID) {
-                    let res = await axios({
-                      // headers: {
-                      //   'content-type': 'multipart/form-data'
-                      // },
-                      method: 'POST',
-                      url: 'supplier/supplierPaymentHistory',
-                      data: {
-                        SupplierID: l.SupplierID
-                      }
-
-                    }).then((res) => {
-
-
-                      setActivePaymentHistory(res.data.data)
-                      document.getElementById('viewTransactionHistory').showModal();
-
-                    });
-
-                  }
-
-
-
                 }}>
 
 
@@ -351,16 +384,6 @@ function Transactions() {
                 </button>
 
 
-                <button className="btn btn-outline btn-sm" onClick={() => {
-
-                  // setisEditModalOpen(true)
-                  // setSelectedSupplier(l);
-
-                  // document.getElementById('viewTransactionHistory').showModal();
-                  // setFieldValue('Admin_Fname', 'dex');
-                }}>
-                  <i class="fa-solid fa-pen-to-square"></i>
-                </button>
 
                 <button
                   className="btn btn-outline btn-sm ml-2"
@@ -368,207 +391,19 @@ function Transactions() {
                     // setactiveChildID(l.ID);
                     // document.getElementById('deleteModal').showModal();
                   }}>
-                  <i class="fa-solid fa-download"></i>
+                  <i class="fa-solid fa-archive"></i>
                 </button>
               </div>
             )
           );
         }
       },
-      // {
-      //   Header: 'Name of Mother/Caregiver',
-      //   accessor: 'Name_of_Mother_or_Caregiver',
 
-      //   Cell: ({ row, value }) => {
-      //     return (
-      //       <div className="flex items-center space-x-3">
-      //         <div className="avatar">
-      //           <div className="mask mask-circle w-12 h-20">
-      //             <img
-      //               src="https://cdn-icons-png.freepik.com/512/8115/8115385.png?ga=GA1.2.680220839.1714096437"
-      //               alt="Avatar"
-      //             />
-      //           </div>
-      //         </div>
-
-      //         <div>
-      //           <div className="font-bold text-neutral-500">{value}</div>
-      //         </div>
-      //       </div>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Barangay',
-      //   accessor: 'Address_or_Location',
-      //   sortable: true,
-      //   wrap: true,
-
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <p
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </p>
-      //     );
-      //   }
-      // },
-
-      // {
-      //   Header: 'Belongs to IP Group?',
-      //   accessor: 'Belongs_to_IP_Group',
-      //   Cell: ({ value }) => {
-      //     return <span className="text-wrap">{value}</span>;
-      //   }
-      // },
-      // {
-      //   Header: 'Gender',
-      //   accessor: 'Sex',
-      //   Cell: ({ value }) => {
-      //     return <span className="text-wrap">{value}</span>;
-      //   }
-      // },
-
-      // {
-      //   Header: 'Date of Birth',
-      //   accessor: 'Date_of_Birth',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {format(value, 'MMM dd, yyyy')}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Date Measured',
-      //   accessor: 'Date_Measured',
-      //   Cell: ({ value }) => {
-      //     console.log({ value });
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value && format(value, 'MMM dd, yyyy')}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Weight',
-      //   accessor: 'Weight',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value} kg
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Height',
-      //   accessor: 'Height',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value} cm
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Age in Months',
-      //   accessor: 'Age_in_Months',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Weight for Age Status',
-      //   accessor: 'Weight_for_Age_Status',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Height for Age Status',
-      //   accessor: 'Height_for_Age_Status',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Weight for Lt/Ht Status',
-      //   accessor: 'Weight_for_Lt_or_Ht_Status',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // }
-      // {
-      //   Header: 'Action',
-      //   accessor: '',
-      //   Cell: ({ row }) => {
-      //     let l = row.original;
-      //     return (
-      //       <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
-      //         <button className="btn btn-sm ">View</button>
-      //       </Link>
-      //     );
-      //   }
-      // }
     ],
     []
   );
 
-  const paymentHistoryColumns = useMemo(
+  const tableColumns = useMemo(
     () => [
 
       {
@@ -598,13 +433,13 @@ function Transactions() {
         accessor: 'Date',
 
         Cell: ({ row, value }) => {
-          let date_modified = format(value, 'MMM dd, yyyy');
+          //  let date_modified = format(value, 'MMM dd, yyyy');
           return (
             <div className="flex items-center space-x-3">
 
 
               <div>
-                <div className="font-bold text-neutral-500">{date_modified}</div>
+                <div className="font-bold text-neutral-500">{1}</div>
               </div>
             </div>
           );
@@ -684,9 +519,9 @@ function Transactions() {
                 <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
 
 
-                  console.log("Dex")
+                  // console.log("Dex")
                   // setisEditModalOpen(true)
-                  console.log({ l })
+                  // console.log({ l })
                   setSelectedPayment(l);
 
                   document.getElementById('viewProofPaymentImage').showModal();
@@ -768,6 +603,8 @@ function Transactions() {
 
   const formikConfig = (selectedSupplier) => {
 
+    console.log({ selectedSupplier })
+
     // console.log({ selectedSupplier })
 
     // console.log({ isAddPaymentOpen })
@@ -778,97 +615,62 @@ function Transactions() {
 
 
     let validation = {
-      SupplierName: Yup.string().required('Required'),
-      PhoneNo: Yup.string().required('Required'),
-      Email: Yup.string().email().required('Required')
-
+      SupplierID: Yup.string().required('Required'),
+      Category: Yup.string().required('Required'),
+      Grams: Yup.number().required('Required'),
+      Price: Yup.number().required('Required'),
+      Amount: Yup.number().required('Required'),
+      Date: Yup.date().required('Required')
     };
 
+
+
+
+    const defaultDate = new Date("2024-10-16T16:00:00.000Z");
+
+    // Format it as YYYY-MM-DD
+    const formattedDate = defaultDate.toISOString().split('T')[0]; // '2024-10-1
+    console.log({ formattedDate })
     let initialValues = {
-      SupplierName: '',
-      PhoneNo: '',
-      Email: ''
+      SupplierID: parseInt(selectedSupplier?.SupplierID) || '',
+      Category: selectedSupplier?.Category || '',
+      Grams: selectedSupplier?.Grams || '',
+      Price: selectedSupplier?.Price || '',
+      Amount: selectedSupplier?.Amount || '',
+      Date: formattedDate
     }
 
-    console.log({ isAddPaymentOpen })
-    if (isAddPaymentOpen) {
-      validation = {
-        OrderID: Yup.string().required('Required'),
-        Date: Yup.string().required('Required'),
-        Amount: Yup.string().required('Required'),
-        Payment_Status: Yup.string().required('Required'),
-
-        Payment_Method: Yup.string().required('Required')
-      }
-      initialValues = {
-        OrderID: '',
-        Amount: '',
-        Payment_Status: '',
-        Date: '',
-        Payment_Method: '',
-        Proof_Payment: '',
-        SupplierID: selectedSupplier.SupplierID,
-        SupplierName: selectedSupplier.SupplierName
-      };
-    }
 
     return {
+      enableReinitialize: true,
       initialValues: initialValues,
       validationSchema: Yup.object(validation),
       validateOnMount: true,
-      validateOnChange: false,
-      onSubmit: async (values, { setFieldError, setSubmitting }) => {
+      validateOnChange: true,
+      onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
         setSubmitting(true);
 
-        console.log("here")
-        // console.log({ isEditModalOpen })
+
         try {
 
 
 
-          if (isAddPaymentOpen) {
-
-
-
-            if (!file) {
-              setFieldError('Proof_Payment', 'Required')
-            }
-
-
-            const data = new FormData();
-
-
-            // OrderID: '',
-            // Amount: '',
-            // Payment_Status: '',
-            // Date: '',
-            // Payment_Method: '',
-
-            data.append('file', file);
-            data.append('SupplierID', values.SupplierID);
-            data.append('OrderID', values.OrderID);
-            data.append('Payment_Status', values.Payment_Status);
-            data.append('Date', values.Date);
-            data.append('Payment_Method', values.Payment_Method);
-            data.append('Amount', values.Amount);
-
+          if (selectedSupplier.OrderID) {
 
             let res = await axios({
-              // headers: {
-              //   'content-type': 'multipart/form-data'
-              // },
-              method: 'POST',
-              url: 'supplier/uploadFile',
-              data
-            });
-
-            setisAddPaymentOpen(false)
-            document.getElementById('createSupplierPayment').close();
+              method: 'put',
+              url: `inventory/${selectedSupplier.OrderID}`,
+              data: values
+            })
+            document.getElementById('inventoryDetails').close();
             await fetchSuppliers();
+            await fetchInventoryList();
+            resetForm()
             toast.success('Updated successfully!', {
               onClose: () => {
                 setSubmitting(false);
-                navigate('/app/suppliers');
+
+                // navigate('/app/suppliers');
               },
               position: 'top-right',
               autoClose: 500,
@@ -880,47 +682,22 @@ function Transactions() {
               theme: 'light'
             });
 
-            // console.log("dex")
-
-            // let res = await axios({
-            //   method: 'POST',
-            //   url: 'user/viewTransactionHistory',
-            //   data: { ...values, EmployeeID: selectedSupplier.EmployeeID }
-            // })
-            // setisEditModalOpen(false)
-            // document.getElementById('viewTransactionHistory').close();
-            // await fetchSuppliers();
-            // toast.success('Updated successfully!', {
-            //   onClose: () => {
-            //     setSubmitting(false);
-            //     navigate('/app/employees');
-            //   },
-            //   position: 'top-right',
-            //   autoClose: 500,
-            //   hideProgressBar: false,
-            //   closeOnClick: true,
-            //   pauseOnHover: true,
-            //   draggable: true,
-            //   progress: undefined,
-            //   theme: 'light'
-            // });
 
           } else {
-
-            // console.log({ values })
-
-
             let res = await axios({
               method: 'POST',
-              url: 'supplier/create',
+              url: 'inventory/create',
               data: values
             })
             document.getElementById('addSupplier').close();
             await fetchSuppliers();
-            toast.success('Supplier successfully added!', {
+            await fetchInventoryList();
+            resetForm()
+            toast.success('Added successfully!', {
               onClose: () => {
                 setSubmitting(false);
-                navigate('/app/suppliers');
+
+                // navigate('/app/suppliers');
               },
               position: 'top-right',
               autoClose: 500,
@@ -935,6 +712,8 @@ function Transactions() {
           }
 
 
+
+
         } catch (error) {
           console.log({ error });
         } finally {
@@ -944,8 +723,15 @@ function Transactions() {
   };
 
 
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const handleChange = async (event) => {
+    setSelectedOption(event.target.value);
+    await fetchInventoryList(event.target.value)
+  };
 
 
+  console.log({ suppliers })
   return (
     isLoaded && (
       <TitleCard
@@ -956,15 +742,43 @@ function Transactions() {
             applySearch={applySearch}
             applyFilter={applyFilter}
             removeFilter={removeFilter}
-            users={users}
+            users={inventoryList}
           />
         }>
         <div className="">
+          <select
+            value={selectedOption}
+            onChange={handleChange}
+            className="block w-60 px-4 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Select supplier</option>
+            {suppliers.map(v => {
+              return {
+                value: v.value,
+                label: v.label
+              }
+            }).map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+
+          </select>
+          {/* <Dropdown
+            // icons={mdiAccount}
+            label="Supplier Name"
+            name="SupplierID"
+            placeholder=""
+            // value={values.SupplierID}
+            // setFieldValue={setFieldValue}
+            // onBlur={handleBlur}
+            options={suppliers}
+          /> */}
           <Table
             style={{ overflow: 'wrap' }}
             className="table-sm"
             columns={columns}
-            data={(users || []).map(data => {
+            data={(inventoryList || []).map(data => {
               return {
                 ...data
                 // fullName,
@@ -1075,14 +889,14 @@ function Transactions() {
         </dialog>
 
         <dialog id="addSupplier" className="modal">
-          <div className="modal-box">
+          <div className="modal-box w-11/12 max-w-2xl">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
               <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
             </form>
             <h1 className="font-bold text-lg">Fill Out Form</h1>
-            <p className="text-sm text-gray-500 mt-1 font-bold">Supplier Details</p>
-            <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
+            <p className="text-sm text-gray-500 mt-1 font-bold">Supplier Order Details</p>
+            <div className="p-2 space-y- md:space-y-6 sm:p-4">
               <Formik {...formikConfig(selectedSupplier)}>
                 {({
                   handleSubmit,
@@ -1115,48 +929,82 @@ function Transactions() {
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
 
 
-                        <InputText
-
+                        {
+                          console.log({ suppliers })
+                        }
+                        <Dropdown
+                          // icons={mdiAccount}
                           label="Supplier Name"
-                          name="SupplierName"
-                          type="text"
+                          name="SupplierID"
                           placeholder=""
-                          value={values.SupplierName}
-                          onBlur={handleBlur} // This apparently updates `touched`?
+                          value={values.SupplierID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={suppliers}
                         />
-
+                        <Dropdown
+                          // icons={mdiAccount}
+                          label="Category"
+                          name="Category"
+                          placeholder=""
+                          value={values.Category}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            { value: 'Pendant', label: 'Pendant' },
+                            { value: 'Bangle', label: 'Bangle' },
+                            { value: 'Earrings', label: 'Earrings' },
+                            { value: 'Bracelet', label: 'Bracelet' },
+                            { value: 'Necklace', label: 'Necklace' },
+                            { value: 'Rings', label: 'Rings' },
+                            { value: 'BRAND NEW', label: 'BRAND NEW' },
+                            { value: 'SUBASTA', label: 'SUBASTA' },
+                          ]}
+                        />
                       </div>
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
-
-
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
 
-                          label="Phone Number"
-                          name="PhoneNo"
-                          type="text"
+                          label="Total Grams"
+                          name="Grams"
+                          type="number"
                           placeholder=""
-                          value={values.PhoneNo}
+                          value={values.Grams}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />  <InputText
+
+                          label="Price"
+                          name="Price"
+                          type="number"
+                          placeholder=""
+                          value={values.Price}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
+
                       </div>
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
-
-
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
 
-                          label="Email"
-                          name="Email"
-                          type="text"
+                          label="Amount"
+                          name="Amount"
+                          type="number"
                           placeholder=""
-                          value={values.Email}
+                          value={values.Amount}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />  <InputText
+
+                          label="Date"
+                          name="Date"
+                          type="date"
+                          placeholder=""
+                          value={values.Date}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
+
                       </div>
-
-
 
                       <button
                         // type="button"
@@ -1176,7 +1024,7 @@ function Transactions() {
 
 
 
-        <dialog id="createSupplierPayment" className="modal">
+        <dialog id="inventoryDetails" className="modal">
           <div className="modal-box">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
@@ -1185,172 +1033,128 @@ function Transactions() {
                   setisAddPaymentOpen(false)
                 }}>✕</button>
             </form>
-            <h1 className="font-bold text-lg">Fill Out Form</h1>
-            <p className="text-sm text-gray-500 mt-1 font-bold text-buttonPrimary">Supplier Payment</p>
-            {isAddPaymentOpen &&
-              <div className="p-0 space-y-2 md:space-y-2 sm:p-0">
-                <Formik {...formikConfig(selectedSupplier)}>
-                  {({
-                    handleSubmit,
-                    handleChange,
-                    handleBlur, // handler for onBlur event of form elements
-                    values,
-                    touched,
-                    errors,
-                    submitForm,
-                    setFieldTouched,
-                    setFieldValue,
-                    setFieldError,
-                    setErrors,
-                    isSubmitting
-                  }) => {
+            <h1 className="font-bold text-lg">Details</h1>
+            {/* <p className="text-sm text-gray-500 mt-1 font-bold text-buttonPrimary">Supplier Payment</p> */}
+            <Formik {...formikConfig(selectedSupplier)}>
+              {({
+                handleSubmit,
+                handleChange,
+                handleBlur, // handler for onBlur event of form elements
+                values,
+                touched,
+                errors,
+                submitForm,
+                setFieldTouched,
+                setFieldValue,
+                setFieldError,
+                setErrors,
+                isSubmitting,
 
+              }) => {
+                const checkValidateTab = () => {
+                  // submitForm();
+                };
+                const errorMessages = () => {
+                  // you can add alert or console.log or any thing you want
+                  alert('Please fill in the required fields');
+                };
 
-                    // console.log({ values })
+                // console.log({ values })
 
-                    return (
-                      <Form className="">
-                        {/* <label
+                return (
+                  <Form className="">
+                    {/* <label
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
-                          <InputText
-
-                            label="Supplier ID"
-                            name="SupplierID "
-                            type="text"
-                            placeholder=""
-                            disabled
-                            value={values.SupplierID}
-                            onBlur={handleBlur} // This apparently updates `touched`?
-                          />
-                          <InputText
-
-                            label="Supplier Name"
-                            name="SupplierName "
-                            type="text"
-                            placeholder=""
-                            disabled
-                            value={values.SupplierName}
-                            onBlur={handleBlur} // This apparently updates `touched`?
-                          />
-                        </div>
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
 
 
-                          <div className='mt-2'>
-                            <Dropdown
-                              // icons={mdiAccount}
-                              label="Order ID"
-                              name="OrderID"
-                              placeholder=""
-                              value={values.OrderID}
-                              setFieldValue={setFieldValue}
-                              onBlur={handleBlur}
-                              options={[
-                                { value: '001', label: '001' },
-                              ]}
-                            />
-                          </div>
-                          <InputText
+                      <Dropdown
+                        // icons={mdiAccount}
+                        label="Supplier Name"
+                        name="SupplierID"
+                        placeholder=""
+                        value={values.SupplierID}
+                        setFieldValue={setFieldValue}
+                        onBlur={handleBlur}
+                        options={suppliers}
+                      />
+                      <Dropdown
+                        // icons={mdiAccount}
+                        label="Category"
+                        name="Category"
+                        placeholder=""
+                        value={values.Category}
+                        setFieldValue={setFieldValue}
+                        onBlur={handleBlur}
+                        options={[
+                          { value: 'Pendant', label: 'Pendant' },
+                          { value: 'Bangle', label: 'Bangle' },
+                          { value: 'Earrings', label: 'Earrings' },
+                          { value: 'Bracelet', label: 'Bracelet' },
+                          { value: 'Necklace', label: 'Necklace' },
+                          { value: 'Rings', label: 'Rings' },
+                          { value: 'BRAND NEW', label: 'BRAND NEW' },
+                          { value: 'SUBASTA', label: 'SUBASTA' },
+                        ]}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                      <InputText
 
-                            label="Date"
-                            name="Date"
-                            type="date"
-                            placeholder=""
-                            value={values.Date}
-                            onBlur={handleBlur} // This apparently updates `touched`?
-                          />
+                        label="Total Grams"
+                        name="Grams"
+                        type="number"
+                        placeholder=""
+                        value={values.Grams}
+                        onBlur={handleBlur} // This apparently updates `touched`?
+                      />  <InputText
 
-                        </div>
-                        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 mt-4">
+                        label="Price"
+                        name="Price"
+                        type="number"
+                        placeholder=""
+                        value={values.Price}
+                        onBlur={handleBlur} // This apparently updates `touched`?
+                      />
 
+                    </div>
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                      <InputText
 
-                          <InputText
+                        label="Amount"
+                        name="Amount"
+                        type="number"
+                        placeholder=""
+                        value={values.Amount}
+                        onBlur={handleBlur} // This apparently updates `touched`?
+                      />  <InputText
 
-                            label="Amount of Payment"
-                            name="Amount"
-                            type="text"
-                            placeholder=""
-                            value={values.Amount}
-                            onBlur={handleBlur} // This apparently updates `touched`?
-                          />
-                          <div className='mt-2'>
-                            <Dropdown
-                              // icons={mdiAccount}
-                              label="Payment Status"
-                              name="Payment_Status"
-                              placeholder=""
-                              value={values.Payment_Status}
-                              setFieldValue={setFieldValue}
-                              onBlur={handleBlur}
-                              options={[
-                                { value: 'PARTIALLY_PAID', label: 'Partially Paid' },
-                                { value: 'OVERDUE', label: 'Overdue' },
-                                { value: 'PAID', label: 'Paid' }
-                              ]}
-                            />
-                          </div>
+                        label="Date"
+                        name="Date"
+                        type="date"
+                        placeholder=""
+                        value={values.date}
+                        onBlur={handleBlur} // This apparently updates `touched`?
+                      />
 
-                        </div>
-                        <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
-                          <RadioText
-                            // icons={mdiAccount}
-                            label="Payment Method"
-                            name="Payment_Method"
-                            placeholder=""
-                            value={values.Payment_Method}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            options={[
-                              { value: 'CASH', label: 'Cash' },
-                              // { value: 'GCASH', label: 'Gcash' },
-                              { value: 'BDO', label: 'BDO' },
-                              { value: 'BPI', label: 'BPI' }
-                            ]}
-                          />
+                    </div>
 
-
-                        </div>
-
-                        <InputText
-
-                          label="Proof of Payment"
-                          name="Proof_Payment"
-                          type="file"
-                          accept="image/*"
-                          placeholder=""
-                          value={values.Proof_Payment}
-                          onChange={(e) => {
-                            let file = e.target.files[0];
-                            setFile(file);
-                            //setFieldValue('Proof_Payment', 'dex')
-                            // console.log(file.name)
-                            if (file) {
-                              blah.src = URL.createObjectURL(file)
-                            }
-
-                          }}
-                          onBlur={handleBlur} // This apparently updates `touched`?
-                        />
-                        <div class="flex justify-center items-center">
-                          <img id="blah" src="img.jpg" alt="" preview className='object-cover h-48 w-96 ' />
-                        </div>
-                        <button
-                          type="submit"
-                          className={
-                            'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
-                            (loading ? ' loading' : '')
-                          }>
-                          Submit
-                        </button>
-                      </Form>
-                    );
-                  }}
-                </Formik>
-              </div>
-            }</div>
+                    <button
+                      // type="button"
+                      type="submit"
+                      className={
+                        'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
+                        (loading ? ' loading' : '')
+                      }>
+                      Submit
+                    </button>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </div>
         </dialog>
 
         <dialog id="viewTransactionHistory" className="modal">
@@ -1366,7 +1170,7 @@ function Transactions() {
             <Table
               style={{ overflow: 'wrap' }}
               className="table-sm"
-              columns={paymentHistoryColumns}
+              columns={tableColumns}
               data={(paymentHistoryList || []).map(data => {
                 return {
                   ...data

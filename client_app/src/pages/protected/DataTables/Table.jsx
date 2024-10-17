@@ -330,7 +330,9 @@ export function StatusPill({ value }) {
         status.startsWith('complete') ? 'bg-lime-100 text-lime-800' : null,
         status.startsWith('unhold') ? 'bg-lime-100 text-lime-800' : null,
         status.startsWith('free_slot') ? 'bg-yellow-100 text-yellow-800' : null,
-        status.startsWith('regular') ? 'bg-yellow-100 text-yellow-800' : null
+        status.startsWith('partially_paid') ? 'bg-yellow-100 text-yellow-800' : null,
+        status.startsWith('paid') ? 'bg-green-100 text-green-800' : null,
+        status.startsWith('overdue') ? 'bg-red-100 text-red-800' : null
       )}>
       {status}
     </span>

@@ -14,7 +14,7 @@ const Users = lazy(() => import('../pages/protected/Transactions'));
 const Employees = lazy(() => import('../pages/protected/Employees'));
 const Suppliers = lazy(() => import('../pages/protected/Suppliers'));
 const Transactions = lazy(() => import('../pages/protected/Transactions_Sales'));
-
+const Layaway = lazy(() => import('../pages/protected/Layaway'));
 
 const Reports = lazy(() => import('../pages/protected/Reports'));
 
@@ -29,6 +29,9 @@ const DocFeatures = lazy(() => import('../pages/DocFeatures'));
 const DocComponents = lazy(() => import('../pages/DocComponents'));
 const AddMember = lazy(() => import('../pages/protected/Leads'));
 
+
+
+const Inventory = lazy(() => import('../pages/protected/Inventory'));
 const token = checkAuth();
 
 const decoded = jwtDecode(token);
@@ -94,6 +97,14 @@ if (decoded && decoded.role === 'ADMIN') {
       path: '/transactions',
       component: Transactions
     },
+    {
+      path: '/inventory',
+      component: Inventory
+    },
+    {
+      path: '/layaway',
+      component: Layaway
+    },
   ];
 } else {
   routes = [
@@ -152,6 +163,7 @@ if (decoded && decoded.role === 'ADMIN') {
       path: '/myProfile',
       component: Suppliers
     },
+
   ];
 }
 

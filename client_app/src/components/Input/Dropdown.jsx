@@ -25,6 +25,7 @@ const MyTextInput = ({
   // message if the field is invalid and it has been touched (i.e. visited)
   const [field, meta, values] = useField(props);
 
+
   let controlClassName = [
     'px-3 py-2 max-w-full border-gray-700 rounded w-full dark:placeholder-gray-400',
     meta.touched && meta.error
@@ -40,7 +41,7 @@ const MyTextInput = ({
 
   return (
     <>
-      <div className="mb-6 last:mb-0">
+      <div className="mb-6 last:mb-0 mt-2">
         {label && (
           <label
             className={`block mb-2 border-gray-700 text-left font-bold ${labelFor ? 'cursor-pointer' : ''

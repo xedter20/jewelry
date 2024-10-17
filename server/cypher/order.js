@@ -9,7 +9,8 @@ export const createOrder = data => {
     Grams,
     Price,
     adminUserID,
-    ItemName
+    ItemName,
+    id
   } = data;
   let queryText;
 
@@ -17,6 +18,7 @@ export const createOrder = data => {
 
 
   INSERT INTO transactions(
+      uuid,
       CustomerID, 
       SupplierID,
       Facebook,
@@ -25,9 +27,11 @@ export const createOrder = data => {
       Grams,
       Status,
       Modified_By,
-      ItemName
+      ItemName,
+      proof_of_payment
  )
         VALUES (
+        '${id}',
        '${CustomerID}',
        '${SupplierID}',
        '${Facebook}',
@@ -36,7 +40,8 @@ export const createOrder = data => {
        '${Grams}',
        'IN_PROGRESS',
        '${adminUserID}',
-           '${ItemName}'
+        '${ItemName}',
+        ''
               
 )
 

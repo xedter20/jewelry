@@ -64,6 +64,16 @@ try {
     });
   };
 
+  // getDbConnection = async () => {
+  //   return await mysql.createConnection({
+  //     host: 'localhost',
+  //     user: 'root',
+  //     password: '',
+  //     database: 'av_de_asis',
+  //     port: 3306
+  //   });
+  // };
+
   mySqlDriver = await getDbConnection();
 
   // Your Firebase configuration
