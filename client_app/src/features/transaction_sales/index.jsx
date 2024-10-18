@@ -448,7 +448,7 @@ function Transactions() {
 
 
 
-                  <i class="fa-solid fa-barcode"></i> QR
+                  <i class="fa-solid fa-barcode"></i> QRs
                 </button>
 
 
@@ -1276,9 +1276,8 @@ function Transactions() {
                   </h2>
 
                   <QRCodeSVG value={
-                    JSON.stringify({
-                      url: `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.TransactionID}`
-                    })
+                    `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.TransactionID}`
+
                   }
 
                     size={200} />,

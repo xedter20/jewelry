@@ -204,7 +204,7 @@ function Transactions() {
           console.log({ row: url })
           return <div className=' flex justify-center items-center mt-4 h-20 w-20'>
             <QRCodeSVG value={
-              JSON.stringify({ website_url: url })
+              url
             } />,
           </div>
         }

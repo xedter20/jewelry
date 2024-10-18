@@ -566,7 +566,7 @@ function CodeGenerator() {
                         max="100"
                         value={values.quantity}
 
-                        // onChange={handleEmailChange}
+                      // onChange={handleEmailChange}
                       />
                       <button
                         type="submit"
