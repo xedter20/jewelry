@@ -322,7 +322,7 @@ function Transactions() {
 
 
               <div>
-                <div className="font-bold text-neutral-500">{value}</div>
+                <div className="font-bold text-neutral-500">{value.toFixed(2)}</div>
               </div>
             </div>
           );

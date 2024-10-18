@@ -355,7 +355,7 @@ function Transactions() {
         Header: 'Grams',
         accessor: 'Grams',
         Cell: ({ row, value }) => {
-          return <span className="">{value}</span>;
+          return <span className="">{value.toFixed(2)}</span>;
         }
       },
       {
