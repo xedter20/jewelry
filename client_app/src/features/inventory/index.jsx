@@ -323,7 +323,7 @@ function Transactions() {
       },
       {
         Header: 'Modified By',
-        accessor: 'Admin_Fname',
+        accessor: 'Admin_FullName',
 
         Cell: ({ row, value }) => {
           // let date_modified = format(value, 'MMM dd, yyyy');
