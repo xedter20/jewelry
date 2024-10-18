@@ -448,7 +448,7 @@ function Transactions() {
 
 
 
-                  <i class="fa-solid fa-barcode"></i> QRs
+                  <i class="fa-solid fa-barcode"></i> QR
                 </button>
 
 
