@@ -991,16 +991,22 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
 
-                          label="Grams per Item"
+                          label="Grams per Item * ₱3,500"
                           name="Grams"
                           type="number"
                           placeholder=""
                           value={values.Grams}
+                          onChange={(e) => {
+                            const grams = parseFloat(e.target.value); // Parse grams, default to 0
+                            console.log({ grams })
+                            setFieldValue('Grams', grams);
+                            setFieldValue('Price', grams * 3500); // Update price based on grams
+                          }}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
 
                         <InputText
-
+                          disabled
                           label="Price"
                           name="Price"
                           type="number"

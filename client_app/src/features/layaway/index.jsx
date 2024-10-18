@@ -1167,10 +1167,16 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
 
-                          label="Grams per Item"
+                          label="Grams per Items * ₱3,500"
                           name="Grams"
                           type="number"
                           placeholder=""
+                          onChange={(e) => {
+                            const grams = parseFloat(e.target.value); // Parse grams, default to 0
+                            console.log({ grams })
+                            setFieldValue('Grams', grams);
+                            setFieldValue('Price', grams * 3500); // Update price based on grams
+                          }}
                           value={values.Grams}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
@@ -1181,6 +1187,7 @@ function Transactions() {
                           name="Price"
                           type="number"
                           placeholder=""
+                          disabled
                           value={values.Price}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
