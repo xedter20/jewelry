@@ -35,6 +35,8 @@ import InputText from '../../components/Input/InputText';
 import Dropdown from '../../components/Input/Dropdown';
 import { Formik, useField, useFormik, Form } from 'formik';
 import * as Yup from 'yup';
+
+import { formatAmount } from './../../features/dashboard/helpers/currencyFormat';
 import RadioText from '../../components/Input/Radio';
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
   const [filterParam, setFilterParam] = useState('');
@@ -117,6 +119,7 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
 };
 
 function Transactions() {
+  const [activeTab, setActiveTab] = useState(1); // State to control active tab
   const [file, setFile] = useState(null);
   const [users, setUser] = useState([]);
   const [paymentHistoryList, setActivePaymentHistory] = useState([]);
@@ -124,7 +127,7 @@ function Transactions() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeChildID, setactiveChildID] = useState('');
+  const [viewedData, setViewedData] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState({});
   const [isAddPaymentOpen, setisAddPaymentOpen] = useState(false);
   const navigate = useNavigate();
@@ -176,6 +179,36 @@ function Transactions() {
     setIsLoaded(true);
 
   }, []);
+
+
+  const [inventoryReportDetails, setInventoryReportDetails] = useState(false);
+
+  const generateInventoryReport = async () => {
+    let res = await axios({
+      method: 'POST',
+      url: `inventory/generateInventoryReport/${viewedData.OrderID}`,
+      data: {
+
+      }
+    });
+
+    let data = res.data.data;
+
+    setInventoryReportDetails(data);
+
+
+  };
+
+
+  useEffect(() => {
+
+    if (!!viewedData && viewedData.OrderID) {
+      generateInventoryReport()
+    }
+
+
+
+  }, [viewedData.OrderID]);
 
   const appSettings = useSelector(state => state.appSettings);
   let { codeTypeList, packageList } = appSettings;
@@ -298,7 +331,7 @@ function Transactions() {
 
 
               <div>
-                <div className="font-bold text-neutral-500">{value}</div>
+                <div className="font-bold text-neutral-500">{formatAmount(value)}</div>
               </div>
             </div>
           );
@@ -315,7 +348,7 @@ function Transactions() {
 
 
               <div>
-                <div className="font-bold text-neutral-500">{value}</div>
+                <div className="font-bold text-neutral-500">{formatAmount(value)}</div>
               </div>
             </div>
           );
@@ -366,21 +399,29 @@ function Transactions() {
           return (
             (
               <div className="flex">
+                <button
+                  className="btn btn-outline btn-sm mr-2"
+                  onClick={() => {
+                    setViewedData(l)
+                    document.getElementById('inventoryViewDetails').showModal();
+                  }}>
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button className="btn btn-outline btn-sm mr-2"
+                  onClick={() => {
 
-                <button className="btn btn-outline btn-sm mr-2" onClick={() => {
-
-                  setisAddPaymentOpen(true)
-                  setSelectedSupplier(l);
+                    setisAddPaymentOpen(true)
+                    setSelectedSupplier(l);
 
 
 
-                  document.getElementById('inventoryDetails').showModal();
-                  // setFieldValue('Admin_Fname', 'dex');
-                }}>
+                    document.getElementById('inventoryDetails').showModal();
+                    // setFieldValue('Admin_Fname', 'dex');
+                  }}>
 
 
 
-                  <i class="fa-regular fa-eye"></i>
+                  <i class="fa-regular fa-edit"></i>
                 </button>
 
 
@@ -731,7 +772,23 @@ function Transactions() {
   };
 
 
-  console.log({ suppliers })
+  // console.log({
+  //   viewedData
+  // })
+
+  console.log({ dexxx: inventoryReportDetails?.TotalGramsSold });
+  const leftColumnData = [
+    { key: 'Grams', value: viewedData.Grams },
+    { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold || 0 },
+    { key: 'For Return', value: viewedData?.ForReturn || 0 },
+  ];
+
+  const rightColumnData = [
+    { key: 'Total Price', value: formatAmount(viewedData?.Amount || 0) },
+    { key: 'Amount Payable', value: formatAmount(inventoryReportDetails?.AmountPayable || 0) },
+    { key: 'Amount Paid', value: formatAmount(inventoryReportDetails?.AmountPaid || 0) },
+  ];
+
   return (
     isLoaded && (
       <TitleCard
@@ -954,12 +1011,12 @@ function Transactions() {
                           setFieldValue={setFieldValue}
                           onBlur={handleBlur}
                           options={[
-                            { value: 'Pendant', label: 'Pendant' },
-                            { value: 'Bangle', label: 'Bangle' },
-                            { value: 'Earrings', label: 'Earrings' },
-                            { value: 'Bracelet', label: 'Bracelet' },
-                            { value: 'Necklace', label: 'Necklace' },
-                            { value: 'Rings', label: 'Rings' },
+                            // { value: 'Pendant', label: 'Pendant' },
+                            // { value: 'Bangle', label: 'Bangle' },
+                            // { value: 'Earrings', label: 'Earrings' },
+                            // { value: 'Bracelet', label: 'Bracelet' },
+                            // { value: 'Necklace', label: 'Necklace' },
+                            // { value: 'Rings', label: 'Rings' },
                             { value: 'BRAND NEW', label: 'BRAND NEW' },
                             { value: 'SUBASTA', label: 'SUBASTA' },
                           ]}
@@ -974,13 +1031,25 @@ function Transactions() {
                           placeholder=""
                           value={values.Grams}
                           onBlur={handleBlur} // This apparently updates `touched`?
+                          onChange={(e) => {
+                            const grams = parseFloat(e.target.value);
+                            const price = parseFloat(values.Price);
+                            setFieldValue("Grams", grams);
+                            setFieldValue("Amount", grams * price);
+                          }}
                         />  <InputText
 
-                          label="Price"
+                          label="Price (₱)"
                           name="Price"
                           type="number"
                           placeholder=""
                           value={values.Price}
+                          onChange={(e) => {
+                            const price = parseFloat(e.target.value);
+                            const grams = parseFloat(values.Grams);
+                            setFieldValue("Price", price);
+                            setFieldValue("Amount", grams * price);
+                          }}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
 
@@ -988,7 +1057,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
 
-                          label="Amount"
+                          label="Total Amount (₱)"
                           name="Amount"
                           type="number"
                           placeholder=""
@@ -1019,6 +1088,115 @@ function Transactions() {
                   );
                 }}
               </Formik> </div>
+          </div>
+        </dialog>
+
+
+        <dialog id="inventoryViewDetails" className="modal">
+          <div className="modal-box w-11/12 max-w-5xl">
+            <button className="btn btn-sm btn-circle absolute right-2 top-2"
+
+              onClick={() => {
+                setViewedData({})
+                document.getElementById("inventoryViewDetails").close();
+              }}
+            >✕</button>
+
+            <div>
+              <ul
+                className="flex mb-0 list-none flex-wrap pt-0 pb-4 flex-row"
+                role="tablist">
+                <li className="mr-2 last:mr-0 flex-auto text-center">
+                  <a
+                    className={
+                      'text-xs font-bold uppercase px-5 py-3 shadow-sm rounded block leading-normal ' +
+                      (activeTab === 1
+                        ? 'text-white bg-slate-700 rounded-lg shadow-lg'
+                        : 'text-slate-700 bg-slate-200 shadow-md')
+                    }
+                    onClick={e => {
+                      e.preventDefault();
+                      setActiveTab(1);
+                    }}
+                    data-toggle="tab"
+                    href="#link1"
+                    role="tablist">
+                    <i className="fa-solid fa-check-to-slot mr-2"></i>
+                    Inventory Details
+                  </a>
+                </li>
+                <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
+                  <a
+                    className={
+                      'text-xs font-bold uppercase px-5 py-3 shadow-sm rounded block leading-normal ' +
+                      (activeTab === 2
+                        ? 'text-white bg-slate-700 rounded-lg shadow-lg'
+                        : 'text-slate-700 bg-slate-200 shadow-md')
+                    }
+                    onClick={e => {
+                      e.preventDefault();
+                      setActiveTab(2);
+                    }}
+                    data-toggle="tab"
+                    href="#link2"
+                    role="tablist">
+                    <i className="fa-solid fa-hourglass-half mr-2"></i>
+                    Payments
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <div
+                className={activeTab === 1 ? 'block' : 'hidden'}
+                id="link1">
+                <div className="flex flex-col items-start space-y-6">
+                  <h1 className="text-2xl font-bold text-green-500">
+                    Order ID: {viewedData.OrderID}
+                  </h1>
+                  <table className="min-w-full border border-gray-300">
+                    <tbody>
+                      <tr>
+                        {/* Left Column */}
+                        <td className="border-r">
+                          <table className="min-w-full">
+                            <tbody>
+                              {leftColumnData.map((item, index) => (
+                                <tr
+                                  key={index}
+                                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b`}
+                                >
+                                  <td className="p-4 font-semibold text-gray-700 border-r">{item.key}</td>
+                                  <td className="p-4 text-gray-600">{item.value}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+
+                        {/* Right Column */}
+                        <td>
+                          <table className="min-w-full">
+                            <tbody>
+                              {rightColumnData.map((item, index) => (
+                                <tr
+                                  key={index}
+                                  className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b`}
+                                >
+                                  <td className="p-4 font-semibold text-gray-700 border-r">{item.key}</td>
+                                  <td className="p-4 text-gray-600">{item.value}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
           </div>
         </dialog>
 
@@ -1108,22 +1286,35 @@ function Transactions() {
                         type="number"
                         placeholder=""
                         value={values.Grams}
-                        onBlur={handleBlur} // This apparently updates `touched`?
+                        onBlur={handleBlur}
+                        onChange={(e) => {
+                          const grams = parseFloat(e.target.value) || 0;
+                          const price = parseFloat(values.Price) || 0;
+                          setFieldValue("Grams", grams);
+                          setFieldValue("Amount", grams * price);
+                        }}
                       />  <InputText
 
-                        label="Price"
+                        label="Price (₱)"
                         name="Price"
                         type="number"
                         placeholder=""
                         value={values.Price}
-                        onBlur={handleBlur} // This apparently updates `touched`?
+                        onBlur={handleBlur}
+                        onChange={(e) => {
+                          const price = parseFloat(e.target.value) || 0;
+                          const grams = parseFloat(values.Grams) || 0;
+                          setFieldValue("Price", price);
+                          setFieldValue("Amount", grams * price);
+                        }}
+
                       />
 
                     </div>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                       <InputText
 
-                        label="Amount"
+                        label="Total Amount (₱)"
                         name="Amount"
                         type="number"
                         placeholder=""
@@ -1148,7 +1339,7 @@ function Transactions() {
                         'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
                         (loading ? ' loading' : '')
                       }>
-                      Submit
+                      Update
                     </button>
                   </Form>
                 );

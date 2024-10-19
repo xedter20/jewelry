@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { showNotification } from '../common/headerSlice';
 import TitleCard from '../../components/Cards/TitleCard';
@@ -130,11 +130,38 @@ function Transactions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeChildID, setactiveChildID] = useState('');
-  const [selectedSupplier, setSelectedSupplier] = useState({});
+  const [selectedSupplierID, setSelectedSupplier] = useState({});
   const [isAddPaymentOpen, setisAddPaymentOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [suppliers, setSupplierList] = useState([]);
+
+  const [inventoryList, setInventoryList] = useState([]);
+
+
+  const fetchInventoryOrders = async () => {
+    let res = await axios({
+      method: 'POST',
+      url: 'inventory/list',
+      data: {
+        SupplierID: selectedSupplierID
+      }
+    });
+
+    let list = res.data.data;
+
+
+
+
+    setInventoryList(list.map((s) => {
+      return {
+        label: `${s.OrderID}`,
+        value: s.OrderID,
+        SupplierID: s.SupplierID
+
+      }
+    }));
+  };
 
 
   const fetchOrders = async () => {
@@ -199,7 +226,12 @@ function Transactions() {
     fetchSuppliers();
     fetchCustomers();
     fetchOrders();
+    fetchInventoryOrders()
   }
+
+  useEffect(() => {
+    fetchInventoryOrders()
+  }, [selectedSupplierID]);
   useEffect(() => {
     dispatch(getFeatureList()).then(result => {
       fetchAll();
@@ -441,7 +473,7 @@ function Transactions() {
 
                   setSelectedOrder(l);
 
-                  document.getElementById('viewTransactionHistory').showModal();
+                  document.getElementById('viewQRCode').showModal();
 
 
                 }}>
@@ -534,7 +566,8 @@ function Transactions() {
       Category: Yup.string().required('Required'),
       SupplierID: Yup.string().required('Required'),
       Grams: Yup.number().required('Required'),
-      Price: Yup.number().required('Required')
+      Price: Yup.number().required('Required'),
+      orderID: Yup.string().required('Required')
 
     };
 
@@ -545,7 +578,8 @@ function Transactions() {
       SupplierID: '',
       Grams: '',
       Price: '',
-      ItemName: ''
+      ItemName: '',
+      orderID: ''
     }
 
 
@@ -590,12 +624,10 @@ function Transactions() {
 
 
 
-
-
           let res = await axios({
             method: 'POST',
             url: 'transactions/addOrder',
-            data: values
+            data: { orderId: values.orderID, ...values }
           })
           await fetchAll();
           document.getElementById('addOrder').close();
@@ -703,6 +735,39 @@ function Transactions() {
   };
 
 
+  const qrCodeRef = useRef();
+  const downloadQRCode = () => {
+    // Create a canvas element to convert SVG to image  
+    const canvas = document.createElement('canvas');
+    const size = 200; // size of the QR code  
+    canvas.width = size;
+    canvas.height = size;
+
+    // Get the SVG data  
+    const svg = qrCodeRef.current.querySelector('svg'); // Adjust to get the SVG element  
+    const svgData = new XMLSerializer().serializeToString(svg);
+
+    // Convert SVG to data URL  
+    const img = new Image();
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      // Draw the image on the canvas  
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url); // Clean up the URL object  
+
+      // Trigger the download of the image  
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png'); // Convert to png  
+      link.download = 'qrcode.png'; // Set the file name  
+      link.click(); // Simulate a click to trigger download  
+    };
+
+    // Set the src of the image to the URL created from SVG blob  
+    img.src = url;
+  };
   return (
     isLoaded && (
       <TitleCard
@@ -846,7 +911,7 @@ function Transactions() {
               <p>Information will be recorded and cannot be changed</p>
             </div>
             <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-              <Formik {...formikConfig(selectedSupplier)}>
+              <Formik {...formikConfig()}>
                 {({
                   handleSubmit,
                   handleChange,
@@ -878,38 +943,77 @@ function Transactions() {
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                        <Dropdown
+                          // icons={mdiAccount}
+                          label="Supplier Name"
+                          name="SupplierID"
+                          placeholder=""
+                          value={values.SupplierID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={suppliers}
+                          affectedInput={
+                            'orderID'
+                          }
+                          functionToCalled={(value) => {
+                            setFieldValue('orderID', '');
+                            setSelectedSupplier(value);
 
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
 
-                        <div className='mt-2'>
-                          <Dropdown
-                            // icons={mdiAccount}
-                            label="Customer"
-                            name="CustomerID"
-                            placeholder=""
-                            value={values.CustomerID}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            options={users}
-                            functionToCalled={(value) => {
+                            // if (inventoryList.length === 0) {
+                            //   setFieldValue('orderID', '')
+                            // }
+                            // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
 
-                              let user = users.find(u => {
-                                return u.value === value
-                              })
+                            // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
+                          }}
+                        // onChange={() => {
+                        //   // setFieldValue('SupplierName', values.SupplierID)
 
-                              setFieldValue('Facebook', user.Facebook)
-                            }}
-                          />
-                        </div>
+                        //   console.log({
+                        //     inventoryList
+                        //   })
+                        // }}
+                        />
 
+                        < Dropdown
+                          // icons={mdiAccount}
+                          label="Inventory Order ID"
+                          name="orderID"
+                          placeholder=""
+                          value={values.orderID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={inventoryList}
+                        />
                       </div>
 
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
 
 
+
+                        <Dropdown
+                          // icons={mdiAccount}
+                          label="Customer"
+                          name="CustomerID"
+                          placeholder=""
+                          value={values.CustomerID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={users}
+                          functionToCalled={(value) => {
+
+                            let user = users.find(u => {
+                              return u.value === value
+                            })
+
+                            setFieldValue('Facebook', user.Facebook)
+                          }}
+                        />
                         <InputText
-                          className="border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          className="py-3 border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
 
                           label="Facebook Link"
                           name="Facebook"
@@ -921,6 +1025,8 @@ function Transactions() {
                         />
 
                       </div>
+
+
                       <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
 
 
@@ -970,23 +1076,7 @@ function Transactions() {
                         </div>
 
                       </div>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
-
-                        <div className='mt-2'>
-                          <Dropdown
-                            // icons={mdiAccount}
-                            label="Supplier Name"
-                            name="SupplierID"
-                            placeholder=""
-                            value={values.SupplierID}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            options={suppliers}
-                          />
-                        </div>
-
-                      </div>
 
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
@@ -1249,7 +1339,7 @@ function Transactions() {
 
 
 
-        <dialog id="viewTransactionHistory" className="modal">
+        <dialog id="viewQRCode" className="modal">
           <div className="modal-box  bg-customBlue ">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
@@ -1275,19 +1365,28 @@ function Transactions() {
 
                   </h2>
 
-                  <QRCodeSVG value={
-                    `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.TransactionID}`
+                  <div
+                    ref={qrCodeRef}
+                  >
+                    <QRCodeSVG
 
-                  }
 
-                    size={200} />,
+                      value={
+                        `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.LayawayID}`
 
+                      }
+
+                      size={200} />,
+                  </div>
 
                   <div className="card-actions justify-end">
                     <button
                       // type="button"
                       size="sm"
                       type="submit"
+                      onClick={() => {
+                        downloadQRCode()
+                      }}
                       className={
                         'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
                         (loading ? ' loading' : '')

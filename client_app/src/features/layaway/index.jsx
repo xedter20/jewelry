@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { showNotification } from '../common/headerSlice';
 import TitleCard from '../../components/Cards/TitleCard';
@@ -130,7 +130,7 @@ function Transactions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeChildID, setactiveChildID] = useState('');
-  const [selectedSupplier, setSelectedSupplier] = useState({});
+
   const [isAddPaymentOpen, setisAddPaymentOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -140,6 +140,35 @@ function Transactions() {
   const [payments, setPayments] = useState([]);
   const [totalPaid, setTotalPaid] = useState(0);
   const [remainingBalance, setRemainingBalance] = useState(8000); // Adjust based on your data
+
+
+  const [inventoryList, setInventoryList] = useState([]);
+  const [selectedSupplierID, setSelectedSupplier] = useState({});
+
+  const fetchInventoryOrders = async () => {
+    let res = await axios({
+      method: 'POST',
+      url: 'inventory/list',
+      data: {
+        SupplierID: selectedSupplierID
+      }
+    });
+
+    let list = res.data.data;
+
+
+
+
+    setInventoryList(list.map((s) => {
+      return {
+        label: `${s.OrderID}`,
+        value: s.OrderID,
+        SupplierID: s.SupplierID
+
+      }
+    }));
+  };
+
 
   // Sample function to fetch payment data (replace with your API call)
   const fetchPayments = async () => {
@@ -151,7 +180,7 @@ function Transactions() {
       method: 'POST',
       url: 'layaway/payment/list',
       data: {
-        LayawayID: selectedOrder.OrderID
+        LayawayID: selectedOrder.LayawayID
       }
     });
 
@@ -183,6 +212,8 @@ function Transactions() {
     });
 
     let list = res.data.data;
+
+
 
 
     setOrders(list)
@@ -235,7 +266,13 @@ function Transactions() {
     fetchSuppliers();
     fetchCustomers();
     fetchOrders();
+    fetchInventoryOrders()
   }
+
+  useEffect(() => {
+    fetchInventoryOrders()
+  }, [selectedSupplierID]);
+
   useEffect(() => {
     dispatch(getFeatureList()).then(result => {
       fetchAll();
@@ -323,13 +360,28 @@ function Transactions() {
 
 
 
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
 
+
+                  setSelectedOrder(l);
+
+                  document.getElementById('viewQRCode').showModal();
+
+
+                }}>
+
+
+
+                  <i class="fa-solid fa-barcode"></i> QR
+                </button>
 
               </div>
             )
           );
         }
       },
+
+
       {
         Header: 'Layaway IDs',
         accessor: 'OrderID',
@@ -544,6 +596,7 @@ function Transactions() {
         try {
 
 
+          console.log({ ...values, Due_Date: endDate })
 
 
 
@@ -646,7 +699,7 @@ function Transactions() {
           data.append('payment_method', values.payment_method);
           data.append('amount', values.amount);
           data.append('customer_id', selectedOrder.CustomerID);
-          data.append('layAwayID', selectedOrder.OrderID);
+          data.append('layAwayID', selectedOrder.LayawayID);
 
 
           let updatedStatus = remainingBalance - values.amount === 0 ? 'PAID' : 'PARTIALLY_PAID';
@@ -708,13 +761,47 @@ function Transactions() {
       const monthsToAdd = parseInt(plan);
       const start = new Date(startDate);
       const calculatedEndDate = new Date(start.setMonth(start.getMonth() + monthsToAdd));
-      setEndDate(calculatedEndDate.toISOString().split('T')[0]);
+      console.log({ calculatedEndDate })
+      calculatedEndDate && setEndDate(calculatedEndDate.toISOString().split('T')[0]);
     } else {
       setEndDate('');
     }
   }, [plan, startDate]);
 
 
+  const qrCodeRef = useRef();
+  const downloadQRCode = () => {
+    // Create a canvas element to convert SVG to image  
+    const canvas = document.createElement('canvas');
+    const size = 200; // size of the QR code  
+    canvas.width = size;
+    canvas.height = size;
+
+    // Get the SVG data  
+    const svg = qrCodeRef.current.querySelector('svg'); // Adjust to get the SVG element  
+    const svgData = new XMLSerializer().serializeToString(svg);
+
+    // Convert SVG to data URL  
+    const img = new Image();
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      // Draw the image on the canvas  
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url); // Clean up the URL object  
+
+      // Trigger the download of the image  
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png'); // Convert to png  
+      link.download = 'qrcode.png'; // Set the file name  
+      link.click(); // Simulate a click to trigger download  
+    };
+
+    // Set the src of the image to the URL created from SVG blob  
+    img.src = url;
+  };
 
   return (
     isLoaded && (
@@ -949,7 +1036,7 @@ function Transactions() {
               <p>Information will be recorded and cannot be changed</p>
             </div>
             <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-              <Formik {...formikConfig(selectedSupplier)}>
+              <Formik {...formikConfig()}>
                 {({
                   handleSubmit,
                   handleChange,
@@ -981,6 +1068,54 @@ function Transactions() {
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                        <Dropdown
+                          // icons={mdiAccount}
+                          label="Supplier Name"
+                          name="SupplierID"
+                          placeholder=""
+                          value={values.SupplierID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={suppliers}
+                          affectedInput={
+                            'orderID'
+                          }
+                          functionToCalled={(value) => {
+                            setFieldValue('orderID', '');
+                            setSelectedSupplier(value);
+
+
+
+                            // if (inventoryList.length === 0) {
+                            //   setFieldValue('orderID', '')
+                            // }
+                            // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+
+                            // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
+                          }}
+                        // onChange={() => {
+                        //   // setFieldValue('SupplierName', values.SupplierID)
+
+                        //   console.log({
+                        //     inventoryList
+                        //   })
+                        // }}
+                        />
+
+                        < Dropdown
+                          // icons={mdiAccount}
+                          label="Inventory Order ID"
+                          name="orderID"
+                          placeholder=""
+                          value={values.orderID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={inventoryList}
+                        />
+                      </div>
+
+
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
 
@@ -1055,38 +1190,31 @@ function Transactions() {
 
 
                       </div>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
 
 
-                        <div className='mt-1'>
-                          <Dropdown
-                            // icons={mdiAccount}
-                            label="Customer"
-                            name="CustomerID"
-                            placeholder=""
-                            value={values.CustomerID}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            options={users}
-                            functionToCalled={(value) => {
 
-                              let user = users.find(u => {
-                                return u.value === value
-                              })
+                        <Dropdown
+                          // icons={mdiAccount}
+                          label="Customer"
+                          name="CustomerID"
+                          placeholder=""
+                          value={values.CustomerID}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={users}
+                          functionToCalled={(value) => {
 
-                              setFieldValue('Facebook', user.Facebook)
-                            }}
-                          />
-                        </div>
+                            let user = users.find(u => {
+                              return u.value === value
+                            })
 
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
-
-
+                            setFieldValue('Facebook', user.Facebook)
+                          }}
+                        />
                         <InputText
 
-                          className="border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          className="border-2 py-3 border-none focus:border-purple-500 rounded-lg p-2 w-full"
                           label="Facebook Link"
                           name="Facebook"
                           type="text"
@@ -1097,6 +1225,8 @@ function Transactions() {
                         />
 
                       </div>
+
+
                       <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
 
 
@@ -1146,23 +1276,7 @@ function Transactions() {
                         </div>
 
                       </div>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
-
-                        <div className='mt-2'>
-                          <Dropdown
-                            // icons={mdiAccount}
-                            label="Supplier Name"
-                            name="SupplierID"
-                            placeholder=""
-                            value={values.SupplierID}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            options={suppliers}
-                          />
-                        </div>
-
-                      </div>
 
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
@@ -1233,6 +1347,10 @@ function Transactions() {
               <h1 className="text-2xl font-bold mb-4">Payment Summary</h1>
               <div className="p-4">
                 <div className="flex justify-between font-bold">
+                  <span>Status:</span>
+                  <span className='font-2xl'><StatusPill value={selectedOrder.status} /></span>
+                </div>
+                <div className="flex justify-between font-bold">
                   <span>Customer Name:</span>
                   <span>{selectedOrder.CustomerName}</span>
                 </div>
@@ -1256,7 +1374,7 @@ function Transactions() {
                     {payments.map(payment => (
                       <tr key={payment.layAwayID} className="border-b">
                         <td className="py-2 px-4">{payment.layAwayID}</td>
-                        <td className="py-2 px-4">₱{payment.amount}</td>
+                        <td className="py-2 px-4">{formatAmount(payment.amount)}</td>
                         <td className="py-2 px-4">{payment.payment_method}</td>
                         <td className="py-2 px-4">{format(payment.payment_date, 'MMM dd, yyyy')}</td>
                         <td className="py-2 px-4">
@@ -1284,15 +1402,15 @@ function Transactions() {
                 <div className="p-4">
                   <div className="flex justify-between font-bold">
                     <span className=''>Order Amount:</span>
-                    <span className='text-green-500'>₱{selectedOrder.Price}</span>
+                    <span className='text-green-500'>{formatAmount(selectedOrder.Price)}</span>
                   </div>
                   <div className="flex justify-between font-bold">
                     <span>Total Amount Paid:</span>
-                    <span>₱{totalAmountPaid}</span>
+                    <span>{formatAmount(totalAmountPaid)}</span>
                   </div>
                   <div className="flex justify-between font-bold">
                     <span>Remaining Balance:</span>
-                    <span className='text-yellow-500'>₱{selectedOrder.Price - totalAmountPaid}</span>
+                    <span className='text-yellow-500'>{formatAmount(selectedOrder.Price - totalAmountPaid)}</span>
                   </div>
                 </div>
               </div>
@@ -1304,7 +1422,15 @@ function Transactions() {
 
               {/* if there is a button in form, it will close the modal */}
               <div className='flex'>
-                <button className="btn mr-2 bg-green-500" onClick={() => document.getElementById('addPayment').showModal()}>Add Payment</button>
+                {
+                  console.log({ selectedOrder })
+                }
+                <button
+
+                  disabled={orders.find(o => {
+                    return o.LayawayID === selectedOrder.LayawayID && o.status === 'PAID'
+                  })}
+                  className="btn mr-2 bg-green-500" onClick={() => document.getElementById('addPayment').showModal()}>Add Payment</button>
 
                 <button className="btn"
                   onClick={() => document.getElementById('viewProofPaymentImage').close()}
@@ -1313,6 +1439,68 @@ function Transactions() {
 
 
             </div>
+          </div>
+        </dialog>
+
+
+        <dialog id="viewQRCode" className="modal">
+          <div className="modal-box  bg-customBlue ">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 bg-white"
+                onClick={() => {
+                  //  setisEditModalOpen(false)
+                }}>✕</button>
+            </form>
+            <h1 className="font-bold text-lg text-center">QR CODE</h1>
+            {/* <div className=' flex justify-center items-center mt-4'>
+              <QRCodeSVG value={
+                JSON.stringify({ dex: 1 })
+              } />,
+            </div> */}
+            <div className=' flex justify-center items-center mt-4'>
+              <div className="card bg-base-100 w-80 shadow-xl">
+                {/* <figure>
+                
+                </figure> */}
+                <div className="card-body justify-center items-center">
+                  <h2 className="card-title text-center mt-4 font-bold">
+                    QR CODE
+
+                  </h2>
+
+                  <div
+                    ref={qrCodeRef}
+                  >
+                    <QRCodeSVG
+
+
+                      value={
+                        `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.LayawayID}`
+
+                      }
+
+                      size={200} />,
+                  </div>
+
+                  <div className="card-actions justify-end">
+                    <button
+                      // type="button"
+                      size="sm"
+                      type="submit"
+                      onClick={() => {
+                        downloadQRCode()
+                      }}
+                      className={
+                        'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
+                        (loading ? ' loading' : '')
+                      }>
+                      Download
+                    </button>
+
+                  </div>
+                </div>
+              </div></div>
           </div>
         </dialog>
 

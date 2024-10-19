@@ -62,6 +62,8 @@ const MyTextInput = ({
             }}
             options={options}
             onChange={({ value }) => {
+
+
               if (affectedInput) {
                 props.setFieldValue(affectedInput, value);
               }
