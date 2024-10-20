@@ -57,17 +57,27 @@ export const editEmployeeController = async (req, res, next) => {
   try {
     let data = req.body;
 
-    console.log({ data });
+    // EmployeeID to update
+    const employeeID = data.EmployeeID;
+
+    // Generate the SET clause dynamically
+    const fields = Object.keys(data)
+      .map(key => `${key} = ?`)
+      .join(', ');
+    const values = Object.values(data);
+
+    // Add the employeeID to the end of the values array
+    values.push(employeeID);
 
     // let adminEmail = req.user.email;
 
     // var [result] = await mySqlDriver.execute(findUserByEmailQuery(adminEmail));
 
     // data.adminFullName = `${result.Fname} ${result.Lname}`;
-    await mySqlDriver.execute(updateEmployee(data.EmployeeID, data), [
-      data,
-      data.EmployeeID
-    ]);
+
+    const query = `UPDATE employees SET ${fields} WHERE EmployeeID = ?`;
+
+    await mySqlDriver.execute(query, values);
 
     res.json({ success: true });
   } catch (error) {

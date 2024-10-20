@@ -2,31 +2,39 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../features/common/headerSlice';
 import Dashboard from '../../features/dashboard/index';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { FaCheckCircle } from 'react-icons/fa'; // Add any icons you want to use
 import axios from 'axios';
-import { format, formatDistance, formatRelative, subDays } from 'date-fns';
+import { format, startOfToday } from 'date-fns';
+import { formatAmount } from './../../features/dashboard/helpers/currencyFormat';
 
 import DatePicker from "react-tailwindcss-datepicker";
 function InternalPage() {
   const dispatch = useDispatch();
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+  // Set today's date as default for the DatePicker
+  const today = startOfToday(); // Get today's date
   const [value, setValue] = useState({
-    startDate: null,
-    endDate: null
+    startDate: today,
+    endDate: today
   });
 
-  let { startDate, endDate } = value
+
+  const [resultData, setResultData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      // const response = await axios.get('layaway/generate/report', {
-      //   params: {
-      //     startDate: startDate.toISOString().split('T')[0],
-      //     endDate: endDate.toISOString().split('T')[0],
-      //   },
-      // });
-      // const reportData = response.data;
+      const response = await axios.post('/inventory/generateDashboardReport', {
+        data: {
+          startDate: value.startDate,
+          endDate: value.endDate
+        },
+      });
+
+
+      const reportData = response.data.data.salesPerDateRange;
+
+      setResultData(reportData)
 
       // // Process data for chart
       // const labels = reportData.map(item => item.Date_Modified);
@@ -50,16 +58,27 @@ function InternalPage() {
   }, [value.startDate, value.endDate]);
 
 
-  console.log({ loggedInUser });
+
   useEffect(() => {
     dispatch(setPageTitle({ title: 'Dashboard' }));
   }, []);
-  const data = [
-    { name: 'Jan', revenue: 30000, earnings: 50000 },
-    { name: 'Feb', revenue: 25000, earnings: 40000 },
-    { name: 'Mar', revenue: 20000, earnings: 30000 },
-    // Add more data as needed
-  ];
+
+  // const resultData = [
+  //   { payment_date: '2024-10-19T10:24:44.000Z', Total_Sales: '3500.00', Total_Grams: 1 },
+  //   { payment_date: '2024-10-19T10:27:22.000Z', Total_Sales: '10500.00', Total_Grams: 3 },
+  //   { payment_date: '2024-10-20T01:06:19.000Z', Total_Sales: '10500.00', Total_Grams: 3 },
+  //   { payment_date: '2024-10-20T01:07:03.000Z', Total_Sales: '7000.00', Total_Grams: 2 },
+  //   { payment_date: '2024-10-20T11:49:23.000Z', Total_Sales: '10800.00', Total_Grams: 3 },
+  //   { payment_date: '2024-10-21T01:06:19.000Z', Total_Sales: '10500.00', Total_Grams: 3 }
+  // ];
+
+  const formattedData = resultData.map(item => ({
+    payment_date: new Date(item.payment_date).getTime(), // Convert to timestamp
+    Total_Sales: parseFloat(item.Total_Price), // Convert to number
+  }));
+
+
+  console.log({ formattedData })
 
   const suppliers = [
     { id: 1, name: 'Supplier #1', completion: 55 },
@@ -105,6 +124,7 @@ function InternalPage() {
     return acc + parseInt(current.Price)
 
   }, 0)
+  const totalRevenue = resultData.reduce((acc, item) => acc + parseFloat(item.Total_Price), 0);
 
   return <div>
     <div className="p-6 bg-gray-50 space-y-6">
@@ -116,42 +136,41 @@ function InternalPage() {
         <DatePicker
           showShortcuts={true}
           id="datepicker"
-          // selected={startDate}
-          onChange={newValue => setValue(newValue)}
+          value={value} // Use the state value
+          onChange={newValue => setValue(newValue)} // Update the state on change
           className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholderText="Select a date"
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h2 className="font-bold text-gray-700">Revenue</h2>
-          <p className="text-3xl font-semibold text-blue-600">₱30,789.00</p>
-          <ResponsiveContainer width="100%" height={100}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="name" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip />
-              <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} />
-            </LineChart>
+          <h2 className="font-bold text-gray-700 text-center">Total Sales</h2>
+          <p className="text-3xl font-semibold text-orange-600 text-center">
+
+
+            {formatAmount(totalRevenue)}
+          </p>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={formattedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="payment_date" domain={['dataMin', 'dataMax']}
+
+                tickFormatter={(timestamp) => {
+                  const date = new Date(timestamp);
+                  return date.toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric'
+                  });
+                }}
+              />
+              <YAxis />
+              <Tooltip labelFormatter={(value) => new Date(value).toLocaleString()} />
+              <Area type="monotone" dataKey="Total_Sales" stroke="#8884d8" fill="#8884d8" />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h2 className="font-bold text-gray-700">Earnings</h2>
-          <p className="text-3xl font-semibold text-green-600">₱50,789.20</p>
-          <ResponsiveContainer width="100%" height={100}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="name" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip />
-              <Line type="monotone" dataKey="earnings" stroke="#22c55e" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+        {/* <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
           <h2 className="font-bold text-gray-700">Sales</h2>
           <p className="text-3xl font-semibold text-orange-600">₱45,908</p>
           <ResponsiveContainer width="100%" height={100}>
@@ -163,7 +182,7 @@ function InternalPage() {
               <Line type="monotone" dataKey="revenue" stroke="#fb923c" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+        </div> */}
       </div>
 
       {/* Payment per Supplier */}

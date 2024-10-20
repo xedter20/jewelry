@@ -96,10 +96,16 @@ router.post('/create', authenticateUserMiddleware, async (req, res) => {
 
     const queryPaymentText = `INSERT INTO payments 
     (
-      layAwayID, customer_id, amount, payment_method
+      layAwayID, customer_id, amount, payment_method, status
     
-    ) VALUES (?, ?, ?, ?)`;
-    const paymentValues = [OrderID, CustomerID, Downpayment, ''];
+    ) VALUES (?, ?, ?, ? ,?)`;
+    const paymentValues = [
+      OrderID,
+      CustomerID,
+      Downpayment,
+      '',
+      'PARTIALLY_PAID'
+    ];
 
     let result = await mySqlDriver.query(queryText, values, (err, result) => {
       return result;
@@ -348,7 +354,7 @@ router.get('/generate/report', async (req, res) => {
   console.log({ startDate, endDate });
 
   const [rows] = await mySqlDriver.query(
-    'SELECT Date_Modified, SUM(Amount_Paid) AS TotalPaid FROM layaway WHERE Date_Modified BETWEEN ? AND ? GROUP BY Date_Modified',
+    `SELECT Date_Modified, SUM(Amount_Paid) AS TotalPaid FROM layaway WHERE Date_Modified BETWEEN ? AND ? GROUP BY Date_Modified`,
     [startDate, endDate]
   );
 

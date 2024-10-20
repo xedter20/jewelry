@@ -55,7 +55,7 @@ export const getChildInfoDetails = ID => {
   let queryText;
 
   queryText = `
-  SELECT * FROM child_info where ID = '${ID}'
+  SELECT * FROM employees where EmployeeID = '${ID}'
 
   `;
 

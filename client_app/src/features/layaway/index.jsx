@@ -145,6 +145,27 @@ function Transactions() {
   const [inventoryList, setInventoryList] = useState([]);
   const [selectedSupplierID, setSelectedSupplier] = useState({});
 
+
+  const [pricingSettings, setPricingSettings] = useState({}); // Changed variable name here
+  const [pricingSettingsSelected, setPricingSettingsSelected] = useState(); //
+  const fetchPricingSettings = async () => {
+    try {
+      const res = await axios.get(`settings/pricing/1`); // Using shorthand for axios.get
+      const settings = res.data.data; // Changed variable name here
+      setPricingSettings(settings); // Changed function call here
+    } catch (err) {
+      console.error('Error fetching pricing settings:', err); // Log the error
+      setError('Failed to fetch pricing settings'); // Changed error message here
+    } finally {
+      setIsLoaded(true); // Ensure isLoaded is set to true regardless of success or error
+    }
+  };
+
+
+  useEffect(() => {
+    fetchPricingSettings(); // Changed function call here
+  }, []);
+
   const fetchInventoryOrders = async () => {
     let res = await axios({
       method: 'POST',
@@ -174,7 +195,6 @@ function Transactions() {
   const fetchPayments = async () => {
     // Example data: replace with your API call
 
-    console.log({ selectedOrder })
 
     let res = await axios({
       method: 'POST',
@@ -645,7 +665,7 @@ function Transactions() {
   };
 
 
-  const totalAmountPaid = selectedOrder ? payments.reduce((acc, current) => {
+  const totalAmountPaid = selectedOrder ? payments.filter(s => ['PAYMENT_FOR_APPROVAL', 'PARTIALLY_PAID', 'PAID'].includes(s.status)).reduce((acc, current) => {
     return acc + parseInt(current.amount)
   }, 0) : 0;
   console.log({ totalAmountPaid })
@@ -803,6 +823,7 @@ function Transactions() {
     img.src = url;
   };
 
+
   return (
     isLoaded && (
       <TitleCard
@@ -836,138 +857,6 @@ function Transactions() {
           />
         </div>
 
-        <Formik {...formikConfigAddPayment()}>
-          {({
-            handleSubmit,
-            handleChange,
-            handleBlur, // handler for onBlur event of form elements
-            values,
-            touched,
-            errors,
-            submitForm,
-            setFieldTouched,
-            setFieldValue,
-            setFieldError,
-            setErrors,
-            isSubmitting,
-
-          }) => {
-            return <dialog id="addPayment" className="modal">
-              <div className="modal-box">
-                <h3 className="font-bold text-lg">Add Payment</h3>
-                {/* <p className="py-4">Pick a file</p> */}
-                {/* 
-                {isSubmitting && (
-                  <div
-                    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-2"
-                    role="alert">
-                    <p class="font-bold">Please wait</p>
-                    <p>Uploading ...</p>
-                  </div>
-                )} */}
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
-                  <InputText
-
-                    label="Customer Name"
-                    name="CustomerName"
-                    type="text"
-                    placeholder=""
-                    value={selectedOrder.CustomerName}
-
-                    onBlur={handleBlur} // This apparently updates `touched`?
-                    disabled
-
-
-                  /></div>
-
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 mt-2">
-                  <Dropdown
-
-                    // icons={mdiAccount}
-                    label="Payment Method"
-                    name="payment_method"
-                    placeholder=""
-                    value={"Gcash"}
-                    setFieldValue={setFieldValue}
-                    onBlur={handleBlur}
-                    options={[
-                      {
-                        label: "Gcash",
-                        value: "Gcash"
-                      },
-                      {
-                        label: "BDO",
-                        value: "BDO"
-                      },
-                      {
-                        label: "BPI",
-                        value: "BPI"
-                      }
-                    ]}
-                    functionToCalled={(value) => {
-
-                      // setPlan();
-                      // let user = users.find(u => {
-                      //   return u.value === value
-                      // })
-                      setPlan(value)
-                      setFieldValue('MonthsToPay', value)
-                    }}
-
-                  />
-                  <InputText
-
-                    label="Amount"
-                    name="amount"
-                    type="number"
-                    placeholder=""
-
-
-                    onBlur={handleBlur} // This apparently updates `touched`?
-
-
-                  />
-
-                </div>
-                <label className="form-control w-full">
-                  <div className="label font-bold">
-                    Proof of Payment
-                    {/* <span className="label-text">Pick a file</span> */}
-                  </div>
-                  <input
-                    name="proof_of_payment"
-                    type="file"
-                    className="file-input file-input-bordered w-full max-w-xs w-full"
-                    onChange={handleOnChange}
-                  />
-                </label>
-
-                <div className="modal-action">
-                  {/* if there is a button in form, it will close the modal */}
-                  <button
-                    className="btn mr-2 bg-green-500"
-                    disabled={isSubmitting || !file}
-                    type='submit'
-                    onClick={e => {
-                      e.preventDefault();
-                      if (!isSubmitting && file) {
-                        handleSubmit(e);
-                      }
-                    }}
-                  >
-                    Submit
-                  </button>
-                  <button className="btn" onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('addPayment').close();
-                  }}>
-                    Close
-                  </button>
-                </div>
-              </div>
-            </dialog>
-          }}
-        </Formik>
 
 
         <ToastContainer />
@@ -1262,6 +1151,33 @@ function Transactions() {
                             value={values.Category}
                             setFieldValue={setFieldValue}
                             onBlur={handleBlur}
+                            // affectedInput={
+                            //   'orderID'
+                            // }
+                            functionToCalled={(value) => {
+
+                              let selectString = {
+                                'SUBASTA': 'Amount_Per_Gram_Subasta',
+                                'BRAND NEW': 'Amount_Per_Gram_Brand_New'
+                              }
+
+                              let multiplyBry = pricingSettings[selectString[value]];
+
+                              console.log({ multiplyBry })
+
+                              setPricingSettingsSelected(multiplyBry)
+                              setFieldValue('Price', (values.Grams * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+                              // setSelectedSupplier(value);
+
+
+
+                              // if (inventoryList.length === 0) {
+                              //   setFieldValue('orderID', '')
+                              // }
+                              // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+
+                              // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
+                            }}
                             options={[
                               // { value: 'Pendant', label: 'Pendant' },
                               // { value: 'Bangle', label: 'Bangle' },
@@ -1281,15 +1197,15 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
 
-                          label="Grams per Items * ₱3,500"
+                          label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
                           name="Grams"
                           type="number"
                           placeholder=""
                           onChange={(e) => {
                             const grams = parseFloat(e.target.value); // Parse grams, default to 0
-                            console.log({ grams })
+
                             setFieldValue('Grams', grams);
-                            setFieldValue('Price', grams * 3500); // Update price based on grams
+                            setFieldValue('Price', (grams * pricingSettingsSelected).toFixed(2)); // Update price based on grams
                           }}
                           value={values.Grams}
                           onBlur={handleBlur} // This apparently updates `touched`?
@@ -1339,6 +1255,138 @@ function Transactions() {
 
 
 
+        <Formik {...formikConfigAddPayment()}>
+          {({
+            handleSubmit,
+            handleChange,
+            handleBlur, // handler for onBlur event of form elements
+            values,
+            touched,
+            errors,
+            submitForm,
+            setFieldTouched,
+            setFieldValue,
+            setFieldError,
+            setErrors,
+            isSubmitting,
+
+          }) => {
+            return <dialog id="addPayment" className="modal">
+              <div className="modal-box">
+                <h3 className="font-bold text-lg">Add Payment</h3>
+                {/* <p className="py-4">Pick a file</p> */}
+                {/* 
+                {isSubmitting && (
+                  <div
+                    class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mt-2"
+                    role="alert">
+                    <p class="font-bold">Please wait</p>
+                    <p>Uploading ...</p>
+                  </div>
+                )} */}
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                  <InputText
+
+                    label="Customer Name"
+                    name="CustomerName"
+                    type="text"
+                    placeholder=""
+                    value={selectedOrder.CustomerName}
+
+                    onBlur={handleBlur} // This apparently updates `touched`?
+                    disabled
+
+
+                  /></div>
+
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2 mt-2">
+                  <Dropdown
+
+                    // icons={mdiAccount}
+                    label="Payment Method"
+                    name="payment_method"
+                    placeholder=""
+                    value={"Gcash"}
+                    setFieldValue={setFieldValue}
+                    onBlur={handleBlur}
+                    options={[
+                      {
+                        label: "Gcash",
+                        value: "Gcash"
+                      },
+                      {
+                        label: "BDO",
+                        value: "BDO"
+                      },
+                      {
+                        label: "BPI",
+                        value: "BPI"
+                      }
+                    ]}
+                    functionToCalled={(value) => {
+
+                      // setPlan();
+                      // let user = users.find(u => {
+                      //   return u.value === value
+                      // })
+                      setPlan(value)
+                      setFieldValue('MonthsToPay', value)
+                    }}
+
+                  />
+                  <InputText
+
+                    label="Amount"
+                    name="amount"
+                    type="number"
+                    placeholder=""
+
+
+                    onBlur={handleBlur} // This apparently updates `touched`?
+
+
+                  />
+
+                </div>
+                <label className="form-control w-full">
+                  <div className="label font-bold">
+                    Proof of Payment
+                    {/* <span className="label-text">Pick a file</span> */}
+                  </div>
+                  <input
+                    name="proof_of_payment"
+                    type="file"
+                    className="file-input file-input-bordered w-full max-w-xs w-full"
+                    onChange={handleOnChange}
+                  />
+                </label>
+
+                <div className="modal-action">
+                  {/* if there is a button in form, it will close the modal */}
+                  <button
+                    className="btn mr-2 bg-green-500"
+                    disabled={isSubmitting || !file}
+                    type='submit'
+                    onClick={e => {
+                      e.preventDefault();
+                      if (!isSubmitting && file) {
+                        handleSubmit(e);
+                      }
+                    }}
+                  >
+                    Submit
+                  </button>
+                  <button className="btn" onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('addPayment').close();
+                  }}>
+                    Close
+                  </button>
+                </div>
+              </div>
+            </dialog>
+          }}
+        </Formik>
 
         <dialog id="viewProofPaymentImage" className="modal">
           <div className="modal-box w-11/12 max-w-5xl">
@@ -1359,20 +1407,24 @@ function Transactions() {
                   <span>{selectedOrder.CustomerID}</span>
                 </div>
               </div>
-              <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                <table className="min-w-full">
-                  <thead className="bg-gray-200">
+              <div className="bg-white shadow-md rounded-lg  overflow-auto">
+                <table className="min-w-full ">
+                  <thead className="bg-gray-200 ">
                     <tr>
                       <th className="py-2 px-4 text-left">Layaway ID</th>
                       <th className="py-2 px-4 text-left">Amount Paid</th>
                       <th className="py-2 px-4 text-left">Payment Method</th>
                       <th className="py-2 px-4 text-left">Payment Date</th>
-                      <th className="py-2 px-4 text-left">View</th>
+                      <th className="py-2 px-4 text-left">Proof of Payment</th>
+                      <th className="py-2 px-4 text-left">Status</th>
+                      <th className="py-2 px-4 text-left">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {payments.map(payment => (
-                      <tr key={payment.layAwayID} className="border-b">
+                    {payments.map(payment => {
+
+                      let forApproval = payment.status === 'PAYMENT_FOR_APPROVAL'
+                      return <tr key={payment.layAwayID} className="border-b">
                         <td className="py-2 px-4">{payment.layAwayID}</td>
                         <td className="py-2 px-4">{formatAmount(payment.amount)}</td>
                         <td className="py-2 px-4">{payment.payment_method}</td>
@@ -1394,9 +1446,60 @@ function Transactions() {
 
 
                         </td>
+                        <td className="py-2 px-4">
 
+                          <StatusPill value={payment.status} />
+                        </td>
+                        <td className="py-2 px-4">
+
+                          {forApproval && <div className="flex">
+                            <button
+                              className="btn btn-success btn-sm flex items-center mr-2"
+
+                              onClick={async () => {
+                                let result = await axios({
+                                  // headers: {
+                                  //   'content-type': 'multipart/form-data'
+                                  // },
+                                  method: 'POST',
+                                  url: 'layaway/payment/updateStatus',
+                                  data: {
+                                    LayawayID: selectedOrder.LayawayID,
+                                    paymentID: payment.id,
+                                    status: 'PAID'
+                                  }
+                                });
+                                fetchPayments()
+                              }}
+                            >
+                              <i className="fa-solid fa-check"></i>
+
+                            </button>
+                            <button className="btn btn-error  btn-sm  flex items-center"
+                              onClick={async () => {
+                                let result = await axios({
+                                  // headers: {
+                                  //   'content-type': 'multipart/form-data'
+                                  // },
+                                  method: 'POST',
+                                  url: 'layaway/payment/updateStatus',
+                                  data: {
+                                    LayawayID: selectedOrder.LayawayID,
+                                    paymentID: payment.id,
+                                    status: 'REJECTED'
+                                  }
+                                });
+                                fetchPayments()
+                              }}
+                            >
+                              <i className="fa-solid fa-times"></i>
+
+                            </button>
+                          </div>}
+
+                        </td>
                       </tr>
-                    ))}
+                    })}
                   </tbody>
                 </table>
                 <div className="p-4">
@@ -1422,15 +1525,13 @@ function Transactions() {
 
               {/* if there is a button in form, it will close the modal */}
               <div className='flex'>
-                {
-                  console.log({ selectedOrder })
-                }
-                <button
+
+                {/* <button
 
                   disabled={orders.find(o => {
                     return o.LayawayID === selectedOrder.LayawayID && o.status === 'PAID'
                   })}
-                  className="btn mr-2 bg-green-500" onClick={() => document.getElementById('addPayment').showModal()}>Add Payment</button>
+                  className="btn mr-2 bg-green-500" onClick={() => document.getElementById('addPayment').showModal()}>Add Payment</button> */}
 
                 <button className="btn"
                   onClick={() => document.getElementById('viewProofPaymentImage').close()}

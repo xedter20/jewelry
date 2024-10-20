@@ -117,6 +117,8 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
 };
 
 function Transactions() {
+
+  const [inventoryList, setInventoryList] = useState([]);
   const [file, setFile] = useState(null);
   const [users, setUser] = useState([]);
   const [paymentHistoryList, setActivePaymentHistory] = useState([]);
@@ -129,6 +131,33 @@ function Transactions() {
   const [isAddPaymentOpen, setisAddPaymentOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const fetchInventoryOrders = async () => {
+
+    console.log({ selectedSupplier })
+    let res = await axios({
+      method: 'POST',
+      url: 'inventory/list',
+      data: {
+        SupplierID: selectedSupplier.SupplierID
+      }
+    });
+
+    let list = res.data.data;
+
+
+
+
+    setInventoryList(list.map((s) => {
+      return {
+        label: `${s.OrderID}`,
+        value: s.OrderID,
+        SupplierID: s.SupplierID
+
+      }
+    }));
+  };
+
   const fetchSuppliers = async () => {
     let res = await axios({
       method: 'POST',
@@ -144,9 +173,14 @@ function Transactions() {
   useEffect(() => {
     dispatch(getFeatureList()).then(result => {
       fetchSuppliers();
+
       setIsLoaded(true);
     });
   }, []);
+
+  useEffect(() => {
+    fetchInventoryOrders()
+  }, [selectedSupplier.SupplierID]);
 
   const appSettings = useSelector(state => state.appSettings);
   let { codeTypeList, packageList } = appSettings;
@@ -1239,18 +1273,16 @@ function Transactions() {
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
 
 
-                          <div className='mt-2'>
+                          <div className=''>
                             <Dropdown
                               // icons={mdiAccount}
-                              label="Order ID"
+                              label="Inventory Order ID"
                               name="OrderID"
                               placeholder=""
                               value={values.OrderID}
                               setFieldValue={setFieldValue}
                               onBlur={handleBlur}
-                              options={[
-                                { value: '001', label: '001' },
-                              ]}
+                              options={inventoryList}
                             />
                           </div>
                           <InputText
@@ -1276,7 +1308,7 @@ function Transactions() {
                             value={values.Amount}
                             onBlur={handleBlur} // This apparently updates `touched`?
                           />
-                          <div className='mt-2'>
+                          <div className=''>
                             <Dropdown
                               // icons={mdiAccount}
                               label="Payment Status"

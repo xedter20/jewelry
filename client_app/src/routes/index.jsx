@@ -15,7 +15,7 @@ const Employees = lazy(() => import('../pages/protected/Employees'));
 const Suppliers = lazy(() => import('../pages/protected/Suppliers'));
 const Transactions = lazy(() => import('../pages/protected/Transactions_Sales'));
 const Layaway = lazy(() => import('../pages/protected/Layaway'));
-
+const Settings = lazy(() => import('../pages/protected/Settings'));
 const Reports = lazy(() => import('../pages/protected/Reports'));
 
 const Statistics = lazy(() => import('../pages/protected/Statistics'));
@@ -58,11 +58,11 @@ if (decoded && decoded.role === 'ADMIN') {
 
     {
       path: '/settings-profile',
-      component: ProfileSettings
+      component: Settings
     },
     {
       path: '/settings-profile/:slug',
-      component: ProfileSettings
+      component: Settings
     },
 
     {
@@ -104,6 +104,10 @@ if (decoded && decoded.role === 'ADMIN') {
     {
       path: '/layaway',
       component: Layaway
+    },
+    {
+      path: '/settings',
+      component: Settings
     },
   ];
 } else {

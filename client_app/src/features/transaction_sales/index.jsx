@@ -138,6 +138,25 @@ function Transactions() {
 
   const [inventoryList, setInventoryList] = useState([]);
 
+  const [pricingSettings, setPricingSettings] = useState({}); // Changed variable name here
+  const [pricingSettingsSelected, setPricingSettingsSelected] = useState(); //
+  const fetchPricingSettings = async () => {
+    try {
+      const res = await axios.get(`settings/pricing/1`); // Using shorthand for axios.get
+      const settings = res.data.data; // Changed variable name here
+      setPricingSettings(settings); // Changed function call here
+    } catch (err) {
+      console.error('Error fetching pricing settings:', err); // Log the error
+      setError('Failed to fetch pricing settings'); // Changed error message here
+    } finally {
+      setIsLoaded(true); // Ensure isLoaded is set to true regardless of success or error
+    }
+  };
+
+
+  useEffect(() => {
+    fetchPricingSettings(); // Changed function call here
+  }, []);
 
   const fetchInventoryOrders = async () => {
     let res = await axios({
@@ -283,7 +302,64 @@ function Transactions() {
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   const columns = useMemo(
     () => [
+      {
+        Header: 'Action',
+        accessor: '',
+        Cell: ({ row }) => {
+          let l = row.original;
 
+
+
+          return (
+            (
+              <div className="flex">
+
+
+
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+
+                  setSelectedOrder(l);
+
+                  document.getElementById('viewReceipt').showModal();
+
+
+                }}>
+
+
+
+                  <i class="fa-regular fa-eye"></i> View
+                </button>
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+
+                  setSelectedOrder(l);
+
+                  document.getElementById('viewQRCode').showModal();
+
+
+                }}>
+
+
+
+                  <i class="fa-solid fa-barcode"></i> QR
+                </button>
+
+
+
+                {/* <button
+                  className="btn btn-outline btn-sm ml-0"
+                  onClick={() => {
+                    // setactiveChildID(l.ID);
+                    // document.getElementById('deleteModal').showModal();
+                  }}>
+                  <i class="fa-solid fa-download"></i>
+                </button> */}
+              </div >
+            )
+          );
+        }
+      },
       {
         Header: 'Transaction ID',
         accessor: 'uuid',
@@ -440,64 +516,7 @@ function Transactions() {
 
         }
       },
-      {
-        Header: 'Action',
-        accessor: '',
-        Cell: ({ row }) => {
-          let l = row.original;
 
-
-
-          return (
-            (
-              <div className="flex">
-
-
-
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  setSelectedOrder(l);
-
-                  document.getElementById('viewReceipt').showModal();
-
-
-                }}>
-
-
-
-                  <i class="fa-regular fa-eye"></i> View
-                </button>
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  setSelectedOrder(l);
-
-                  document.getElementById('viewQRCode').showModal();
-
-
-                }}>
-
-
-
-                  <i class="fa-solid fa-barcode"></i> QR
-                </button>
-
-
-
-                {/* <button
-                  className="btn btn-outline btn-sm ml-0"
-                  onClick={() => {
-                    // setactiveChildID(l.ID);
-                    // document.getElementById('deleteModal').showModal();
-                  }}>
-                  <i class="fa-solid fa-download"></i>
-                </button> */}
-              </div >
-            )
-          );
-        }
-      }
     ],
     []
   );
@@ -1072,6 +1091,31 @@ function Transactions() {
                               { value: 'BRAND NEW', label: 'BRAND NEW' },
                               { value: 'SUBASTA', label: 'SUBASTA' },
                             ]}
+                            functionToCalled={(value) => {
+
+                              let selectString = {
+                                'SUBASTA': 'Amount_Per_Gram_Subasta',
+                                'BRAND NEW': 'Amount_Per_Gram_Brand_New'
+                              }
+
+                              let multiplyBry = pricingSettings[selectString[value]];
+
+
+                              setPricingSettingsSelected(multiplyBry)
+
+                              setFieldValue('Price', (values.Grams * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+
+                              // setSelectedSupplier(value);
+
+
+
+                              // if (inventoryList.length === 0) {
+                              //   setFieldValue('orderID', '')
+                              // }
+                              // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+
+                              // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
+                            }}
                           />
                         </div>
 
@@ -1081,7 +1125,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
 
-                          label="Grams per Item * ₱3,500"
+                          label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
                           name="Grams"
                           type="number"
                           placeholder=""
@@ -1090,7 +1134,7 @@ function Transactions() {
                             const grams = parseFloat(e.target.value); // Parse grams, default to 0
                             console.log({ grams })
                             setFieldValue('Grams', grams);
-                            setFieldValue('Price', grams * 3500); // Update price based on grams
+                            setFieldValue('Price', (grams * pricingSettingsSelected).toFixed(2)); // Update price based on grams
                           }}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
@@ -1216,7 +1260,7 @@ function Transactions() {
                                     <td className="py-4 text-gray-700">
 
                                       <span className='font-bold'>
-                                        {formatAmount(selectedOrder.Grams * selectedOrder.Price)}
+                                        {formatAmount(selectedOrder.Price)}
                                       </span>
                                     </td>
                                   </tr>
@@ -1235,7 +1279,7 @@ function Transactions() {
                               <div className="flex justify-end mb-8">
                                 <div className="text-gray-700 mr-2">Grand Total:</div>
                                 <div className="text-gray-700 font-bold text-xl"> <span className='font-bold text-green-500'>
-                                  {formatAmount(selectedOrder.Grams * selectedOrder.Price)}
+                                  {formatAmount(selectedOrder.Price)}
                                 </span></div>
                               </div>
                               {/* <div className="border-t-2 border-gray-300 pt-8 mb-8">
@@ -1265,12 +1309,23 @@ function Transactions() {
                             <div className="overflow-x-auto">
                               <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
 
-                                <div class="max-w-sm mx-auto">
-                                  <img src={
-                                    selectedOrder.proof_of_payment
-                                  } alt="Responsive Image" class="w-full h-90 object-fit" />
+                                {
+                                  selectedOrder.proof_of_payment && <div class="max-w-sm mx-auto">
+                                    <img src={
+                                      selectedOrder.proof_of_payment
+                                    } alt="Responsive Image" class="w-full h-90 object-fit" />
 
-                                </div>
+                                  </div>
+                                }
+
+
+                                {
+                                  !selectedOrder.proof_of_payment && <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                                    <p class="font-bold">Payment Pending</p>
+                                    <p>System haven't received the payment yet.
+                                    </p>
+                                  </div>
+                                }
 
 
                               </div>
@@ -1372,7 +1427,7 @@ function Transactions() {
 
 
                       value={
-                        `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.LayawayID}`
+                        `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.TransactionID || selectedOrder.LayawayID}`
 
                       }
 

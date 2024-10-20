@@ -135,6 +135,8 @@ function Transactions() {
 
   const [suppliers, setSupplierList] = useState([]);
   const [inventoryList, setInventoryList] = useState([]);
+
+
   const fetchInventoryList = async (SupplierID) => {
     let res = await axios({
       method: 'post',
@@ -172,6 +174,10 @@ function Transactions() {
       }
     }));
   };
+
+
+
+
   useEffect(() => {
 
     fetchSuppliers();
@@ -195,6 +201,26 @@ function Transactions() {
     let data = res.data.data;
 
     setInventoryReportDetails(data);
+
+
+    let supplierPayments = await axios({
+      // headers: {
+      //   'content-type': 'multipart/form-data'
+      // },
+      method: 'POST',
+      url: 'supplier/supplierPaymentHistory',
+      data: {
+        SupplierID: viewedData.SupplierID,
+        OrderID: viewedData.OrderID
+      }
+
+    }).then((res) => {
+
+
+      setActivePaymentHistory(res.data.data)
+
+
+    });
 
 
   };
@@ -461,6 +487,13 @@ function Transactions() {
           return <span className="">{value}</span>;
         }
       },
+      // {
+      //   Header: 'Date Created',
+      //   accessor: 'Date',
+      //   Cell: ({ row, value }) => {
+      //     return <span className="">{value}</span>;
+      //   }
+      // },
       {
         Header: 'Order ID',
         accessor: 'OrderID',
@@ -474,13 +507,13 @@ function Transactions() {
         accessor: 'Date',
 
         Cell: ({ row, value }) => {
-          //  let date_modified = format(value, 'MMM dd, yyyy');
+          let date_modified = format(value, 'MMM dd, yyyy');
           return (
             <div className="flex items-center space-x-3">
 
 
               <div>
-                <div className="font-bold text-neutral-500">{1}</div>
+                <div className="font-bold text-neutral-500">{date_modified}</div>
               </div>
             </div>
           );
@@ -780,7 +813,7 @@ function Transactions() {
   const leftColumnData = [
     { key: 'Grams', value: viewedData.Grams },
     { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold || 0 },
-    { key: 'For Return', value: viewedData?.ForReturn || 0 },
+    { key: 'For Return', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold || 0 },
   ];
 
   const rightColumnData = [
@@ -1122,7 +1155,7 @@ function Transactions() {
                     href="#link1"
                     role="tablist">
                     <i className="fa-solid fa-check-to-slot mr-2"></i>
-                    Inventory Details
+                    Inventory Detailss
                   </a>
                 </li>
                 <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">
@@ -1195,6 +1228,29 @@ function Transactions() {
                   </table>
                 </div>
               </div>
+              <div
+                className={activeTab === 2 ? 'block' : 'hidden'}
+                id="link1">
+                <h1 className="font-bold text-lg">Supplier Payment History</h1>
+                <Table
+                  style={{ overflow: 'wrap' }}
+                  className="table-sm"
+                  columns={tableColumns}
+                  data={(paymentHistoryList || []).map(data => {
+                    return {
+                      ...data
+                      // fullName,
+                      // address: fullAddress,
+                      // packageDisplayName: aP && aP.displayName,
+                      // date_created:
+                      //   data.date_created &&
+                      //   format(data.date_created, 'MMM dd, yyyy hh:mm:ss a')
+                    };
+                  })}
+                  searchField="lastName"
+                />
+              </div>
+
             </div>
 
           </div>
@@ -1357,24 +1413,7 @@ function Transactions() {
                   setisEditModalOpen(false)
                 }}>✕</button>
             </form>
-            <h1 className="font-bold text-lg">Supplier Payment History</h1>
-            <Table
-              style={{ overflow: 'wrap' }}
-              className="table-sm"
-              columns={tableColumns}
-              data={(paymentHistoryList || []).map(data => {
-                return {
-                  ...data
-                  // fullName,
-                  // address: fullAddress,
-                  // packageDisplayName: aP && aP.displayName,
-                  // date_created:
-                  //   data.date_created &&
-                  //   format(data.date_created, 'MMM dd, yyyy hh:mm:ss a')
-                };
-              })}
-              searchField="lastName"
-            />
+
           </div>
         </dialog>
 

@@ -64,28 +64,28 @@ try {
     });
   };
 
-  // getDbConnection = async () => {
-  //   return await mysql.createConnection({
-  //     host: 'localhost',
-  //     user: 'root',
-  //     password: '',
-  //     database: 'av_de_asis',
-  //     port: 3306
-  //   });
-  // };
+  getDbConnection = async () => {
+    return await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'av_de_asis',
+      port: 3306
+    });
+  };
 
   mySqlDriver = await getDbConnection();
 
   // Your Firebase configuration
-  const firebaseConfig = {
-    apiKey: 'AIzaSyAln9KogkLpr_eMbBLlnQfMae7Ji380phQ',
-    authDomain: 'avdeasis-4b5c7.firebaseapp.com',
-    projectId: 'avdeasis-4b5c7',
-    storageBucket: 'avdeasis-4b5c7.appspot.com',
-    messagingSenderId: '563212793374',
-    appId: '1:563212793374:web:4a5f5dd187e0304661a00f',
-    measurementId: 'G-5LTWLEWR22'
-  };
+  // const firebaseConfig = {
+  //   apiKey: 'AIzaSyAln9KogkLpr_eMbBLlnQfMae7Ji380phQ',
+  //   authDomain: 'avdeasis-4b5c7.firebaseapp.com',
+  //   projectId: 'avdeasis-4b5c7',
+  //   storageBucket: 'avdeasis-4b5c7.appspot.com',
+  //   messagingSenderId: '563212793374',
+  //   appId: '1:563212793374:web:4a5f5dd187e0304661a00f',
+  //   measurementId: 'G-5LTWLEWR22'
+  // };
 
   //mysql://b828180a13a6f7:4c4f1b87@us-cluster-east-01.k8s.cleardb.net/heroku_2f0733fc1ed4d7a?reconnect=true
   // Username: b828180a13a6f7

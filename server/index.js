@@ -20,7 +20,7 @@ import featureListRoute from './routes/featureListRoute.js';
 
 import payoutRoute from './routes/payoutRoute.js';
 import adminPayoutRoute from './routes/admin/payoutRoute.js';
-
+import pricingRoute from './routes/admin/pricing.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 // const { cypherQuerySession } = config;
@@ -75,6 +75,8 @@ app.use('/api/code', codeRoute);
 app.use('/api/featureList', featureListRoute);
 app.use('/api/payout', payoutRoute);
 app.use('/api/admin/payout', adminPayoutRoute);
+
+app.use('/api/settings', pricingRoute);
 
 app.use(express.static('public'));
 app.use(express.static('files'));

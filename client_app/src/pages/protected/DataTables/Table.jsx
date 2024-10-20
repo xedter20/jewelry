@@ -332,7 +332,10 @@ export function StatusPill({ value }) {
         status.startsWith('free_slot') ? 'bg-yellow-100 text-yellow-800' : null,
         status.startsWith('partially_paid') ? 'bg-yellow-100 text-yellow-800' : null,
         status.startsWith('paid') ? 'bg-green-100 text-green-800' : null,
-        status.startsWith('overdue') ? 'bg-red-100 text-red-800' : null
+        status.startsWith('overdue') ? 'bg-red-100 text-red-800' : null,
+        status.startsWith('rejected') ? 'bg-red-100 text-red-800' : null,
+        status.startsWith('in_progress') ? 'bg-orange-100 text-orange-800' : null,
+        status.startsWith('payment_for_approval') ? 'bg-yellow-100 text-yellow-800' : null,
       )}>
       {status}
     </span>
