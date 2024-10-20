@@ -34,9 +34,9 @@ const AuthWrapper = dex => {
   let currentDate = new Date();
 
   // // JWT exp is in seconds
-  if (decodedToken.exp * 1000 < currentDate.getTime()) {
-    return <Navigate to="/login"></Navigate>;
-  }
+  // if (decodedToken.exp * 1000 < currentDate.getTime()) {
+  //   return <Navigate to="/login"></Navigate>;
+  // }
 
   return <Outlet />;
 };
