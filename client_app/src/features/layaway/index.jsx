@@ -1577,7 +1577,7 @@ function Transactions() {
 
 
                       value={
-                        `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}/order/${selectedOrder.LayawayID}`
+                        `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myProfile/${selectedOrder.CustomerID}/layaway/${selectedOrder.LayawayID}`
 
                       }
 
