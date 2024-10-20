@@ -65,11 +65,11 @@ function ForgotPassword() {
             Cell: ({ row }) => {
                 let TransactionID = row.original.TransactionID || row.original.LayawayID
 
-                let link = `/myProfile/${userId}/order/${TransactionID}`;
+                let link = `/myprofile/${userId}/order/${TransactionID}`;
 
                 if (row.original.LayawayID) {
 
-                    link = `/myProfile/${userId}/layway/${TransactionID}`;
+                    link = `/myprofile/${userId}/layway/${TransactionID}`;
                 }
                 return (
                     <div className="flex space-x-2">

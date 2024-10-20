@@ -294,7 +294,7 @@ function ForgotPassword() {
                         theme: 'light'
                     });
 
-                    navigate(`/myProfile/${userId}`);
+                    navigate(`/myprofile/${userId}`);
                 }
 
 

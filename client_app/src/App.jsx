@@ -50,9 +50,9 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/myProfile/:userId" element={<MyProfile />} />
-          <Route path="/myProfile/:userId/order/:transactionId" element={<PaymentOrder />} />
-          <Route path="/myProfile/:userId/layaway/:transactionId" element={<LayawayPaymentOrder />} />
+          <Route path="/myprofile/:userId" element={<MyProfile />} />
+          <Route path="/myprofile/:userId/order/:transactionId" element={<PaymentOrder />} />
+          <Route path="/myprofile/:userId/layaway/:transactionId" element={<LayawayPaymentOrder />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* <Route path="/register" element={<Register />} /> */}
