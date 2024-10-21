@@ -10,6 +10,7 @@ import { format, startOfToday } from 'date-fns';
 import { formatAmount } from './../../features/dashboard/helpers/currencyFormat';
 
 import DatePicker from "react-tailwindcss-datepicker";
+import { DateTime } from 'luxon';
 function InternalPage() {
   const dispatch = useDispatch();
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
@@ -24,10 +25,24 @@ function InternalPage() {
   const [resultData, setResultData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
+
+      let { startDate, endDate } = value;
+
+      // Convert dates to Philippine Time (PHT)
+      const start = DateTime.fromJSDate(new Date(startDate))
+        .setZone('Asia/Manila', { keepLocalTime: true }) // Set timezone
+        .startOf('day') // Start of the day
+        .toISO(); // Convert to ISO string
+
+      const end = DateTime.fromJSDate(new Date(endDate))
+        .setZone('Asia/Manila', { keepLocalTime: true }) // Set timezone
+        .endOf('day') // End of the day
+        .toISO(); // Convert to ISO string
+
       const response = await axios.post('/inventory/generateDashboardReport', {
         data: {
-          startDate: value.startDate,
-          endDate: value.endDate
+          startDate: start, // Convert to ISO string for backend
+          endDate: end       // Convert to ISO string for backend
         },
       });
 
