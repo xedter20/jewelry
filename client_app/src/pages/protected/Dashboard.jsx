@@ -230,17 +230,20 @@ function InternalPage() {
             </tr>
           </thead>
           <tbody>
-            {layAwayList.map(item => (
-              <tr key={item.OrderID} className="border-b hover:bg-gray-50">
+            {layAwayList.map(item => {
+
+              let remains = parseInt(item.Price) - parseInt(item.totalPaidAmount);
+              let intergerAmount = remains > 0 ? remains : 0
+              return <tr key={item.OrderID} className="border-b hover:bg-gray-50">
                 <td className="p-2">{item.OrderID}</td>
                 <td className="p-2">{item.CustomerName}</td>
                 <td className="p-2">{item.OrderID}</td>
                 <td className="p-2">{format(item.Due_Date, 'MMM dd, yyyy')}</td>
-                <td className="p-2">₱{item.Price}</td>
-                <td className="p-2">₱{item.totalPaidAmount}</td>
-                <td className="p-2">₱{parseInt(item.Price) - parseInt(item.totalPaidAmount)}</td>
+                <td className="p-2">{formatAmount(item.Price)}</td>
+                <td className="p-2">{formatAmount(item.totalPaidAmount)}</td>
+                <td className="p-2">{formatAmount(intergerAmount)}</td>
               </tr>
-            ))}
+            })}
           </tbody>
         </table>
       </div>
