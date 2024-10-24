@@ -38,137 +38,77 @@ const decoded = jwtDecode(token);
 
 let routes = [];
 
-console.log({ decoded })
 
-if (decoded && decoded.role === 'ADMIN') {
-  routes = [
-    {
-      path: '/dashboard', // the url
-      component: Dashboard // view rendered
-    },
-    {
-      path: '/dashboard', // the url
-      component: Dashboard // view rendered
-    },
 
-    {
-      path: '/stats', // the url
-      component: Statistics // view rendered
-    },
+routes = [
+  {
+    path: '/dashboard', // the url
+    component: Dashboard // view rendered
+  },
+  {
+    path: '/dashboard', // the url
+    component: Dashboard // view rendered
+  },
 
-    {
-      path: '/settings-profile',
-      component: Settings
-    },
-    {
-      path: '/settings-profile/:slug',
-      component: Settings
-    },
+  {
+    path: '/stats', // the url
+    component: Statistics // view rendered
+  },
 
-    {
-      path: '/404',
-      component: Page404
-    },
-    {
-      path: '/blank',
-      component: Blank
-    },
-    {
-      path: '/users',
-      component: Users
-    },
-    {
-      path: '/addMember',
-      component: AddMember
-    },
-    {
-      path: '/reports', // the url
-      component: Reports // view rendered
-    },
-    {
-      path: '/employees',
-      component: Employees
-    },
-    {
-      path: '/suppliers',
-      component: Suppliers
-    },
-    {
-      path: '/transactions',
-      component: Transactions
-    },
-    {
-      path: '/inventory',
-      component: Inventory
-    },
-    {
-      path: '/layaway',
-      component: Layaway
-    },
-    {
-      path: '/settings',
-      component: Settings
-    },
-  ];
-} else {
-  routes = [
-    {
-      path: '/dashboard', // the url
-      component: Dashboard // view rendered
-    },
-    {
-      path: '/dashboard', // the url
-      component: Dashboard // view rendered
-    },
+  {
+    path: '/settings-profile',
+    component: Settings
+  },
+  {
+    path: '/settings-profile/:slug',
+    component: Settings
+  },
 
-    {
-      path: '/stats', // the url
-      component: Statistics // view rendered
-    },
+  {
+    path: '/404',
+    component: Page404
+  },
+  {
+    path: '/blank',
+    component: Blank
+  },
+  {
+    path: '/users',
+    component: Users
+  },
+  {
+    path: '/addMember',
+    component: AddMember
+  },
+  {
+    path: '/reports', // the url
+    component: Reports // view rendered
+  },
+  {
+    path: '/employees',
+    component: Employees
+  },
+  {
+    path: '/suppliers',
+    component: Suppliers
+  },
+  {
+    path: '/transactions',
+    component: Transactions
+  },
+  {
+    path: '/inventory',
+    component: Inventory
+  },
+  {
+    path: '/layaway',
+    component: Layaway
+  },
+  {
+    path: '/settings',
+    component: Settings
+  },
+];
 
-    {
-      path: '/settings-profile',
-      component: ProfileSettings
-    },
-    {
-      path: '/settings-profile/:slug',
-      component: ProfileSettings
-    },
-
-    {
-      path: '/404',
-      component: Page404
-    },
-    {
-      path: '/blank',
-      component: Blank
-    },
-    {
-      path: '/users',
-      component: Transactions
-    },
-    {
-      path: '/addMember',
-      component: AddMember
-    },
-    {
-      path: '/reports', // the url
-      component: Reports // view rendered
-    },
-    {
-      path: '/employees',
-      component: Employees
-    },
-    {
-      path: '/suppliers',
-      component: Suppliers
-    },
-    {
-      path: '/myProfile',
-      component: Suppliers
-    },
-
-  ];
-}
 
 export default routes;

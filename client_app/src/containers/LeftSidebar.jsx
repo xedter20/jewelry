@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import routes from '../routes/sidebar';
+import RoutesSideBar from '../routes/sidebar';
 import { NavLink, Routes, Link, useLocation } from 'react-router-dom';
 import SidebarSubmenu from './SidebarSubmenu';
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
@@ -42,11 +42,11 @@ function LeftSidebar() {
 
     <div className="drawer-side text-white bg-customBlue h-screen w-60">
       <label htmlFor="left-sidebar-drawer" className="drawer-overlay"></label>
-      <div className="flex items-center justify-center mb-8 mt-4">
+      <div className=" mx-auto flex items-center justify-center mb-8 mt-4">
         <img src="/A.V. Logo.png" alt="Logo" className="w-30 h-24" />
       </div>
       <hr class="border-t-2 border-white mx-auto w-1/2 my-2"></hr>
-      <div className="flex items-center justify-center mb-3 mt-6">
+      <div className=" mx-auto flex items-center justify-center mb-3 mt-6">
         <img
           src="/Admin Picture.png"
           alt="Logo"
@@ -75,7 +75,6 @@ function LeftSidebar() {
             <label className=" text-white">
               Hello,{' '}
 
-
               <span className="font-bold">
                 {selectedUser.Admin_Fname} {selectedUser.Admin_Lname}
               </span>
@@ -86,29 +85,7 @@ function LeftSidebar() {
             <span className="border-lg text-xs">{selectedUser.role}</span>
           </label>
         </li>
-        {routes.map((route, k) => {
-          return (
-            <li className="p-2 text-center" key={k}>
-              {route.submenu ? (
-                <SidebarSubmenu {...route} />
-              ) : (
-                <NavLink
-                  end
-                  to={route.path}
-                  className={({ isActive }) =>
-                    `${isActive ? 'font-bold bg-customGray text-grey-900' : ''}`
-                  }>
-                  {route.icon} {route.name}
-                  {location.pathname === route.path ? (
-                    <span
-                      className="absolute inset-y-0 left-0 w-2 rounded-tr-md rounded-br-md"
-                      aria-hidden="true"></span>
-                  ) : null}
-                </NavLink>
-              )}
-            </li>
-          );
-        })}
+        <RoutesSideBar />
       </ul>
     </div>
   );

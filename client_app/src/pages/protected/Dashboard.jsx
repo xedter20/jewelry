@@ -93,7 +93,7 @@ function InternalPage() {
   }));
 
 
-  console.log({ formattedData })
+  // //console.log({ formattedData })
 
   const suppliers = [
     { id: 1, name: 'Supplier #1', completion: 55 },
@@ -107,7 +107,7 @@ function InternalPage() {
     { id: '3', name: 'Deocles Dionisio', orderId: '01163403', dueDate: '04/15/24', amount: 2600 },
     // Add more data as needed
   ];
-  // return loggedInUser.role === 'ADMIN' ? <Dashboard /> : <Dashboard />;
+  // return loggedInUser.role === 'super_admin' ? <Dashboard /> : <Dashboard />;
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [layAwayList, setLayAwayList] = useState([]);
@@ -133,7 +133,7 @@ function InternalPage() {
 
   }, []);
 
-  console.log({ layAwayList })
+  //console.log({ layAwayList })
 
   let layAwayTotalValue = layAwayList.reduce((acc, current) => {
     return acc + parseInt(current.Price)

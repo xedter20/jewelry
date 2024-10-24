@@ -91,7 +91,7 @@ function Team() {
   const [members, setMembers] = useState(TEAM_MEMBERS);
 
   const getRoleComponent = role => {
-    if (role === 'Admin')
+    if (role === 'super_admin')
       return <div className="badge badge-secondary">{role}</div>;
     if (role === 'Manager') return <div className="badge">{role}</div>;
     if (role === 'Owner')

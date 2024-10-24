@@ -38,7 +38,33 @@ import * as Yup from 'yup';
 
 import { formatAmount } from './../../features/dashboard/helpers/currencyFormat';
 import RadioText from '../../components/Input/Radio';
+
+
+import * as XLSX from 'xlsx';
+
+const todayInManila = new Date().toLocaleString('en-CA', {
+  timeZone: 'Asia/Manila',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+}).split(',')[0];
+
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
+
+
+  const exportToXLS = () => {
+    let tableData = users;
+    // Convert table data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(tableData);
+
+    // Create a new workbook
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+    // Export the workbook to an XLS file
+    XLSX.writeFile(workbook, 'table_data.xlsx');
+  };
+
   const [filterParam, setFilterParam] = useState('');
   const [searchText, setSearchText] = useState('');
 
@@ -83,6 +109,12 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
       <button className="btn btn-outline btn-sm" onClick={() => document.getElementById('addSupplier').showModal()}>
         Add
         <PlusCircleIcon className="h-6 w-6 text-white-500" />
+      </button>
+      <button
+        onClick={exportToXLS}
+        className="btn btn-outline btn-sm ml-2 bg-green-500 text-white"
+      >
+        Export to XLS
       </button>
 
       {/* 
@@ -813,7 +845,7 @@ function Transactions() {
   const leftColumnData = [
     { key: 'Grams', value: viewedData.Grams },
     { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold || 0 },
-    { key: 'For Return', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold || 0 },
+    { key: 'Remaining Stocks', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold || 0 },
   ];
 
   const rightColumnData = [
@@ -1072,7 +1104,7 @@ function Transactions() {
                           }}
                         />  <InputText
 
-                          label="Price (₱)"
+                          label="Price Per Gram(₱)"
                           name="Price"
                           type="number"
                           placeholder=""
@@ -1090,14 +1122,14 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
 
-                          label="Total Amount (₱)"
+                          label="Amount Payable(₱)"
                           name="Amount"
                           type="number"
                           placeholder=""
                           value={values.Amount}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />  <InputText
-
+                          min={todayInManila}
                           label="Date"
                           name="Date"
                           type="date"

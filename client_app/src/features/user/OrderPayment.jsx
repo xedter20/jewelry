@@ -347,14 +347,23 @@ function ForgotPassword() {
                                             <thead>
                                                 <tr>
                                                     <th className="font-bold uppercase py-2">Description</th>
-                                                    <th className="font-bold uppercase py-2">Quantity</th>
+                                                    <th className="font-bold uppercase py-2">Grams</th>
                                                     <th className="font-bold uppercase py-2">Price</th>
 
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td className="py-4">{selectedOrder.ItemName}</td>
+                                                    <td className="py-4">
+
+                                                        <ul className="list-disc pl-5">
+                                                            {selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).map((itemObj, index) => (
+                                                                <li key={index} className="mb-1">
+                                                                    {itemObj.item}: <span className="font-semibold">{itemObj.count}</span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </td>
                                                     <td className="py-4">{selectedOrder.Grams} grams</td>
                                                     <td className="py-4">{formatAmount(selectedOrder.Price)}</td>
 

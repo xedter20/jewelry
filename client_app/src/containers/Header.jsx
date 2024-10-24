@@ -61,7 +61,13 @@ function Header() {
     );
   };
 
-  function logoutUser() {
+  async function logoutUser() {
+    let res = await axios({
+      method: 'POST',
+      url: 'auth/logout',
+      data: {}
+    });
+
     localStorage.clear();
     window.location.href = '/';
   }

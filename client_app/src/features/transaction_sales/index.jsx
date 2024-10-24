@@ -40,6 +40,7 @@ import Dropdown from '../../components/Input/Dropdown';
 import { Formik, useField, useFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import RadioText from '../../components/Input/Radio';
+import { current } from '@reduxjs/toolkit';
 const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
   const [filterParam, setFilterParam] = useState('');
   const [searchText, setSearchText] = useState('');
@@ -121,6 +122,16 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
 };
 
 function Transactions() {
+
+  const allItemOptions = [
+    { value: 'Pendant', label: 'Pendant' },
+    { value: 'Bangle', label: 'Bangle' },
+    { value: 'Earrings', label: 'Earrings' },
+    { value: 'Bracelet', label: 'Bracelet' },
+    { value: 'Necklace', label: 'Necklace' },
+    { value: 'Rings', label: 'Rings' }
+  ];
+
   const [file, setFile] = useState(null);
   const [users, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -176,7 +187,9 @@ function Transactions() {
       return {
         label: `${s.OrderID}`,
         value: s.OrderID,
-        SupplierID: s.SupplierID
+        SupplierID: s.SupplierID,
+        Total_Grams_Sold: s.Total_Grams_Sold,
+        maxGramsOffer: s.Grams - s.Total_Grams_Sold
 
       }
     }));
@@ -581,24 +594,122 @@ function Transactions() {
     let validation = {
       CustomerID: Yup.string().required('Required'),
       Facebook: Yup.string().required('Required'),
-      ItemName: Yup.string().required('Required'),
       Category: Yup.string().required('Required'),
       SupplierID: Yup.string().required('Required'),
       Grams: Yup.number().required('Required'),
-      Price: Yup.number().required('Required'),
-      orderID: Yup.string().required('Required')
+      orderID: Yup.string().required('Required'),
+      Price: Yup.number()
+        .required('Price is required')
+        .min(0, 'Must be greater than or equal to 0')
+        .max(1000000, 'Price cannot exceed 1 million')
+        .typeError('Price must be a number'),
+
+      quantity: Yup.number().required('Quantity is required').positive('Must be a positive number').integer('Must be an integer'),
+      itemNames: Yup.array().of(
+        Yup.number()
+          // .required('Item count is required')
+          .test(
+            'max-toTal-quantity',
+            'The item count must not exceed the total quantity available',
+            function (value) {
+
+              let total = this.parent.reduce((acc, current) => {
+                let sum = current;
+                if (!current) {
+                  sum = 0;
+                }
+                return acc + sum
+              }, 0)
+
+
+
+
+              const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
+
+
+              if (total > quantity) {
+                return false
+              }
+              return true
+            }
+          )
+          .test(
+            'max-to-quantity',
+            'The item count must not exceed or less than the quantity',
+            function (value) {
+
+              let total = this.parent.reduce((acc, current) => {
+                let sum = current;
+                if (!current) {
+                  sum = 0;
+                }
+                return acc + sum
+              }, 0)
+
+
+
+
+              const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
+
+              if (total === 0) {
+                return false
+              }
+              else if (total < quantity) {
+
+                return false
+
+              }
+              else if (value > quantity) {
+                return false
+              }
+              return true
+            }
+          )
+        // .test(
+        //   'max-to-quantity',
+        //   'The item count must not exceed the total quantity available',
+        //   function (value) {
+
+        //     let total = this.parent.reduce((acc, current) => {
+        //       let sum = current;
+        //       if (!current) {
+        //         sum = 0;
+        //       }
+        //       return acc + sum
+        //     }, 0)
+
+
+
+
+        //     const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
+
+
+        //     if (total === 0) {
+        //       return false
+        //     }
+        //     return true
+        //   }
+        // )
+      ),
 
     };
 
     let initialValues = {
+
+      quantity: 1,
+      itemNames: [
+
+      ],
       CustomerID: '',
-      Facebook: '',
-      Category: '',
+      Facebook: "",
+      Category: "",
       SupplierID: '',
       Grams: '',
       Price: '',
       ItemName: '',
       orderID: ''
+
+
     }
 
 
@@ -626,9 +737,9 @@ function Transactions() {
     return {
       initialValues: initialValues,
       validationSchema: Yup.object(validation),
-      validateOnMount: true,
-      validateOnChange: false,
-      onSubmit: async (values, { setFieldError, setSubmitting }) => {
+      // validateOnMount: true,
+      // validateOnChange: false,
+      onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
         setSubmitting(true);
 
         // console.log("here")
@@ -640,8 +751,15 @@ function Transactions() {
         try {
 
 
+          const itemNames = allItemOptions.map((item, index) => ({
+            item: item.label,
+            count: values.itemNames[index] || 0 // Default to0 if the count is empty}));  
+          })).filter((item) => {
+            return item.count > 0
+          });
 
 
+          values.itemNames = itemNames;
 
           let res = await axios({
             method: 'POST',
@@ -667,11 +785,12 @@ function Transactions() {
           });
 
 
-
+          resetForm()
 
         } catch (error) {
           console.log({ error });
         } finally {
+
         }
       }
     };
@@ -944,8 +1063,11 @@ function Transactions() {
                   setFieldError,
                   setErrors,
                   isSubmitting,
+                  resetForm
 
                 }) => {
+
+                  // console.log(errors)
                   const checkValidateTab = () => {
                     // submitForm();
                   };
@@ -955,6 +1077,14 @@ function Transactions() {
                   };
 
                   // console.log({ values })
+
+
+                  // // Calculate the total of item quantities
+                  // const totalItems = values.itemNames.reduce((acc, curr) => {
+                  //   const num = parseInt(curr) || 0; // Convert to number, default to 0
+                  //   return acc + num;
+                  // }, 0);
+
 
                   return (
                     <Form className="">
@@ -1045,30 +1175,48 @@ function Transactions() {
 
                       </div>
 
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
+                        <InputText
 
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
-
-
-                        <Dropdown
-                          // icons={mdiAccount}
-                          label="Item Name"
-                          name="ItemName"
+                          label={`Quantity`}
+                          name="quantity"
+                          type="number"
                           placeholder=""
-                          value={values.ItemName}
-                          setFieldValue={setFieldValue}
-                          onBlur={handleBlur}
-                          options={[
-                            { value: 'Pendant', label: 'Pendant' },
-                            { value: 'Bangle', label: 'Bangle' },
-                            { value: 'Earrings', label: 'Earrings' },
-                            { value: 'Bracelet', label: 'Bracelet' },
-                            { value: 'Necklace', label: 'Necklace' },
-                            { value: 'Rings', label: 'Rings' }
-                          ]}
+                          value={values.quantity}
+
+                          onBlur={handleBlur} // This apparently updates `touched`?
                         />
 
 
                       </div>
+
+
+
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                        {allItemOptions.map((item, index) => (
+                          <InputText
+
+
+                            itemClass={true}
+                            key={item.value} // Unique key for each input
+                            label={`${item.label}`}
+                            name={`itemNames[${index}]`}
+                            type="number"
+                            placeholder=""
+                            value={values.itemNames[index]}
+                            onChange={(e) => {
+                              const newValue = e.target.value;
+                              if (/^\d*$/.test(newValue)) { // Check if the value is a whole number
+                                handleChange(e); // Update the form state
+                              }
+                            }}
+                            onBlur={handleBlur} // This updates `touched`
+                            error={errors.itemNames?.[index]} // Show error if touched
+
+                          />
+                        ))}
+                      </div>
+
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
 
@@ -1131,10 +1279,41 @@ function Transactions() {
                           placeholder=""
                           value={values.Grams}
                           onChange={(e) => {
-                            const grams = parseFloat(e.target.value); // Parse grams, default to 0
-                            console.log({ grams })
-                            setFieldValue('Grams', grams);
-                            setFieldValue('Price', (grams * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+
+                            let findTotal_Grams_Sold = inventoryList.find(i => i.value === values.orderID);
+
+
+
+                            let maxOrder = findTotal_Grams_Sold.maxGramsOffer;
+
+
+
+                            console.log({ maxOrder })
+                            const grams = e.target.value;
+
+                            // Regex to allow only numbers and up to 2 decimal places
+                            const gramsRegex = /^\d*\.?\d{0,2}$/;
+
+                            if (gramsRegex.test(grams) || grams === "") {
+                              setFieldValue('Grams', grams); // Update grams directly as a string
+                              let gramsNumber = parseFloat(grams);
+
+                              if (gramsNumber > parseFloat(maxOrder)) {
+                                gramsNumber = maxOrder;
+                                setFieldError(
+                                  'Grams', `Mininum order is ${maxOrder} as per inventory`
+                                );
+                                setFieldValue(
+                                  'Grams', maxOrder
+                                )
+
+                              }
+                              if (!isNaN(gramsNumber) && gramsNumber >= 0) {
+                                setFieldValue('Price', (gramsNumber * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+                              } else {
+                                setFieldValue('Price', '0.00'); // Reset price if grams is invalid
+                              }
+                            }
                           }}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
@@ -1147,6 +1326,7 @@ function Transactions() {
                           placeholder=""
                           value={values.Price}
                           onBlur={handleBlur} // This apparently updates `touched`?
+
                         />
                       </div>
 
@@ -1170,7 +1350,7 @@ function Transactions() {
 
 
 
-        {selectedOrder.TransactionID && <dialog id="viewReceipt" className="modal">
+        <dialog id="viewReceipt" className="modal">
           <div className="modal-box w-full max-w-none">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
@@ -1247,14 +1427,25 @@ function Transactions() {
                                 <thead>
                                   <tr>
                                     <th className="text-gray-700 font-bold uppercase py-2">Description</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Quantity</th>
+                                    <th className="text-gray-700 font-bold uppercase py-2">Grams</th>
                                     <th className="text-gray-700 font-bold uppercase py-2">Price</th>
                                     <th className="text-gray-700 font-bold uppercase py-2">Total</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   <tr>
-                                    <td className="py-4 text-gray-700">{selectedOrder.ItemName}</td>
+                                    <td className="py-4 text-gray-700">{selectedOrder.ItemNames}
+
+
+                                      <ul className="list-disc pl-5">
+                                        {selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).map((itemObj, index) => (
+                                          <li key={index} className="mb-1">
+                                            {itemObj.item}: <span className="font-semibold">{itemObj.count}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+
+                                    </td>
                                     <td className="py-4 text-gray-700">{selectedOrder.Grams}</td>
                                     <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
                                     <td className="py-4 text-gray-700">
@@ -1390,7 +1581,7 @@ function Transactions() {
               </Formik> </div>
           </div>
         </dialog>
-        }
+
 
 
 

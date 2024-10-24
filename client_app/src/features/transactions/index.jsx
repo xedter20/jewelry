@@ -321,11 +321,11 @@ function Transactions() {
           return (
             (
               <div className="flex">
-                <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
+                {/* <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
                   <button className="btn btn-outline btn-sm">
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
-                </Link>
+                </Link> */}
                 <button
                   className="btn btn-outline btn-sm ml-2"
                   onClick={() => {

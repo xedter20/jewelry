@@ -204,7 +204,7 @@ function InternalPage() {
           <div className="sm:w-11/12 lg:w-3/4 mx-auto">
             <div className="mt-2 flex justify-end gap-x-3 mb-4">
               {payoutData.status !== 'COMPLETED' &&
-              userDetails.role === 'ADMIN' ? (
+                userDetails.role === 'super_admin' ? (
                 <button
                   className="btn bg-green-500  font-bold btn-md text-white"
                   onClick={() => {
@@ -585,7 +585,7 @@ function InternalPage() {
                           // await handleEmailChange(e);
                           await handleBlur(e);
                         }}
-                        // onChange={handleEmailChange}
+                      // onChange={handleEmailChange}
                       />
                       <button
                         type="submit"
