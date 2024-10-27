@@ -307,55 +307,52 @@ function ForgotPassword() {
     let isPaid = selectedOrder.Status === 'PAID';
     return (
         selectedUser ? isLoaded && (
-            <div className="min-h-screen bg-base-200 flex items-center bg-customBlue shadow-lg">
-                <div className="card mx-auto w-full max-w-7xl shadow-xl">
-                    <div className="p-4 flex justify-between items-center">
+            <div className="min-h-screen bg-base-200 flex flex-col items-center bg-customBlue shadow-lg">
+                <div className="card w-full max-w-7xl mx-2 sm:mx-auto shadow-xl">
+                    <div className="p-4 flex flex-col sm:flex-row justify-between items-center">
                         <button
                             onClick={() => navigate(-1)} // Go back to the previous page
-                            className="btn bg-buttonPrimary text-white">
+                            className="btn bg-buttonPrimary text-white mb-2 sm:mb-0">
                             Back
                         </button>
-                        <h1 className="text-xl font-bold">Invoice Details</h1>
+                        <h1 className="text-lg sm:text-xl font-bold">Invoice Details</h1>
                     </div>
-                    <div className={`grid grid-cols-1 md:grid-cols-${isPaid ? '2' : '3'} bg-base-100 rounded-xl`}>
-                        <div className="bg-gray-100 p-4 md:p-6">
+                    <div className={`flex flex-col gap-4 sm:gap-6 ${isPaid ? 'md:flex-row' : 'md:flex-row'} bg-base-100 rounded-xl`}>
+                        <div className="bg-gray-100 p-4 sm:p-6 flex-1">
                             <div className="flex items-center justify-between">
                                 <div className={`px-3 py-1 rounded-full text-white ${colors[selectedOrder.Status]}`}>
                                     {selectedOrder.Status}
                                 </div>
                             </div>
-
-                            <div className="p-1 space-y-6">
+                            <div className="p-1 space-y-4 sm:space-y-6">
                                 <div className="overflow-x-auto">
-                                    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 mx-auto">
-                                        <div className="flex flex-col md:flex-row items-center justify-between mb-6">
+                                    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 mx-auto">
+                                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
                                             <div className="text-gray-700 font-semibold text-lg">A.V De Asis</div>
-                                            <div className="text-gray-700 text-center md:text-right mt-2 md:mt-0">
+                                            <div className="text-gray-700 text-left md:text-right mt-2 md:mt-0">
                                                 <div className="font-bold text-xl">INVOICE</div>
                                                 <div className="text-sm">Date: {selectedOrder.Date_Created}</div>
                                                 <div className="text-sm">Invoice #: INV-{selectedOrder.TransactionID}</div>
                                             </div>
                                         </div>
                                         <div className="border-b-2 border-gray-300 pb-4 mb-6">
-                                            <h2 className="text-2xl font-bold mb-2">Bill To:</h2>
+                                            <h2 className="text-xl sm:text-2xl font-bold mb-2">Bill To:</h2>
                                             <div className="text-gray-700">{selectedOrder.CustomerName}</div>
                                             <div className="text-gray-700">{selectedOrder.Address}</div>
                                             <div className="text-gray-700">{selectedOrder.Contact}</div>
                                             <div className="text-gray-700">{selectedOrder.Email}</div>
                                         </div>
-                                        <table className="w-full text-left text-sm md:text-base mb-6">
+                                        <table className="w-full text-left text-xs sm:text-sm md:text-base mb-6">
                                             <thead>
                                                 <tr>
                                                     <th className="font-bold uppercase py-2">Description</th>
                                                     <th className="font-bold uppercase py-2">Grams</th>
                                                     <th className="font-bold uppercase py-2">Price</th>
-
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
                                                     <td className="py-4">
-
                                                         <ul className="list-disc pl-5">
                                                             {selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).map((itemObj, index) => (
                                                                 <li key={index} className="mb-1">
@@ -366,7 +363,6 @@ function ForgotPassword() {
                                                     </td>
                                                     <td className="py-4">{selectedOrder.Grams} grams</td>
                                                     <td className="py-4">{formatAmount(selectedOrder.Price)}</td>
-
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -380,12 +376,12 @@ function ForgotPassword() {
                         </div>
 
                         {selectedOrder.Status === 'PAID' && (
-                            <div className="bg-gray-100 p-4 md:p-6">
+                            <div className="bg-gray-100 p-4 sm:p-6 flex-1">
                                 <div className="flex justify-center">
                                     <div className="px-3 py-1 text-white bg-blue-600">Proof of Payment</div>
                                 </div>
                                 <div className="p-4">
-                                    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 mx-auto">
+                                    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 mx-auto">
                                         <img src={selectedOrder.proof_of_payment} alt="Proof of Payment" className="w-full h-auto object-cover" />
                                     </div>
                                 </div>
@@ -394,43 +390,41 @@ function ForgotPassword() {
 
                         {selectedOrder.Status !== 'PAID' && (
                             <>
-                                <div className="p-6">
-                                    <h2 className="text-2xl font-bold mb-2">Step 1: Pay</h2>
-                                    <div className="space-y-6">
+                                <div className="p-4 sm:p-6 flex-1">
+                                    <h2 className="text-xl sm:text-2xl font-bold mb-2">Step 1: Pay</h2>
+                                    <div className="space-y-4 sm:space-y-6">
                                         <div className="divider font-bold">Scan QR</div>
                                         <p className="text-center">
                                             Please pay <span className="font-bold text-green-500">{formatAmount(selectedOrder.Price)}</span> using the QR Code below.
                                         </p>
                                         <div className="flex justify-center">
-                                            <img src="/paymentMethod.png" alt="Payment Method" className="w-full max-w-sm h-auto" />
+                                            <img src="/paymentMethod.png" alt="Payment Method" className="w-full max-w-xs sm:max-w-sm h-auto" />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-6">
-                                    <h2 className="text-2xl font-bold mb-2">Step 2: Upload Proof of Payment</h2>
+                                <div className="p-4 sm:p-6 flex-1">
+                                    <h2 className="text-xl sm:text-2xl font-bold mb-2">Step 2: Upload Proof of Payment</h2>
                                     <Formik {...formikConfigViewReciept()}>
                                         {({
                                             handleSubmit, handleBlur, values, setFieldValue,
                                         }) => (
-                                            <Form className="space-y-6">
+                                            <Form className="space-y-4 sm:space-y-6">
                                                 <InputText
                                                     label="Upload"
                                                     name="Proof_Payment"
                                                     type="file"
                                                     accept="image/*"
-                                                    // value={values.Proof_Payment}
                                                     onChange={(e) => {
                                                         const file = e.target.files[0];
                                                         setFile(file);
                                                         if (file) {
                                                             document.getElementById("blah").src = URL.createObjectURL(file);
                                                         }
-                                                        //  setFieldValue("Proof_Payment", file || "");
                                                     }}
                                                     onBlur={handleBlur}
                                                 />
                                                 <div className="flex justify-center">
-                                                    <img id="blah" alt="" className="h-60 w-40 object-contain" />
+                                                    <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" />
                                                 </div>
                                                 <InputText label="Comments" name="Comments" type="text" value={values.Comments} onBlur={handleBlur} />
                                                 <button type="submit" className="btn w-full bg-buttonPrimary font-bold text-white">Submit</button>
@@ -444,6 +438,7 @@ function ForgotPassword() {
                 </div>
                 <ToastContainer />
             </div>
+
         ) : (
             <div className="flex items-center justify-center h-screen bg-gray-100">
                 <div className="text-center">

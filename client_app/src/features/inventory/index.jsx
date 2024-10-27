@@ -723,9 +723,17 @@ function Transactions() {
     let validation = {
       SupplierID: Yup.string().required('Required'),
       Category: Yup.string().required('Required'),
-      Grams: Yup.number().required('Required'),
-      Price: Yup.number().required('Required'),
-      Amount: Yup.number().required('Required'),
+      Grams: Yup.number().required('Required').min(1, 'Must be greater than or equal to 1'),
+      Price: Yup.number()
+        .required('Price is required')
+        .min(0, 'Must be greater than or equal to 0')
+        .max(1000000, 'Price cannot exceed 1 million')
+        .typeError('Price must be a number'),
+      Amount: Yup.number()
+        .required('Amount is required')
+        .min(0, 'Must be greater than or equal to 0')
+        .max(1000000, 'Amount cannot exceed 1 million')
+        .typeError('Amount must be a number'),
       Date: Yup.date().required('Required')
     };
 
@@ -1097,10 +1105,11 @@ function Transactions() {
                           value={values.Grams}
                           onBlur={handleBlur} // This apparently updates `touched`?
                           onChange={(e) => {
-                            const grams = parseFloat(e.target.value);
-                            const price = parseFloat(values.Price);
+                            let grams = parseFloat(e.target.value) || 0; // Handle NaN cases
+                            grams = parseFloat(grams.toFixed(2)); // Limit to two decimal places
+                            const price = parseFloat(values.Price) || 0;
                             setFieldValue("Grams", grams);
-                            setFieldValue("Amount", grams * price);
+                            setFieldValue("Amount", parseFloat((grams * price).toFixed(2))); // Limit Amount to two decimal places
                           }}
                         />  <InputText
 
@@ -1110,10 +1119,11 @@ function Transactions() {
                           placeholder=""
                           value={values.Price}
                           onChange={(e) => {
-                            const price = parseFloat(e.target.value);
-                            const grams = parseFloat(values.Grams);
+                            let price = parseFloat(e.target.value) || 0;
+                            price = parseFloat(price.toFixed(2)); // Limit to two decimal places
+                            const grams = parseFloat(values.Grams) || 0;
                             setFieldValue("Price", price);
-                            setFieldValue("Amount", grams * price);
+                            setFieldValue("Amount", parseFloat((grams * price).toFixed(2))); // Limit Amount to two decimal places
                           }}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
@@ -1187,7 +1197,7 @@ function Transactions() {
                     href="#link1"
                     role="tablist">
                     <i className="fa-solid fa-check-to-slot mr-2"></i>
-                    Inventory Detailss
+                    Inventory Details
                   </a>
                 </li>
                 <li className="-mb-px mr-2 last:mr-0 flex-auto text-center">

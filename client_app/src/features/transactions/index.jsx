@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { showNotification } from '../common/headerSlice';
 import TitleCard from '../../components/Cards/TitleCard';
@@ -117,6 +117,39 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
 };
 
 function Transactions() {
+  const qrCodeRef = useRef();
+  const downloadQRCode = () => {
+    // Create a canvas element to convert SVG to image  
+    const canvas = document.createElement('canvas');
+    const size = 200; // size of the QR code  
+    canvas.width = size;
+    canvas.height = size;
+
+    // Get the SVG data  
+    const svg = qrCodeRef.current.querySelector('svg'); // Adjust to get the SVG element  
+    const svgData = new XMLSerializer().serializeToString(svg);
+
+    // Convert SVG to data URL  
+    const img = new Image();
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      // Draw the image on the canvas  
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url); // Clean up the URL object  
+
+      // Trigger the download of the image  
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png'); // Convert to png  
+      link.download = 'qrcode.png'; // Set the file name  
+      link.click(); // Simulate a click to trigger download  
+    };
+
+    // Set the src of the image to the URL created from SVG blob  
+    img.src = url;
+  };
   const [file, setFile] = useState(null);
   const [users, setUser] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -202,10 +235,29 @@ function Transactions() {
         Cell: ({ row }) => {
           const url = `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${row.original.CustomerID}`;
           console.log({ row: url })
-          return <div className=' flex justify-center items-center mt-4 h-20 w-20'>
-            <QRCodeSVG value={
-              url
-            } />,
+
+          return <div>
+            <div
+              ref={qrCodeRef}
+              onClick={() => {
+                downloadQRCode()
+              }}
+              className=' flex justify-center items-center mt-4 h-20 w-20'>
+              <QRCodeSVG value={
+                url
+              } />,
+            </div>
+            <button
+              // type="button"
+              className='btn btn-sm mt-2'
+              size="sm"
+              type="submit"
+              onClick={() => {
+                downloadQRCode()
+              }}
+            >
+              Download
+            </button>
           </div>
         }
       },
@@ -332,7 +384,7 @@ function Transactions() {
                     setactiveChildID(l.ID);
                     document.getElementById('deleteModal').showModal();
                   }}>
-                  <i class="fa-solid fa-trash"></i>
+                  <i class="fa-solid fa-archive"></i>
                 </button>
               </div>
             )

@@ -344,7 +344,7 @@ function Transactions() {
                     setactiveChildID(l.ID);
                     document.getElementById('deleteModal').showModal();
                   }}>
-                  <i class="fa-solid fa-trash"></i>
+                  <i class="fa-solid fa-archive"></i>
                 </button>
               </div>
             )
@@ -601,6 +601,8 @@ function Transactions() {
     // console.log(selectedEmployee.Admin_Fname)
     return {
       initialValues: {
+        role: selectedEmployee.role || '',
+        email: selectedEmployee.email || '',
         Admin_Fname: selectedEmployee.Admin_Fname || '',
         Admin_Lname: selectedEmployee.Admin_Lname || '',
         Phone: selectedEmployee.Phone || '',
@@ -609,6 +611,8 @@ function Transactions() {
 
       },
       validationSchema: Yup.object({
+        role: Yup.string().required('Required'),
+        email: Yup.string().email().required('Required'),
         Admin_Fname: Yup.string().required('Required'),
         Admin_Lname: Yup.string().required('Required'),
         Phone: Yup.number().required('Required'),
@@ -856,6 +860,38 @@ function Transactions() {
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
+
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                        <InputText
+
+                          label="Email"
+                          name="email"
+                          type="email"
+                          placeholder=""
+                          value={values.email}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+
+                        < Dropdown
+                          // icons={mdiAccount}
+                          label="Role"
+                          name="role"
+                          placeholder=""
+                          value={values.role}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            {
+                              label: 'Admin',
+                              value: 'admin',
+                            },
+                            {
+                              value: 'super_admin',
+                              label: 'Super Admin',
+                            }
+                          ]}
+                        />
+                      </div>
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
 
 
@@ -972,7 +1008,46 @@ function Transactions() {
                 Child
               </label> */}
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                          <InputText
 
+                            label="Email"
+                            name="email"
+                            type="email"
+                            placeholder=""
+                            value={values.email}
+                            onBlur={handleBlur} // This apparently updates `touched`?
+                          />
+
+                          < Dropdown
+                            // icons={mdiAccount}
+                            label="Role"
+                            name="role"
+                            placeholder=""
+                            value={values.role}
+                            setFieldValue={setFieldValue}
+                            onBlur={handleBlur}
+                            options={[
+                              {
+                                label: 'Admin',
+                                value: 'admin',
+                              },
+                              {
+                                value: 'super_admin',
+                                label: 'Super Admin',
+                              }
+                            ]}
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                          {/* <InputText
+
+                            label="Email"
+                            name="email"
+                            type="email"
+                            placeholder=""
+                            value={values.Email}
+                            onBlur={handleBlur} // This apparently updates `touched`?
+                          /> */}
 
                           <InputText
 

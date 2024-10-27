@@ -5,7 +5,7 @@ import ErrorText from '../../components/Typography/ErrorText';
 import InputText from '../../components/Input/InputText';
 import { Formik, useField, useFormik, Form } from 'formik';
 import * as Yup from 'yup';
-import { mdiAccount, mdiLockOutline } from '@mdi/js';
+import { mdiAccount, mdiLockOutline, mdiEye, mdiEyeOff } from '@mdi/js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -19,10 +19,14 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState('');
   const [loginObj, setLoginObj] = useState(INITIAL_LOGIN_OBJ);
 
-  const updateFormValue = ({ updateType, value }) => {
-    setErrorMessage('');
-    setLoginObj({ ...loginObj, [updateType]: value });
+
+  const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
+
+
 
   const formikConfig = {
     initialValues: {
@@ -137,16 +141,33 @@ function Login() {
                       value={values.email}
                       onBlur={handleBlur} // This apparently updates `touched`?
                     />
-                    <InputText
-                      icons={mdiLockOutline}
-                      labelColor="text-white"
-                      label="Password"
-                      name="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={values.password}
-                      onBlur={handleBlur} // This apparently updates `touched`?
-                    />
+
+                    <div className="relative">
+                      <InputText
+                        icons={mdiLockOutline}
+                        labelColor="text-white"
+                        label="Password"
+                        name="password"
+                        type={showPassword ? "text" : "password"} // Change type based on visibility
+                        value={values.password}
+                        onBlur={handleBlur}
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 z-10" // Added z-10
+                      >
+                        {showPassword ? (
+                          <svg className="w-10 h-5 mt-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d={mdiEyeOff} />
+                          </svg>
+                        ) : (
+                          <svg className="w-10 h-5 mt-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path d={mdiEye} />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                     <div class="text-right text-primary"><a href="/forgot-password"><span class="text-sm  text-white inline-block  hover:text-buttonPrimary  hover:underline hover:cursor-pointer transition duration-200">Forgot Password?</span></a></div>
 
                     <button

@@ -374,6 +374,13 @@ function Transactions() {
         }
       },
       {
+        Header: 'Date Created',
+        accessor: 'Date_Created',
+        Cell: ({ row, value }) => {
+          return <span className="">{format(value, 'MMM dd, yyyy hh:mm:ss a')}</span>;
+        }
+      },
+      {
         Header: 'Transaction ID',
         accessor: 'uuid',
         Cell: ({ row, value }) => {
@@ -596,11 +603,11 @@ function Transactions() {
       Facebook: Yup.string().required('Required'),
       Category: Yup.string().required('Required'),
       SupplierID: Yup.string().required('Required'),
-      Grams: Yup.number().required('Required'),
+      Grams: Yup.number().required('Required').min(1, 'Must be greater than or equal to 1'),
       orderID: Yup.string().required('Required'),
       Price: Yup.number()
         .required('Price is required')
-        .min(0, 'Must be greater than or equal to 0')
+        .min(1, 'Must be greater than or equal to 1')
         .max(1000000, 'Price cannot exceed 1 million')
         .typeError('Price must be a number'),
 
@@ -737,8 +744,8 @@ function Transactions() {
     return {
       initialValues: initialValues,
       validationSchema: Yup.object(validation),
-      // validateOnMount: true,
-      // validateOnChange: false,
+      validateOnMount: true,
+      validateOnChange: false,
       onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
         setSubmitting(true);
 
@@ -920,11 +927,15 @@ function Transactions() {
           />
         }>
         <div className="">
+
+          {
+            console.log({ orders })
+          }
           <Table
             style={{ overflow: 'wrap' }}
             className="table-sm"
             columns={columns}
-            data={(orders || []).map(data => {
+            data={orders.sort((a, b) => new Date(b.Date_Created) - new Date(a.Date_Created)).map(data => {
               return {
                 ...data
                 // fullName,
@@ -1178,7 +1189,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
                         <InputText
 
-                          label={`Quantity`}
+                          label={`Item Quantity`}
                           name="quantity"
                           type="number"
                           placeholder=""
@@ -1287,8 +1298,14 @@ function Transactions() {
                             let maxOrder = findTotal_Grams_Sold.maxGramsOffer;
 
 
-
                             console.log({ maxOrder })
+                            if (maxOrder < 1) {
+                              setFieldError(
+                                'Grams', `Stock is already 0`
+                              );
+                            }
+
+
                             const grams = e.target.value;
 
                             // Regex to allow only numbers and up to 2 decimal places
@@ -1303,9 +1320,9 @@ function Transactions() {
                                 setFieldError(
                                   'Grams', `Mininum order is ${maxOrder} as per inventory`
                                 );
-                                setFieldValue(
-                                  'Grams', maxOrder
-                                )
+                                // setFieldValue(
+                                //   'Grams', maxOrder
+                                // )
 
                               }
                               if (!isNaN(gramsNumber) && gramsNumber >= 0) {
@@ -1622,7 +1639,7 @@ function Transactions() {
 
                       }
 
-                      size={200} />,
+                      size={200} />
                   </div>
 
                   <div className="card-actions justify-end">

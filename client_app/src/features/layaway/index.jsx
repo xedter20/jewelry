@@ -357,65 +357,17 @@ function Transactions() {
   const columns = useMemo(
     () => [
 
+
+
       {
-        Header: 'Action',
-        accessor: '',
-        Cell: ({ row }) => {
-          let l = row.original;
-
-
-
-          return (
-            (
-              <div className="flex">
-
-
-
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  // console.log("Dex")
-                  // setisEditModalOpen(true)
-                  // console.log({ l })
-                  setSelectedOrder(l);
-
-                  document.getElementById('viewProofPaymentImage').showModal();
-
-
-
-                }}>
-
-
-
-                  <i class="fa-regular fa-eye"></i>
-                </button>
-
-
-
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  setSelectedOrder(l);
-
-                  document.getElementById('viewQRCode').showModal();
-
-
-                }}>
-
-
-
-                  <i class="fa-solid fa-barcode"></i> QR
-                </button>
-
-              </div>
-            )
-          );
+        Header: 'Date Created',
+        accessor: 'Date_Created',
+        Cell: ({ row, value }) => {
+          return <span className="">{value && format(value, 'MMM dd, yyyy hh:mm:ss a')}</span>;
         }
       },
-
-
       {
-        Header: 'Layaway IDs',
+        Header: 'Layaway ID',
         accessor: 'OrderID',
         Cell: ({ row, value }) => {
           return <span className="">{value}</span>;
@@ -496,6 +448,60 @@ function Transactions() {
 
           return <StatusPill value={value} />
         }
+      }, {
+        Header: 'Action',
+        accessor: '',
+        Cell: ({ row }) => {
+          let l = row.original;
+
+
+
+          return (
+            (
+              <div className="flex">
+
+
+
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+
+                  // console.log("Dex")
+                  // setisEditModalOpen(true)
+                  // console.log({ l })
+                  setSelectedOrder(l);
+
+                  document.getElementById('viewProofPaymentImage').showModal();
+
+
+
+                }}>
+
+
+
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+
+
+
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+
+                  setSelectedOrder(l);
+
+                  document.getElementById('viewQRCode').showModal();
+
+
+                }}>
+
+
+
+                  <i class="fa-solid fa-barcode"></i> QR
+                </button>
+
+              </div>
+            )
+          );
+        }
       },
     ],
     []
@@ -566,8 +572,12 @@ function Transactions() {
       // ItemName: Yup.string().required('Required'),
       Category: Yup.string().required('Required'),
       SupplierID: Yup.string().required('Required'),
-      Grams: Yup.number().required('Required'),
-      Price: Yup.number().required('Required'),
+      Grams: Yup.number().required('Required').min(1, 'Must be greater than or equal to 1'),
+      Price: Yup.number()
+        .required('Price is required')
+        .min(0, 'Must be greater than or equal to 0')
+        .max(1000000, 'Price cannot exceed 1 million')
+        .typeError('Price must be a number'),
       quantity: Yup.number().required('Quantity is required').positive('Must be a positive number').integer('Must be an integer'),
       itemNames: Yup.array().of(
         Yup.number()
@@ -1253,7 +1263,7 @@ function Transactions() {
 
                         <InputText
 
-                          label={`Quantity`}
+                          label={`Item Quantity`}
                           name="quantity"
                           type="number"
                           placeholder=""

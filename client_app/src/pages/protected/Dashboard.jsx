@@ -93,6 +93,12 @@ function InternalPage() {
   }));
 
 
+  const formattedDataItemsSold = resultData.map(item => ({
+    payment_date: new Date(item.payment_date).getTime(), // Convert to timestamp
+    Total_Sales: parseFloat(item.Total_Grams), // Convert to number
+  }));
+
+
   // //console.log({ formattedData })
 
   const suppliers = [
@@ -101,12 +107,6 @@ function InternalPage() {
     { id: 3, name: 'Supplier #3', completion: 100 },
   ];
 
-  const LayawaySchedule = [
-    { id: '1', name: 'Juliette Teodoro', orderId: '01163401', dueDate: '04/15/24', amount: 2500 },
-    { id: '2', name: 'Rizalle Santos', orderId: '02163402', dueDate: '04/15/24', amount: 3600 },
-    { id: '3', name: 'Deocles Dionisio', orderId: '01163403', dueDate: '04/15/24', amount: 2600 },
-    // Add more data as needed
-  ];
   // return loggedInUser.role === 'super_admin' ? <Dashboard /> : <Dashboard />;
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -141,6 +141,8 @@ function InternalPage() {
   }, 0)
   const totalRevenue = resultData.reduce((acc, item) => acc + parseFloat(item.Total_Price), 0);
 
+
+  const totalGramsSold = resultData.reduce((acc, item) => acc + parseFloat(item.Total_Grams), 0);
   return <div>
     <div className="p-6 bg-gray-50 space-y-6">
       {/* Sales Summary */}
@@ -183,7 +185,31 @@ function InternalPage() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <h2 className="font-bold text-gray-700 text-center">Items Sold</h2>
+          <p className="text-3xl font-semibold text-orange-600 text-center">
 
+
+            {totalGramsSold.toFixed(2)} Grams
+          </p>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={formattedDataItemsSold}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="payment_date" domain={['dataMin', 'dataMax']}
+
+                tickFormatter={(timestamp) => {
+                  const date = new Date(timestamp);
+                  return date.toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric'
+                  });
+                }}
+              />
+              <YAxis />
+              <Tooltip labelFormatter={(value) => new Date(value).toLocaleString()} />
+              <Area type="monotone" dataKey="Total_Sales" stroke="#8884d8" fill="#8884d8" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
 
         {/* <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
           <h2 className="font-bold text-gray-700">Sales</h2>
@@ -200,8 +226,41 @@ function InternalPage() {
         </div> */}
       </div>
 
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="font-bold text-gray-700">Sales Breakdown</h2>
+        <table className="min-w-full mt-4 border border-gray-200">
+          <thead>
+            <tr className="bg-gray-100 border-b">
+
+              <th className="p-2 text-left text-gray-600"> Date</th>
+              <th className="p-2 text-left text-gray-600">Order ID</th>
+
+              <th className="p-2 text-left text-gray-600">Total Amount</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            {layAwayList.map(item => {
+
+              let remains = parseInt(item.Price) - parseInt(item.totalPaidAmount);
+              let intergerAmount = remains > 0 ? remains : 0
+              return <tr key={item.OrderID} className="border-b hover:bg-gray-50">
+
+
+                <td className="p-2">{format(item.Due_Date, 'MMM dd, yyyy')}</td>
+                <td className="p-2">{item.OrderID}</td>
+
+                <td className="p-2">{formatAmount(item.Price)}</td>
+
+              </tr>
+            })}
+          </tbody>
+        </table>
+      </div>
+
+
       {/* Payment per Supplier */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {suppliers.map(supplier => (
           <div key={supplier.id} className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center transition-transform transform hover:scale-105">
             <h3 className="font-bold text-gray-700">{supplier.name}</h3>
@@ -212,7 +271,7 @@ function InternalPage() {
             <FaCheckCircle className="text-green-500 mt-2" />
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Lay-away Payment Schedule */}
       <div className="bg-white p-6 rounded-lg shadow-lg">
