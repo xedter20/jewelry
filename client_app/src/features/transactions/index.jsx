@@ -651,7 +651,7 @@ function Transactions() {
       }),
       validateOnMount: true,
       validateOnChange: false,
-      onSubmit: async (values, { setFieldError, setSubmitting }) => {
+      onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
         setSubmitting(true);
 
         try {
@@ -665,6 +665,7 @@ function Transactions() {
           })
           document.getElementById('addCustomer').close();
           await fetchUsers();
+          resetForm();
           toast.success('Customer successfully added!', {
             onClose: () => {
               setSubmitting(false);
