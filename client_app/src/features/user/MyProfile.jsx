@@ -51,8 +51,10 @@ function ForgotPassword() {
                 let TransactionID = row.original.TransactionID || row.original.LayawayID;
                 let link = `/myprofile/${userId}/order/${TransactionID}`;
 
+
+                console.log({ Dex: row.original.LayawayID })
                 if (row.original.LayawayID) {
-                    link = `/myprofile/${userId}/layway/${TransactionID}`;
+                    link = `/myprofile/${userId}/layaway/${TransactionID}`;
                 }
                 return (
                     <div className="flex space-x-2">
