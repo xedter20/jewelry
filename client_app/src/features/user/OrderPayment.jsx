@@ -317,7 +317,7 @@ function ForgotPassword() {
                         </button>
                         <h1 className="text-lg sm:text-xl font-bold">Invoice Details</h1>
                     </div>
-                    <div className={`flex flex-col gap-4 sm:gap-6 ${isPaid ? 'md:flex-row' : 'md:flex-row'} bg-base-100 rounded-xl`}>
+                    <div className="flex flex-col gap-4 bg-base-100 rounded-xl">
                         <div className="bg-gray-100 p-4 sm:p-6 flex-1">
                             <div className="flex items-center justify-between">
                                 <div className={`px-3 py-1 rounded-full text-white ${colors[selectedOrder.Status]}`}>
@@ -375,70 +375,70 @@ function ForgotPassword() {
                             </div>
                         </div>
 
-                        {selectedOrder.Status === 'PAID' && (
-                            <div className="bg-gray-100 p-4 sm:p-6 flex-1">
-                                <div className="flex justify-center">
-                                    <div className="px-3 py-1 text-white bg-blue-600">Proof of Payment</div>
-                                </div>
-                                <div className="p-4">
-                                    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 mx-auto">
-                                        <img src={selectedOrder.proof_of_payment} alt="Proof of Payment" className="w-full h-auto object-cover" />
+                        {/* Right section for Payment Steps */}
+                        <div className="flex flex-col gap-4 bg-base-100 rounded-xl">
+                            {selectedOrder.Status === 'PAID' ? (
+                                <div className="bg-gray-100 p-4 sm:p-6 flex-1">
+                                    <div className="flex justify-center">
+                                        <div className="px-3 py-1 text-white bg-blue-600">Proof of Payment</div>
                                     </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {selectedOrder.Status !== 'PAID' && (
-                            <>
-                                <div className="p-4 sm:p-6 flex-1">
-                                    <h2 className="text-xl sm:text-2xl font-bold mb-2">Step 1: Pay</h2>
-                                    <div className="space-y-4 sm:space-y-6">
-                                        <div className="divider font-bold">Scan QR</div>
-                                        <p className="text-center">
-                                            Please pay <span className="font-bold text-green-500">{formatAmount(selectedOrder.Price)}</span> using the QR Code below.
-                                        </p>
-                                        <div className="flex justify-center">
-                                            <img src="/paymentMethod.png" alt="Payment Method" className="w-full max-w-xs sm:max-w-sm h-auto" />
+                                    <div className="p-4">
+                                        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 mx-auto">
+                                            <img src={selectedOrder.proof_of_payment} alt="Proof of Payment" className="w-full h-auto object-cover" />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-4 sm:p-6 flex-1">
-                                    <h2 className="text-xl sm:text-2xl font-bold mb-2">Step 2: Upload Proof of Payment</h2>
-                                    <Formik {...formikConfigViewReciept()}>
-                                        {({
-                                            handleSubmit, handleBlur, values, setFieldValue,
-                                        }) => (
-                                            <Form className="space-y-4 sm:space-y-6">
-                                                <InputText
-                                                    label="Upload"
-                                                    name="Proof_Payment"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => {
-                                                        const file = e.target.files[0];
-                                                        setFile(file);
-                                                        if (file) {
-                                                            document.getElementById("blah").src = URL.createObjectURL(file);
-                                                        }
-                                                    }}
-                                                    onBlur={handleBlur}
-                                                />
-                                                <div className="flex justify-center">
-                                                    <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" />
-                                                </div>
-                                                <InputText label="Comments" name="Comments" type="text" value={values.Comments} onBlur={handleBlur} />
-                                                <button type="submit" className="btn w-full bg-buttonPrimary font-bold text-white">Submit</button>
-                                            </Form>
-                                        )}
-                                    </Formik>
-                                </div>
-                            </>
-                        )}
+                            ) : (
+                                <>
+                                    <div className="p-4 sm:p-6 flex-1">
+                                        <h2 className="text-xl sm:text-2xl font-bold mb-2">Step 1: Pay</h2>
+                                        <div className="space-y-4 sm:space-y-6">
+                                            <div className="divider font-bold">Scan QR</div>
+                                            <p className="text-center">
+                                                Please pay <span className="font-bold text-green-500">{formatAmount(selectedOrder.Price)}</span> using the QR Code below.
+                                            </p>
+                                            <div className="flex justify-center">
+                                                <img src="/paymentMethod.png" alt="Payment Method" className="w-full max-w-xs sm:max-w-sm h-auto" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 sm:p-6 flex-1">
+                                        <h2 className="text-xl sm:text-2xl font-bold mb-2">Step 2: Upload Proof of Payment</h2>
+                                        <Formik {...formikConfigViewReciept()}>
+                                            {({
+                                                handleSubmit, handleBlur, values, setFieldValue,
+                                            }) => (
+                                                <Form className="space-y-4 sm:space-y-6">
+                                                    <InputText
+                                                        label="Upload"
+                                                        name="Proof_Payment"
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files[0];
+                                                            setFile(file);
+                                                            if (file) {
+                                                                setPreview(URL.createObjectURL(file));
+                                                            }
+                                                        }}
+                                                        onBlur={handleBlur}
+                                                    />
+                                                    <div className="flex justify-center">
+                                                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" />
+                                                    </div>
+                                                    <InputText label="Comments" name="Comments" type="text" value={values.Comments} onBlur={handleBlur} />
+                                                    <button type="submit" className="btn w-full bg-buttonPrimary font-bold text-white">Submit</button>
+                                                </Form>
+                                            )}
+                                        </Formik>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
                 <ToastContainer />
             </div>
-
         ) : (
             <div className="flex items-center justify-center h-screen bg-gray-100">
                 <div className="text-center">
