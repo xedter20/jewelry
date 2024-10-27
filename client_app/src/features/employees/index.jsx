@@ -341,7 +341,9 @@ function Transactions() {
                 <button
                   className="btn btn-outline btn-sm ml-2"
                   onClick={() => {
-                    setactiveChildID(l.ID);
+
+
+                    setactiveChildID(l.EmployeeID);
                     document.getElementById('deleteModal').showModal();
                   }}>
                   <i class="fa-solid fa-archive"></i>
@@ -790,28 +792,28 @@ function Transactions() {
                 className="btn bg-buttonPrimary text-white"
                 onClick={async () => {
                   try {
-                    // let res = await axios({
-                    //   method: 'POST',
-                    //   url: 'user/deleteChildRecord',
-                    //   data: {
-                    //     activeChildID: activeChildID
-                    //   }
-                    // });
+                    let res = await axios({
+                      method: 'put',
+                      url: `/archive/employees/${activeChildID}/EmployeeID`,
+                      data: {
+                        activeChildID: activeChildID
+                      }
+                    });
 
-                    // document.getElementById('deleteModal').close();
-                    // toast.success(`Deleted Successfully`, {
-                    //   onClose: () => {
-                    //     window.location.reload();
-                    //   },
-                    //   position: 'top-right',
-                    //   autoClose: 1000,
-                    //   hideProgressBar: false,
-                    //   closeOnClick: true,
-                    //   pauseOnHover: true,
-                    //   draggable: true,
-                    //   progress: undefined,
-                    //   theme: 'light'
-                    // });
+                    document.getElementById('deleteModal').close();
+                    toast.success(`Deleted Successfully`, {
+                      onClose: () => {
+                        // window.location.reload();
+                      },
+                      position: 'top-right',
+                      autoClose: 1000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                      theme: 'light'
+                    });
                   } catch (error) { }
                 }}>
                 Yes

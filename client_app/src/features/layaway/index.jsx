@@ -131,6 +131,8 @@ function Transactions() {
     { value: 'Rings', label: 'Rings' }
   ];
 
+
+
   const [file, setFile] = useState(null);
   const [users, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -357,7 +359,43 @@ function Transactions() {
   const columns = useMemo(
     () => [
 
+      {
+        Header: 'QR Code',
+        accessor: 'qr',
+        Cell: ({ row }) => {
+          let l = row.original;
 
+
+
+          return (
+            (
+              <div className="flex">
+
+
+
+
+
+
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+
+                  setSelectedOrder(l);
+
+                  document.getElementById('viewQRCode').showModal();
+
+
+                }}>
+
+
+
+                  <i class="fa-solid fa-barcode"></i> QR
+                </button>
+
+              </div>
+            )
+          );
+        }
+      },
 
       {
         Header: 'Date Created',
@@ -448,7 +486,8 @@ function Transactions() {
 
           return <StatusPill value={value} />
         }
-      }, {
+      },
+      {
         Header: 'Action',
         accessor: '',
         Cell: ({ row }) => {
@@ -481,22 +520,17 @@ function Transactions() {
                   <i class="fa-regular fa-eye"></i>
                 </button>
 
+                <button
+                  className="btn btn-outline btn-sm ml-2"
+                  onClick={() => {
 
 
-                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
-
-
-                  setSelectedOrder(l);
-
-                  document.getElementById('viewQRCode').showModal();
-
-
-                }}>
-
-
-
-                  <i class="fa-solid fa-barcode"></i> QR
+                    setactiveChildID(l.LayawayID);
+                    document.getElementById('deleteModal').showModal();
+                  }}>
+                  <i class="fa-solid fa-archive"></i>
                 </button>
+
 
               </div>
             )
@@ -977,28 +1011,28 @@ function Transactions() {
                 className="btn bg-buttonPrimary text-white"
                 onClick={async () => {
                   try {
-                    // let res = await axios({
-                    //   method: 'POST',
-                    //   url: 'user/deleteChildRecord',
-                    //   data: {
-                    //     activeChildID: activeChildID
-                    //   }
-                    // });
+                    let res = await axios({
+                      method: 'put',
+                      url: `/archive/layaway/${activeChildID}/LayawayID`,
+                      data: {
+                        activeChildID: activeChildID
+                      }
+                    });
 
-                    // document.getElementById('deleteModal').close();
-                    // toast.success(`Deleted Successfully`, {
-                    //   onClose: () => {
-                    //     window.location.reload();
-                    //   },
-                    //   position: 'top-right',
-                    //   autoClose: 1000,
-                    //   hideProgressBar: false,
-                    //   closeOnClick: true,
-                    //   pauseOnHover: true,
-                    //   draggable: true,
-                    //   progress: undefined,
-                    //   theme: 'light'
-                    // });
+                    document.getElementById('deleteModal').close();
+                    toast.success(`Deleted Successfully`, {
+                      onClose: () => {
+                        // window.location.reload();
+                      },
+                      position: 'top-right',
+                      autoClose: 1000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                      theme: 'light'
+                    });
                   } catch (error) { }
                 }}>
                 Yes
@@ -1006,6 +1040,7 @@ function Transactions() {
             </div>
           </div>
         </dialog>
+
 
         <dialog id="addOrder" className="modal">
           <div className="modal-box w-11/12 max-w-2xl">

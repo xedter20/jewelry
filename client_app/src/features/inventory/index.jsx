@@ -164,7 +164,7 @@ function Transactions() {
   const [isAddPaymentOpen, setisAddPaymentOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [activeChildID, setactiveChildID] = useState('');
   const [suppliers, setSupplierList] = useState([]);
   const [inventoryList, setInventoryList] = useState([]);
 
@@ -487,8 +487,12 @@ function Transactions() {
                 <button
                   className="btn btn-outline btn-sm ml-2"
                   onClick={() => {
-                    // setactiveChildID(l.ID);
-                    // document.getElementById('deleteModal').showModal();
+
+
+                    console.log(l.OrderID)
+
+                    setactiveChildID(l.OrderID);
+                    document.getElementById('deleteModal').showModal();
                   }}>
                   <i class="fa-solid fa-archive"></i>
                 </button>
@@ -988,28 +992,28 @@ function Transactions() {
                 className="btn bg-buttonPrimary text-white"
                 onClick={async () => {
                   try {
-                    // let res = await axios({
-                    //   method: 'POST',
-                    //   url: 'user/deleteChildRecord',
-                    //   data: {
-                    //     activeChildID: activeChildID
-                    //   }
-                    // });
+                    let res = await axios({
+                      method: 'put',
+                      url: `/archive/inventory/${activeChildID}/OrderID`,
+                      data: {
+                        activeChildID: activeChildID
+                      }
+                    });
 
-                    // document.getElementById('deleteModal').close();
-                    // toast.success(`Deleted Successfully`, {
-                    //   onClose: () => {
-                    //     window.location.reload();
-                    //   },
-                    //   position: 'top-right',
-                    //   autoClose: 1000,
-                    //   hideProgressBar: false,
-                    //   closeOnClick: true,
-                    //   pauseOnHover: true,
-                    //   draggable: true,
-                    //   progress: undefined,
-                    //   theme: 'light'
-                    // });
+                    document.getElementById('deleteModal').close();
+                    toast.success(`Deleted Successfully`, {
+                      onClose: () => {
+                        // window.location.reload();
+                      },
+                      position: 'top-right',
+                      autoClose: 1000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                      theme: 'light'
+                    });
                   } catch (error) { }
                 }}>
                 Yes
@@ -1017,7 +1021,6 @@ function Transactions() {
             </div>
           </div>
         </dialog>
-
         <dialog id="addSupplier" className="modal">
           <div className="modal-box w-11/12 max-w-2xl">
             <form method="dialog">

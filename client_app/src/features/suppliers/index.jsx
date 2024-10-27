@@ -384,7 +384,7 @@ function Transactions() {
                   <i class="fa-regular fa-eye"></i>
                 </button>
 
-
+                {/* 
                 <button className="btn btn-outline btn-sm" onClick={() => {
 
                   // setisEditModalOpen(true)
@@ -403,7 +403,7 @@ function Transactions() {
                     // document.getElementById('deleteModal').showModal();
                   }}>
                   <i class="fa-solid fa-download"></i>
-                </button>
+                </button> */}
               </div>
             )
           );
