@@ -1000,6 +1000,7 @@ function Transactions() {
                       }
                     });
 
+                    fetchInventoryList();
                     document.getElementById('deleteModal').close();
                     toast.success(`Deleted Successfully`, {
                       onClose: () => {
