@@ -170,7 +170,7 @@ function ForgotPassword() {
                                                         'btn text-white mt-2 w-full bg-buttonPrimary font-bold' +
                                                         (loading ? ' loading' : '')
                                                     }>
-                                                    Sign in
+                                                    Send
                                                 </button>
 
 

@@ -620,10 +620,11 @@ const NotificationsTab = () => {
         </div>
       </div>
       <ul className="divide-y divide-gray-200">
-        {notifications.map((notification) => (
-          <li
+        {notifications.map((notification) => {
+          const briefMessage = notification.message.split('.')[0];
+          return <li
             key={notification.id}
-            className={`flex items-center p-2 ${notification.is_read === 0 ? 'bg-gray-100' : 'bg-white'}`}
+            className={`flex justify-between p-2 ${notification.is_read === 0 ? 'bg-gray-100' : 'bg-white'}`}
           >
             <input
               type="checkbox"
@@ -633,7 +634,7 @@ const NotificationsTab = () => {
               aria-label={`Select notification for ${notification.message}`}
             />
             <p className={`font-semibold text-sm ${notification.is_read ? 'text-gray-500' : 'text-gray-800'}`}>
-              {notification.message}
+              {briefMessage}
             </p>
             <LayawayReminder id={notification.id} ref={createRef()} {...JSON.parse(notification.messageData)} />
             <button
@@ -643,7 +644,7 @@ const NotificationsTab = () => {
               <i class="fa-solid fa-file-export"></i>
             </button>
           </li>
-        ))}
+        })}
       </ul>
       <button
         onClick={handleSeeMore}
@@ -959,8 +960,8 @@ const AuditTrailTab = () => {
     {
       Header: 'Employee ID',
       accessor: 'employeeId',
-      Cell: ({ row }) => {
-        return <span className="text-gray-600">{row.index + 1}</span>;
+      Cell: ({ row, value }) => {
+        return <span className="text-gray-600">{value}</span>;
       }
     },
 
