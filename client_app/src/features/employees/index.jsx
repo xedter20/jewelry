@@ -199,6 +199,13 @@ function Transactions() {
         }
       },
       {
+        Header: 'Email',
+        accessor: 'email',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
         Header: 'First Name',
         accessor: 'Admin_Fname',
 
