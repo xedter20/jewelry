@@ -222,52 +222,7 @@ function Transactions() {
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   const columns = useMemo(
     () => [
-      {
-        Header: 'Action',
-        accessor: '',
-        Cell: ({ row }) => {
-          let l = row.original;
 
-          return (
-            (
-              <div className="flex">
-                {/* <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
-                  <button className="btn btn-outline btn-sm">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
-                </Link> */}
-                <button
-                  className="btn btn-outline btn-sm ml-2"
-                  onClick={() => {
-                    setactiveChildID(l.CustomerID);
-                    document.getElementById('deleteModal').showModal();
-                  }}>
-                  <i class="fa-solid fa-archive"></i>
-                </button>
-                <button
-                  className="btn btn-outline btn-sm ml-2"
-                  onClick={() => {
-                    setactiveChildID(l.CustomerID);
-                    setviewedUser(l)
-                    document.getElementById('updateCustomer').showModal();
-                  }}>
-                  <i class="fa-solid fa-edit"></i>
-                </button>
-                <Link to={`/app/userProfile/${l.CustomerID}`}>
-                  <button
-                    className="btn btn-outline btn-sm ml-2"
-                    onClick={() => {
-                      setactiveChildID(l.CustomerID);
-                      // document.getElementById('updateCustomer').showModal();
-                    }}>
-                    <i class="fa-solid fa-eye"></i>
-                  </button>
-                </Link>
-              </div>
-            )
-          );
-        }
-      },
       {
         Header: 'Customer ID',
         accessor: '',
@@ -410,196 +365,54 @@ function Transactions() {
           );
         }
       },
+      {
+        Header: 'Action',
+        accessor: '',
+        Cell: ({ row }) => {
+          let l = row.original;
 
-      // {
-      //   Header: 'Name of Mother/Caregiver',
-      //   accessor: 'Name_of_Mother_or_Caregiver',
+          return (
+            (
+              <div className="flex">
+                {/* <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
+                  <button className="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                </Link> */}
+                <button
+                  className="btn btn-outline btn-sm ml-2"
+                  onClick={() => {
+                    setactiveChildID(l.CustomerID);
+                    document.getElementById('deleteModal').showModal();
+                  }}>
+                  <i class="fa-solid fa-archive"></i>
+                </button>
+                <button
+                  className="btn btn-outline btn-sm ml-2"
+                  onClick={() => {
+                    setactiveChildID(l.CustomerID);
+                    setviewedUser(l)
+                    document.getElementById('updateCustomer').showModal();
+                  }}>
+                  <i class="fa-solid fa-edit"></i>
+                </button>
+                <Link to={`/app/userProfile/${l.CustomerID}`}>
+                  <button
+                    className="btn btn-outline btn-sm ml-2"
+                    onClick={() => {
+                      setactiveChildID(l.CustomerID);
+                      // document.getElementById('updateCustomer').showModal();
+                    }}>
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </Link>
+              </div>
+            )
+          );
+        }
+      },
 
-      //   Cell: ({ row, value }) => {
-      //     return (
-      //       <div className="flex items-center space-x-3">
-      //         <div className="avatar">
-      //           <div className="mask mask-circle w-12 h-20">
-      //             <img
-      //               src="https://cdn-icons-png.freepik.com/512/8115/8115385.png?ga=GA1.2.680220839.1714096437"
-      //               alt="Avatar"
-      //             />
-      //           </div>
-      //         </div>
 
-      //         <div>
-      //           <div className="font-bold text-neutral-500">{value}</div>
-      //         </div>
-      //       </div>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Barangay',
-      //   accessor: 'Address_or_Location',
-      //   sortable: true,
-      //   wrap: true,
-
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <p
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </p>
-      //     );
-      //   }
-      // },
-
-      // {
-      //   Header: 'Belongs to IP Group?',
-      //   accessor: 'Belongs_to_IP_Group',
-      //   Cell: ({ value }) => {
-      //     return <span className="text-wrap">{value}</span>;
-      //   }
-      // },
-      // {
-      //   Header: 'Gender',
-      //   accessor: 'Sex',
-      //   Cell: ({ value }) => {
-      //     return <span className="text-wrap">{value}</span>;
-      //   }
-      // },
-
-      // {
-      //   Header: 'Date of Birth',
-      //   accessor: 'Date_of_Birth',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {format(value, 'MMM dd, yyyy')}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Date Measured',
-      //   accessor: 'Date_Measured',
-      //   Cell: ({ value }) => {
-      //     console.log({ value });
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value && format(value, 'MMM dd, yyyy')}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Weight',
-      //   accessor: 'Weight',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value} kg
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Height',
-      //   accessor: 'Height',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value} cm
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Age in Months',
-      //   accessor: 'Age_in_Months',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Weight for Age Status',
-      //   accessor: 'Weight_for_Age_Status',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Height for Age Status',
-      //   accessor: 'Height_for_Age_Status',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // },
-      // {
-      //   Header: 'Weight for Lt/Ht Status',
-      //   accessor: 'Weight_for_Lt_or_Ht_Status',
-      //   Cell: ({ value }) => {
-      //     return (
-      //       <span
-      //         className=""
-      //         style={{
-      //           whiteSpace: 'normal'
-      //         }}>
-      //         {value}
-      //       </span>
-      //     );
-      //   }
-      // }
-      // {
-      //   Header: 'Action',
-      //   accessor: '',
-      //   Cell: ({ row }) => {
-      //     let l = row.original;
-      //     return (
-      //       <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
-      //         <button className="btn btn-sm ">View</button>
-      //       </Link>
-      //     );
-      //   }
-      // }
     ],
     []
   );
@@ -936,7 +749,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Full Name"
                           name="CustomerName"
                           type="text"
@@ -948,6 +761,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
 
                         <InputText
+                          isRequired
                           className="border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
                           label="Facebook Link"
                           name="Facebook"
@@ -957,7 +771,7 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                         <InputText
-
+                          isRequired
                           label="Contact Number"
                           name="Contact"
                           type="text"
@@ -973,7 +787,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Complete Address"
                           name="Address"
                           type="text"
@@ -982,6 +796,7 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                       </div>
+                      * All fields are required.
                       <button
                         type="submit"
                         className={
@@ -1040,7 +855,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Full Name"
                           name="CustomerName"
                           type="text"
@@ -1052,6 +867,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
 
                         <InputText
+                          isRequired
                           className="border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
                           label="Facebook Link"
                           name="Facebook"
@@ -1061,7 +877,7 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                         <InputText
-
+                          isRequired
                           label="Contact Number"
                           name="Contact"
                           type="text"
@@ -1077,7 +893,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Complete Address"
                           name="Address"
                           type="text"

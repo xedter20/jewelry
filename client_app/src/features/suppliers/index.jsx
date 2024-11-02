@@ -1162,7 +1162,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Supplier Name"
                           name="SupplierName"
                           type="text"
@@ -1176,7 +1176,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Phone Number"
                           name="PhoneNo"
                           type="text"
@@ -1189,7 +1189,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Email"
                           name="Email"
                           type="text"
@@ -1200,7 +1200,7 @@ function Transactions() {
                       </div>
 
 
-
+                      * All fields are required.
                       <button
                         // type="button"
                         type="submit"
@@ -1259,7 +1259,7 @@ function Transactions() {
                       </label> */}
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                           <InputText
-
+                            isRequired
                             label="Supplier ID"
                             name="SupplierID "
                             type="text"
@@ -1269,7 +1269,7 @@ function Transactions() {
                             onBlur={handleBlur} // This apparently updates `touched`?
                           />
                           <InputText
-
+                            isRequired
                             label="Supplier Name"
                             name="SupplierName "
                             type="text"
@@ -1284,6 +1284,7 @@ function Transactions() {
 
                           <div className=''>
                             <Dropdown
+                              isRequired
                               // icons={mdiAccount}
                               label="Inventory Order ID"
                               name="OrderID"
@@ -1295,7 +1296,7 @@ function Transactions() {
                             />
                           </div>
                           <InputText
-
+                            isRequired
                             label="Date"
                             name="Date"
                             type="date"
@@ -1309,7 +1310,7 @@ function Transactions() {
 
 
                           <InputText
-
+                            isRequired
                             label="Amount of Payment"
                             name="Amount"
                             type="text"
@@ -1319,6 +1320,7 @@ function Transactions() {
                           />
                           <div className=''>
                             <Dropdown
+                              isRequired
                               // icons={mdiAccount}
                               label="Payment Status"
                               name="Payment_Status"
@@ -1337,8 +1339,9 @@ function Transactions() {
                         </div>
                         <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
                           <RadioText
+                            isRequired
                             // icons={mdiAccount}
-                            label="Payment Method"
+                            label="Payment Method *"
                             name="Payment_Method"
                             placeholder=""
                             value={values.Payment_Method}
@@ -1356,7 +1359,7 @@ function Transactions() {
                         </div>
 
                         <InputText
-
+                          isRequired
                           label="Proof of Payment"
                           name="Proof_Payment"
                           type="file"
@@ -1377,7 +1380,7 @@ function Transactions() {
                         />
                         <div class="flex justify-center items-center">
                           <img id="blah" src="img.jpg" alt="" preview className='object-cover h-48 w-96 ' />
-                        </div>
+                        </div>* All fields are required.
                         <button
                           type="submit"
                           className={
@@ -1538,7 +1541,7 @@ function Transactions() {
 
 
                           <InputText
-
+                            isRequired
                             label="Supplier Name"
                             name="SupplierName"
                             type="text"
@@ -1552,7 +1555,7 @@ function Transactions() {
 
 
                           <InputText
-
+                            isRequired
                             label="Phone Number"
                             name="PhoneNo"
                             type="text"
@@ -1565,7 +1568,7 @@ function Transactions() {
 
 
                           <InputText
-
+                            isRequired
                             label="Email"
                             name="Email"
                             type="text"
@@ -1576,7 +1579,7 @@ function Transactions() {
                         </div>
 
 
-
+                        * All fields are required.
                         <button
                           // type="button"
                           type="submit"

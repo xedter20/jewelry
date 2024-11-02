@@ -744,7 +744,7 @@ function Transactions() {
 
 
 
-    const defaultDate = new Date("2024-10-16T16:00:00.000Z");
+    const defaultDate = new Date();
 
     // Format it as YYYY-MM-DD
     const formattedDate = defaultDate.toISOString().split('T')[0]; // '2024-10-1
@@ -1071,6 +1071,7 @@ function Transactions() {
                         }
                         <Dropdown
                           // icons={mdiAccount}
+                          isRequired
                           label="Supplier Name"
                           name="SupplierID"
                           placeholder=""
@@ -1081,6 +1082,7 @@ function Transactions() {
                         />
                         <Dropdown
                           // icons={mdiAccount}
+                          isRequired
                           label="Category"
                           name="Category"
                           placeholder=""
@@ -1101,6 +1103,7 @@ function Transactions() {
                       </div>
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
+                          isRequired
                           label="Total Grams"
                           name="Grams"
                           type="number"
@@ -1119,18 +1122,26 @@ function Transactions() {
                           }}
                         />
                         <InputText
-
+                          isRequired
                           label="Price Per Gram(₱)"
                           name="Price"
                           type="number"
                           placeholder=""
                           value={values.Price}
                           onChange={(e) => {
-                            let price = parseFloat(e.target.value) || 0;
-                            price = parseFloat(price.toFixed(2)); // Limit to two decimal places
-                            const grams = parseFloat(values.Grams) || 0;
-                            setFieldValue("Price", price);
-                            setFieldValue("Amount", parseFloat((grams * price).toFixed(2))); // Limit Amount to two decimal places
+                            let price = parseFloat(e.target.value);
+
+                            // Only proceed if price is a valid number and greater than 0
+                            if (!isNaN(price) && price > 0) {
+                              price = parseFloat(price.toFixed(2)); // Limit to two decimal places
+                              const grams = parseFloat(values.Grams) || 0;
+                              setFieldValue("Price", price);
+                              setFieldValue("Amount", parseFloat((grams * price).toFixed(2))); // Limit Amount to two decimal places
+                            } else {
+                              // If the input is not valid, reset Price and Amount
+                              setFieldValue("Price", '');
+                              setFieldValue("Amount", '');
+                            }
                           }}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
@@ -1138,7 +1149,7 @@ function Transactions() {
                       </div>
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
-
+                          isRequired
                           label="Amount Payable(₱)"
                           name="Amount"
                           type="number"
@@ -1146,6 +1157,7 @@ function Transactions() {
                           value={values.Amount}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />  <InputText
+                          isRequired
                           min={todayInManila}
                           label="Date"
                           name="Date"
@@ -1156,7 +1168,7 @@ function Transactions() {
                         />
 
                       </div>
-
+                      * All fields are required.
                       <button
                         // type="button"
                         type="submit"
@@ -1355,6 +1367,7 @@ function Transactions() {
 
                       <Dropdown
                         // icons={mdiAccount}
+                        isRequired
                         label="Supplier Name"
                         name="SupplierID"
                         placeholder=""
@@ -1365,6 +1378,7 @@ function Transactions() {
                       />
                       <Dropdown
                         // icons={mdiAccount}
+                        isRequired
                         label="Category"
                         name="Category"
                         placeholder=""
@@ -1385,7 +1399,7 @@ function Transactions() {
                     </div>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                       <InputText
-
+                        isRequired
                         label="Total Grams"
                         name="Grams"
                         type="number"
@@ -1399,7 +1413,7 @@ function Transactions() {
                           setFieldValue("Amount", grams * price);
                         }}
                       />  <InputText
-
+                        isRequired
                         label="Price (₱)"
                         name="Price"
                         type="number"
@@ -1418,7 +1432,7 @@ function Transactions() {
                     </div>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                       <InputText
-
+                        isRequired
                         label="Total Amount (₱)"
                         name="Amount"
                         type="number"
@@ -1426,7 +1440,7 @@ function Transactions() {
                         value={values.Amount}
                         onBlur={handleBlur} // This apparently updates `touched`?
                       />  <InputText
-
+                        isRequired
                         label="Date"
                         name="Date"
                         type="date"
@@ -1436,7 +1450,7 @@ function Transactions() {
                       />
 
                     </div>
-
+                    * All fields are required.
                     <button
                       // type="button"
                       type="submit"

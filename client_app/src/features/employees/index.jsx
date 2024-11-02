@@ -880,6 +880,7 @@ function Transactions() {
                           type="email"
                           placeholder=""
                           value={values.email}
+                          isRequired
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
 
@@ -887,6 +888,7 @@ function Transactions() {
                           // icons={mdiAccount}
                           label="Role"
                           name="role"
+                          isRequired
                           placeholder=""
                           value={values.role}
                           setFieldValue={setFieldValue}
@@ -907,7 +909,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="First Name"
                           name="Admin_Fname"
                           type="text"
@@ -916,7 +918,7 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                         <InputText
-
+                          isRequired
                           label="Last Name"
                           name="Admin_Lname"
                           type="text"
@@ -929,7 +931,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Phone Number"
                           name="Phone"
                           type="text"
@@ -945,7 +947,7 @@ function Transactions() {
 
 
                         <InputText
-
+                          isRequired
                           label="Username"
                           name="Username"
                           type="text"
@@ -954,7 +956,7 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                         <InputText
-
+                          isRequired
                           label="Password"
                           name="Password"
                           type="text"
@@ -963,6 +965,8 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                       </div>
+
+                      * All fields are required.
                       <button
                         type="submit"
                         className={
@@ -1020,7 +1024,7 @@ function Transactions() {
               </label> */}
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                           <InputText
-
+                            isRequired
                             label="Email"
                             name="email"
                             type="email"
@@ -1030,6 +1034,7 @@ function Transactions() {
                           />
 
                           < Dropdown
+                            isRequired
                             // icons={mdiAccount}
                             label="Role"
                             name="role"
@@ -1061,7 +1066,7 @@ function Transactions() {
                           /> */}
 
                           <InputText
-
+                            isRequired
                             label="First Name"
                             name="Admin_Fname"
                             type="text"
@@ -1071,6 +1076,7 @@ function Transactions() {
                           />
                           <InputText
 
+                            isRequired
                             label="Last Name"
                             name="Admin_Lname"
                             type="text"
@@ -1083,7 +1089,7 @@ function Transactions() {
 
 
                           <InputText
-
+                            isRequired
                             label="Phone Number"
                             name="Phone"
                             type="text"
@@ -1095,11 +1101,11 @@ function Transactions() {
 
 
 
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
 
                           <InputText
-
+                            isRequired
                             label="Username"
                             name="Username"
                             type="text"
@@ -1107,15 +1113,15 @@ function Transactions() {
                             value={values.Username}
                             onBlur={handleBlur} // This apparently updates `touched`?
                           />
-                          <InputText
-
+                          {/* <InputText
+                            isRequired
                             label="Password"
                             name="Password"
                             type="text"
                             placeholder=""
                             value={values.Password}
                             onBlur={handleBlur} // This apparently updates `touched`?
-                          />
+                          /> */}
                         </div>
                         <button
                           type="submit"

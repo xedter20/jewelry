@@ -18,6 +18,7 @@ const MyTextInput = ({
   functionToCalled,
   value,
   allValues,
+  isRequired,
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -46,7 +47,7 @@ const MyTextInput = ({
           <label
             className={`block mb-2 border-gray-700 text-left font-bold ${labelFor ? 'cursor-pointer' : ''
               }`}>
-            {label}
+            {label} {isRequired ? '*' : ''}
           </label>
         )}
 

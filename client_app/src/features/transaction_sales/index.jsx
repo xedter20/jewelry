@@ -1125,6 +1125,7 @@ function Transactions() {
                       </label> */}
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <Dropdown
+                          isRequired
                           // icons={mdiAccount}
                           label="Supplier Name"
                           name="SupplierID"
@@ -1159,6 +1160,7 @@ function Transactions() {
                         />
 
                         < Dropdown
+                          isRequired
                           // icons={mdiAccount}
                           label="Inventory Order ID"
                           name="orderID"
@@ -1176,6 +1178,7 @@ function Transactions() {
 
                         <Dropdown
                           // icons={mdiAccount}
+                          isRequired
                           label="Customer"
                           name="CustomerID"
                           placeholder=""
@@ -1193,6 +1196,7 @@ function Transactions() {
                           }}
                         />
                         <InputText
+                          isRequired
                           className="py-3 border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
 
                           label="Facebook Link"
@@ -1208,7 +1212,7 @@ function Transactions() {
 
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
                         <InputText
-
+                          isRequired
                           label={`Item Quantity`}
                           name="quantity"
                           type="number"
@@ -1253,6 +1257,7 @@ function Transactions() {
 
                         <div className='mt-2'>
                           <Dropdown
+                            isRequired
                             // icons={mdiAccount}
                             label="Category"
                             name="Category"
@@ -1303,7 +1308,7 @@ function Transactions() {
 
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
                         <InputText
-
+                          isRequired
                           label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
                           name="Grams"
                           type="number"
@@ -1356,6 +1361,7 @@ function Transactions() {
                         />
 
                         <InputText
+                          isRequired
                           disabled
                           label="Price"
                           name="Price"
@@ -1368,7 +1374,7 @@ function Transactions() {
                       </div>
 
 
-
+                      * All fields are required.
                       <button
                         // type="button"
                         type="submit"

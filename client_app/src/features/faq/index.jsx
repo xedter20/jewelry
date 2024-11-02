@@ -555,6 +555,7 @@ function Transactions() {
 
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
                         <TextAreaInput
+                          isRequired
                           placeholder="Question ..."
                           label="Question"
                           name="question"
@@ -569,6 +570,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
                         <TextAreaInput
+                          isRequired
                           placeholder="Type Answer ..."
                           label="Answer"
                           name="answer"
@@ -637,6 +639,7 @@ function Transactions() {
               </label> */}
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
                           <TextAreaInput
+                            isRequired
                             placeholder="Question ..."
                             label="Question"
                             name="question"
@@ -651,6 +654,7 @@ function Transactions() {
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
 
                           <TextAreaInput
+                            isRequired
                             placeholder="Question ..."
                             label="Answer"
                             name="answer"

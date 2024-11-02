@@ -47,7 +47,7 @@ function InternalPage() {
     // Perform any filtering action here based on selectedValue
     console.log('Selected Filter:', selectedValue);
     // Optionally close the dropdown after selection
-    setDropdownVisible(false);
+    // setDropdownVisible(false);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -117,7 +117,9 @@ function InternalPage() {
   const formattedData = resultData.map(item => ({
     date_created: new Date(item.date_created).getTime(), // Convert to timestamp
     Total_Sales: parseFloat(item.Total_Price), // Convert to number
+    Total_Profit: parseFloat(item.Total_Profit)
   }));
+
 
 
   const formattedDataItemsSold = resultData.map(item => ({
@@ -172,6 +174,9 @@ function InternalPage() {
   const totalGramsSold = resultData.reduce((acc, item) => acc + parseFloat(item.Total_Grams), 0);
 
 
+  const totalProfit = resultData.reduce((acc, item) => acc + parseFloat(item.Total_Profit), 0);
+
+
   const columns = useMemo(
     () => [
 
@@ -190,6 +195,13 @@ function InternalPage() {
         }
       },
       {
+        Header: 'Supplier Name',
+        accessor: 'SupplierName',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
+        }
+      },
+      {
         Header: 'Total Grams Sold',
         accessor: 'Total_Grams',
         Cell: ({ row, value }) => {
@@ -197,8 +209,15 @@ function InternalPage() {
         }
       },
       {
-        Header: 'Total Price',
+        Header: 'Total Sales',
         accessor: 'Total_Price',
+        Cell: ({ row, value }) => {
+          return <span className="">{formatAmount(value)}</span>;
+        }
+      },
+      {
+        Header: 'Total Profit',
+        accessor: 'Total_Profit',
         Cell: ({ row, value }) => {
           return <span className="">{formatAmount(value)}</span>;
         }
@@ -211,7 +230,7 @@ function InternalPage() {
         // Filter: SelectColumnFilter,
         Cell: ({ row, value }) => {
           return <span className="">
-            <ul className="bg-gray-100 rounded-lg p-4 space-y-2">
+            <ul className="">
               {value.map(({ item, count }, index) => (
                 <li
                   key={index}
@@ -301,6 +320,79 @@ function InternalPage() {
           </ResponsiveContainer>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <h2 className="font-bold text-gray-700">Total Profit</h2>
+          <p className="text-3xl font-semibold text-orange-600 text-center">
+
+
+            {formatAmount(totalProfit)}
+          </p>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={formattedData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date_created" domain={['dataMin', 'dataMax']}
+
+                tickFormatter={(timestamp) => {
+                  const date = new Date(timestamp);
+                  return date.toLocaleDateString('en-US', {
+                    month: 'long', day: 'numeric', year: 'numeric'
+                  });
+                }}
+              />
+              <YAxis />
+              <Tooltip labelFormatter={(value) => new Date(value).toLocaleString()} />
+              <Area type="monotone" dataKey="Total_Profit" stroke="#8884d8" fill="#8884d8" />
+            </AreaChart>
+          </ResponsiveContainer>
+
+        </div>
+
+        {/* <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
+          <h2 className="font-bold text-gray-700">Sales</h2>
+          <p className="text-3xl font-semibold text-orange-600">₱45,908</p>
+          <ResponsiveContainer width="100%" height={100}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" stroke="#6b7280" />
+              <YAxis stroke="#6b7280" />
+              <Tooltip />
+              <Line type="monotone" dataKey="revenue" stroke="#fb923c" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div> */}
+      </div>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
+
+          <div className='flex justify-between items-center'>
+
+            <h2 className="font-bold text-gray-700">Sales Breakdown</h2>
+            <button
+              onClick={exportToXLS}
+              className="btn btn-outline btn-sm ml-2 bg-green-500 hover:bg-green-600 text-white"
+            >
+              Export to XLS
+            </button>
+          </div>
+
+          <Table
+            style={{ overflow: 'wrap' }}
+            className="table-sm"
+            columns={columns}
+            data={(resultData).map(data => {
+              return {
+                ...data
+                // fullName,
+                // address: fullAddress,
+                // packageDisplayName: aP && aP.displayName,
+                // date_created:
+                //   data.date_created &&
+                //   format(data.date_created, 'MMM dd, yyyy hh:mm:ss a')
+              };
+            })}
+            searchField="lastName"
+          />
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-lg">
           <div className="flex justify-between items-center">
             <h2 className="font-bold text-gray-700 text-center">Items Sold</h2>
             {dropdownVisible && (
@@ -354,54 +446,7 @@ function InternalPage() {
             </AreaChart>
           </ResponsiveContainer>
         </div>
-
-        {/* <div className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
-          <h2 className="font-bold text-gray-700">Sales</h2>
-          <p className="text-3xl font-semibold text-orange-600">₱45,908</p>
-          <ResponsiveContainer width="100%" height={100}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="name" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
-              <Tooltip />
-              <Line type="monotone" dataKey="revenue" stroke="#fb923c" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div> */}
       </div>
-
-      <div className="bg-white p-6 rounded-lg shadow-lg">
-
-        <div className='flex justify-between items-center'>
-
-          <h2 className="font-bold text-gray-700">Sales Breakdown</h2>
-          <button
-            onClick={exportToXLS}
-            className="btn btn-outline btn-sm ml-2 bg-green-500 hover:bg-green-600 text-white"
-          >
-            Export to XLS
-          </button>
-        </div>
-
-        <Table
-          style={{ overflow: 'wrap' }}
-          className="table-sm"
-          columns={columns}
-          data={(resultData).map(data => {
-            return {
-              ...data
-              // fullName,
-              // address: fullAddress,
-              // packageDisplayName: aP && aP.displayName,
-              // date_created:
-              //   data.date_created &&
-              //   format(data.date_created, 'MMM dd, yyyy hh:mm:ss a')
-            };
-          })}
-          searchField="lastName"
-        />
-      </div>
-
 
       {/* Payment per Supplier */}
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

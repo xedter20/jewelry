@@ -11,7 +11,10 @@ const MyTextInput = ({
   labelColor,
   labelFor,
   itemClass,
+  required, // Add required prop
+  isRequired = false,
   ...props
+
 }) => {
 
 
@@ -19,6 +22,8 @@ const MyTextInput = ({
   // which we can spread on <input>. We can use field meta to show an error
   // message if the field is invalid and it has been touched (i.e. visited)
   const [field, meta] = useField(props);
+
+  console.log({ field, meta })
 
   let controlClassName = [
     'px-3 py-2 max-w-full border-gray-700 rounded w-full dark:placeholder-gray-400',
@@ -39,7 +44,7 @@ const MyTextInput = ({
     <>
       <div className="mb-6 last:mb-0">
         {label && <label className={`mt-2 font-bold text-neutral-600  block mb-2 ${labelColor}`}>
-          {label}</label>
+          {label} {isRequired ? '*' : ''} </label>
         }
         {/* {label && (
           <label
