@@ -280,15 +280,15 @@ export function SelectColumnFilter({
     return [...options.values()];
   }, [id, preFilteredRows]);
 
-  // Render a multi-select box
-  const appSettings = useSelector(state => state.appSettings);
-  let { codeTypeList, packageList } = appSettings;
+  // // Render a multi-select box
+  // const appSettings = useSelector(state => state.appSettings);
+  // let { codeTypeList, packageList } = appSettings;
 
   return (
-    <label className="flex gap-x-2 items-baseline p-1">
-      <span className="text-gray-700">{render('Header')}: </span>
+    <div className="flex w-full">
+      {/* <span className="text-gray-700">{render('Header')}: </span> */}
       <select
-        className="p-2 mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 border-2 border-slate-300"
+        className="w-full p-2 mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 border-2 border-slate-300 text-sm"
         name={id}
         id={id}
         value={filterValue}
@@ -296,8 +296,8 @@ export function SelectColumnFilter({
           setFilter(e.target.value || undefined);
         }}>
         <option value="">All</option>
-        {options.map((option, i) => {
-          let pt = packageList.find(p => {
+        {[].map((option, i) => {
+          let pt = [].find(p => {
             return p.name === option;
           });
 
@@ -309,7 +309,7 @@ export function SelectColumnFilter({
           );
         })}
       </select>
-    </label>
+    </div>
   );
 }
 
@@ -630,14 +630,9 @@ function Table({ columns, data, searchField }) {
                               <SortIcon className="w-4 h-4 text-gray-400 " />
                             </span> */}
                             </div>
-                            <div className="flex items-center justify-between">
+                            <div className="">
                               <div>
-                                {/* {console.log({
-                                  a: column.render('Header'),
-                                  dex: column.canFilter
-                                })} */}
 
-                                {console.log(column.Filter)}
                                 {column.canFilter && column.Filter
                                   ? column.render('Filter')
                                   : null}

@@ -59,6 +59,7 @@
     "react-tailwindcss-datepicker": "^1.7.2",
     "react-to-print": "^2.15.1",
     "react-toastify": "^10.0.5",
+    "react-tooltip": "^5.28.0",
     "recharts": "^2.13.0",
     "select-philippines-address": "^1.0.6",
     "theme-change": "^2.5.0",

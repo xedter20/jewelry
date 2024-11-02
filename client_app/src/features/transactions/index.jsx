@@ -156,6 +156,7 @@ function Transactions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeChildID, setactiveChildID] = useState('');
+  const [viewedUser, setviewedUser] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const fetchUsers = async () => {
@@ -221,7 +222,52 @@ function Transactions() {
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   const columns = useMemo(
     () => [
+      {
+        Header: 'Action',
+        accessor: '',
+        Cell: ({ row }) => {
+          let l = row.original;
 
+          return (
+            (
+              <div className="flex">
+                {/* <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
+                  <button className="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                </Link> */}
+                <button
+                  className="btn btn-outline btn-sm ml-2"
+                  onClick={() => {
+                    setactiveChildID(l.CustomerID);
+                    document.getElementById('deleteModal').showModal();
+                  }}>
+                  <i class="fa-solid fa-archive"></i>
+                </button>
+                <button
+                  className="btn btn-outline btn-sm ml-2"
+                  onClick={() => {
+                    setactiveChildID(l.CustomerID);
+                    setviewedUser(l)
+                    document.getElementById('updateCustomer').showModal();
+                  }}>
+                  <i class="fa-solid fa-edit"></i>
+                </button>
+                <Link to={`/app/userProfile/${l.CustomerID}`}>
+                  <button
+                    className="btn btn-outline btn-sm ml-2"
+                    onClick={() => {
+                      setactiveChildID(l.CustomerID);
+                      // document.getElementById('updateCustomer').showModal();
+                    }}>
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </Link>
+              </div>
+            )
+          );
+        }
+      },
       {
         Header: 'Customer ID',
         accessor: '',
@@ -364,33 +410,7 @@ function Transactions() {
           );
         }
       },
-      {
-        Header: 'Action',
-        accessor: '',
-        Cell: ({ row }) => {
-          let l = row.original;
 
-          return (
-            (
-              <div className="flex">
-                {/* <Link to={`/app/settings-profile/user?userId=${l.ID}`}>
-                  <button className="btn btn-outline btn-sm">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
-                </Link> */}
-                <button
-                  className="btn btn-outline btn-sm ml-2"
-                  onClick={() => {
-                    setactiveChildID(l.CustomerID);
-                    document.getElementById('deleteModal').showModal();
-                  }}>
-                  <i class="fa-solid fa-archive"></i>
-                </button>
-              </div>
-            )
-          );
-        }
-      },
       // {
       //   Header: 'Name of Mother/Caregiver',
       //   accessor: 'Name_of_Mother_or_Caregiver',
@@ -689,6 +709,62 @@ function Transactions() {
       }
     };
   };
+  const formikConfigUpdate = (viewedUser) => {
+    return {
+      initialValues: {
+        CustomerName: viewedUser.CustomerName || '',
+        Facebook: viewedUser.Facebook || '',
+        Contact: viewedUser.Contact || '',
+        Address: viewedUser.Address || ''
+
+      },
+      validationSchema: Yup.object({
+        CustomerName: Yup.string().required('Required'),
+        Facebook: Yup.string().required('Required'),
+        Contact: Yup.number().required('Required'),
+        Address: Yup.string().required('Required'),
+      }),
+      validateOnMount: true,
+      validateOnChange: false,
+      onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
+        setSubmitting(true);
+
+        try {
+
+
+
+          let res = await axios({
+            method: 'put',
+            url: `user/${activeChildID}`,
+            data: values
+          })
+          document.getElementById('updateCustomer').close();
+          setviewedUser({})
+          await fetchUsers();
+          resetForm();
+          toast.success('Customer successfully updated!', {
+            onClose: () => {
+              setSubmitting(false);
+              navigate('/app/users');
+            },
+            position: 'top-right',
+            autoClose: 500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light'
+          });
+
+
+        } catch (error) {
+          console.log({ error });
+        } finally {
+        }
+      }
+    };
+  };
 
   return (
     isLoaded && (
@@ -918,6 +994,110 @@ function Transactions() {
                   );
                 }}
               </Formik> </div>
+          </div>
+        </dialog>
+
+
+        <dialog id="updateCustomer" className="modal">
+          <div className="modal-box">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h1 className="font-bold text-lg">Update</h1>
+            {/* <p className="text-sm text-gray-500 mt-1">Customer Details</p> */}
+            <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
+              {viewedUser.CustomerName && <Formik {...formikConfigUpdate(viewedUser)}>
+                {({
+                  handleSubmit,
+                  handleChange,
+                  handleBlur, // handler for onBlur event of form elements
+                  values,
+                  touched,
+                  errors,
+                  submitForm,
+                  setFieldTouched,
+                  setFieldValue,
+                  setFieldError,
+                  setErrors,
+                  isSubmitting
+                }) => {
+                  const checkValidateTab = () => {
+                    // submitForm();
+                  };
+                  const errorMessages = () => {
+                    // you can add alert or console.log or any thing you want
+                    alert('Please fill in the required fields');
+                  };
+
+                  return (
+                    <Form className="">
+                      {/* <label
+                        className={`block mb-2 text-green-400 text-left font-bold`}>
+                        Child
+                      </label> */}
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+                        <InputText
+
+                          label="Full Name"
+                          name="CustomerName"
+                          type="text"
+                          placeholder=""
+                          value={values.CustomerName}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
+
+                        <InputText
+                          className="border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          label="Facebook Link"
+                          name="Facebook"
+                          type="text"
+                          placeholder=""
+                          value={values.Facebook}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+                        <InputText
+
+                          label="Contact Number"
+                          name="Contact"
+                          type="text"
+                          placeholder=""
+                          value={values.Contact}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+                      </div>
+
+
+
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+                        <InputText
+
+                          label="Complete Address"
+                          name="Address"
+                          type="text"
+                          placeholder=""
+                          value={values.Address}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className={
+                          'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
+                          (loading ? ' loading' : '')
+                        }>
+                        Update
+                      </button>
+                    </Form>
+                  );
+                }}
+              </Formik>} </div>
           </div>
         </dialog>
 

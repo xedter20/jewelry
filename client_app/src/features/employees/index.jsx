@@ -626,10 +626,12 @@ function Transactions() {
         Admin_Lname: Yup.string().required('Required'),
         Phone: Yup.number().required('Required'),
         Username: Yup.string().required('Required'),
-        Password: Yup.string().required('Required'),
+        Password: Yup.string()
+          .required('Required')
+          .min(8, 'Password must be at least 8 characters'),
       }),
-      validateOnMount: true,
-      validateOnChange: false,
+      // validateOnMount: true,
+      // validateOnChange: false,
       onSubmit: async (values, { setFieldError, setSubmitting }) => {
         setSubmitting(true);
 

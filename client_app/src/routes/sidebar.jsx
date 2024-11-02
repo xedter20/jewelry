@@ -7,7 +7,10 @@ import {
   UsersIcon,
   PresentationChartLineIcon,
   BanknotesIcon,
-  DocumentChartBarIcon
+  DocumentChartBarIcon,
+  CogIcon,
+  IdentificationIcon,
+  QuestionMarkCircleIcon
 } from '@heroicons/react/24/outline';
 
 const iconClasses = 'h-6 w-6';
@@ -44,6 +47,8 @@ const AppRoutes = () => {
 
 
 
+
+
       newRoutes.push({
         path: '/app/dashboard',
         icon: <Squares2X2Icon className={iconClasses} />,
@@ -52,14 +57,14 @@ const AppRoutes = () => {
 
       newRoutes.push({
         path: '/app/employees',
-        icon: <UsersIcon className={iconClasses} />,
+        icon: <IdentificationIcon className={iconClasses} />,
         name: 'Employees',
       });
 
       if (result.includes('Inventory')) {
         newRoutes.push({
           path: '/app/inventory',
-          icon: <UsersIcon className={iconClasses} />,
+          icon: <DocumentChartBarIcon className={iconClasses} />,
           name: 'Inventory',
         });
       }
@@ -92,10 +97,17 @@ const AppRoutes = () => {
         });
       }
 
+
+      newRoutes.push({
+        path: '/app/faq',
+        icon: <QuestionMarkCircleIcon className={iconClasses} />,
+        name: 'FAQ',
+      });
+
       if (result.includes('Settings')) {
         newRoutes.push({
           path: '/app/settings',
-          icon: <UsersIcon className={iconClasses} />,
+          icon: <CogIcon className={iconClasses} />,
           name: 'Settings',
         });
 

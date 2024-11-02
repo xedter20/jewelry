@@ -1101,21 +1101,24 @@ function Transactions() {
                       </div>
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
-
                           label="Total Grams"
                           name="Grams"
                           type="number"
                           placeholder=""
-                          value={values.Grams}
-                          onBlur={handleBlur} // This apparently updates `touched`?
+                          value={values.Grams || ''} // Display an empty string if Grams is 0
+                          onBlur={handleBlur}
                           onChange={(e) => {
-                            let grams = parseFloat(e.target.value) || 0; // Handle NaN cases
-                            grams = parseFloat(grams.toFixed(2)); // Limit to two decimal places
+                            let grams = parseFloat(e.target.value) || ''; // Set to empty string if NaN or 0
+                            grams = grams ? parseFloat(grams.toFixed(2)) : ''; // Limit to two decimal places if non-empty
+
                             const price = parseFloat(values.Price) || 0;
+                            const amount = grams ? parseFloat((grams * price).toFixed(2)) : ''; // Set Amount to empty if Grams is empty
+
                             setFieldValue("Grams", grams);
-                            setFieldValue("Amount", parseFloat((grams * price).toFixed(2))); // Limit Amount to two decimal places
+                            setFieldValue("Amount", amount);
                           }}
-                        />  <InputText
+                        />
+                        <InputText
 
                           label="Price Per Gram(₱)"
                           name="Price"

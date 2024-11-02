@@ -148,7 +148,7 @@ function Transactions() {
   const [suppliers, setSupplierList] = useState([]);
 
   const [inventoryList, setInventoryList] = useState([]);
-
+  const [activeTabMain, setactiveTabMain] = useState(''); // State to control active tab
   const [pricingSettings, setPricingSettings] = useState({}); // Changed variable name here
   const [pricingSettingsSelected, setPricingSettingsSelected] = useState(); //
   const fetchPricingSettings = async () => {
@@ -201,7 +201,7 @@ function Transactions() {
       method: 'POST',
       url: 'transactions/listOrder',
       data: {
-
+        status: activeTabMain
       }
     });
 
@@ -265,11 +265,11 @@ function Transactions() {
     fetchInventoryOrders()
   }, [selectedSupplierID]);
   useEffect(() => {
-    dispatch(getFeatureList()).then(result => {
-      fetchAll();
-      setIsLoaded(true);
-    });
-  }, []);
+
+    fetchAll();
+    setIsLoaded(true);
+
+  }, [activeTabMain]);
 
   const appSettings = useSelector(state => state.appSettings);
   let { codeTypeList, packageList } = appSettings;
@@ -913,6 +913,9 @@ function Transactions() {
     // Set the src of the image to the URL created from SVG blob  
     img.src = url;
   };
+
+
+
   return (
     isLoaded && (
       <TitleCard
@@ -927,10 +930,27 @@ function Transactions() {
           />
         }>
         <div className="">
+          <div className="flex justify-left mb-4 p-4">
+            <button
+              className={`btn ${activeTabMain === '' ? 'bg-customBrown text-white ' : 'bg-base-200'} mr-2`}
+              onClick={() => {
+                setactiveTabMain('');
 
-          {
-            console.log({ orders })
-          }
+              }}
+            >
+              Active
+            </button>
+            <button
+              className={`btn ${activeTabMain === 'CANCELLED' ? 'bg-customBrown text-white' : 'bg-base-200'}`}
+              onClick={() => {
+                setactiveTabMain('CANCELLED');
+
+              }}
+            >
+              Cancelled
+            </button>
+          </div>
+
           <Table
             style={{ overflow: 'wrap' }}
             className="table-sm"
@@ -1509,7 +1529,7 @@ function Transactions() {
                                 TO PAY</h2> */}
 
 
-                            <div className={`px-2 py-1  font-normal text-white bg-blue-600 `}>
+                            <div className={`text-2xl font-bold`}>
                               Proof of Payment
                             </div>
                           </div>
@@ -1558,10 +1578,10 @@ function Transactions() {
                             onBlur={handleBlur}
                             v
                             options={[
-                              { value: 'PAID', label: 'PAID' },
-                              { value: 'CANCELLED', label: 'CANCELLED' },
-                              { value: 'IN_PROGRESS', label: 'IN_PROGRESS' },
-                              { value: 'COMPLETED', label: 'COMPLETED' }
+                              { value: 'PAID', label: 'Paid' },
+                              { value: 'CANCELLED', label: 'Cancelled' },
+                              { value: 'IN_PROGRESS', label: 'In-Progress' },
+
                             ]}
                           />
                           <InputText

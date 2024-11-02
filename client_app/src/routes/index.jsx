@@ -22,7 +22,11 @@ const Statistics = lazy(() => import('../pages/protected/Statistics'));
 
 const ProfileSettings = lazy(() =>
   import('../pages/protected/ProfileSettings')
-);
+
+)
+  ;
+
+const UserProfile = lazy(() => import('../pages/UserProfile'));
 
 const GettingStarted = lazy(() => import('../pages/GettingStarted'));
 const DocFeatures = lazy(() => import('../pages/DocFeatures'));
@@ -32,6 +36,11 @@ const AddMember = lazy(() => import('../pages/protected/Leads'));
 
 
 const Inventory = lazy(() => import('../pages/protected/Inventory'));
+
+
+const FAQ = lazy(() => import('../pages/protected/Faq'));
+
+
 const token = checkAuth();
 
 const decoded = jwtDecode(token);
@@ -108,6 +117,15 @@ routes = [
     path: '/settings',
     component: Settings
   },
+  {
+    path: '/userProfile/:userId',
+    component: UserProfile
+  },
+  {
+    path: '/faq',
+    component: FAQ
+  },
+
 ];
 
 

@@ -103,7 +103,7 @@ function LayAwayPayment({ layAwayID }) {
       method: 'POST',
       url: 'layaway/payment/list',
       data: {
-        LayawayID: selectedOrder.LayawayID
+        LayawayID: transactionId
       }
     });
 
@@ -137,6 +137,8 @@ function LayAwayPayment({ layAwayID }) {
     let list = res.data.data;
 
 
+
+    console.log({ transactionId, list })
 
 
     setOrders(list);
@@ -198,10 +200,10 @@ function LayAwayPayment({ layAwayID }) {
   }, [selectedSupplierID]);
 
   useEffect(() => {
-    dispatch(getFeatureList()).then(result => {
-      fetchAll();
-      setIsLoaded(true);
-    });
+
+    fetchAll();
+    setIsLoaded(true);
+
   }, []);
 
   const appSettings = useSelector(state => state.appSettings);
@@ -390,13 +392,13 @@ function LayAwayPayment({ layAwayID }) {
                     label="Payment Method"
                     name="payment_method"
                     placeholder=""
-                    value={"Gcash"}
+                    value={"Cash"}
                     setFieldValue={setFieldValue}
                     onBlur={handleBlur}
                     options={[
                       {
-                        label: "Gcash",
-                        value: "Gcash"
+                        label: "Cash",
+                        value: "Cash"
                       },
                       {
                         label: "BDO",

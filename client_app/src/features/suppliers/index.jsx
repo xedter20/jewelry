@@ -134,7 +134,7 @@ function Transactions() {
 
   const fetchInventoryOrders = async () => {
 
-    console.log({ selectedSupplier })
+
     let res = await axios({
       method: 'POST',
       url: 'inventory/list',
@@ -180,7 +180,8 @@ function Transactions() {
 
   useEffect(() => {
     fetchInventoryOrders()
-  }, [selectedSupplier.SupplierID]);
+    // setSelectedSupplier(selectedSupplier)
+  }, []);
 
   const appSettings = useSelector(state => state.appSettings);
   let { codeTypeList, packageList } = appSettings;
@@ -350,7 +351,6 @@ function Transactions() {
                 <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
 
 
-                  console.log("Dex")
                   // setisEditModalOpen(true)
                   setSelectedSupplier(l);
 
@@ -383,7 +383,30 @@ function Transactions() {
 
                   <i class="fa-regular fa-eye"></i>
                 </button>
+                <button className="btn btn-outline btn-sm mr-2" onClick={() => {
+                  // setactiveChildID(l.SupplierID);
+                  setSelectedSupplier(l);
+                  document.getElementById('editSupplierModal').showModal();
 
+
+                }}>
+
+
+
+                  <i class="fa-regular fa-edit"></i>
+                </button>
+                <button className="btn btn-outline btn-sm mr-2" onClick={async () => {
+
+                  setactiveChildID(l.SupplierID);
+                  setSelectedSupplier(l);
+                  document.getElementById('deleteModal').showModal();
+
+                }}>
+
+
+
+                  <i class="fa-solid fa-archive"></i>
+                </button>
                 {/* 
                 <button className="btn btn-outline btn-sm" onClick={() => {
 
@@ -800,13 +823,16 @@ function Transactions() {
   };
 
 
-  const formikConfig = (selectedSupplier) => {
+  const formikConfig = (selectedSupplier, isFromEdit = false) => {
+
+
 
     // console.log({ selectedSupplier })
 
     // console.log({ isAddPaymentOpen })
 
     // console.log(selectedSupplier.Admin_Fname)
+
 
 
 
@@ -818,14 +844,20 @@ function Transactions() {
 
     };
 
+
     let initialValues = {
-      SupplierName: '',
-      PhoneNo: '',
-      Email: ''
+      SupplierName: selectedSupplier.SupplierName || '',
+      PhoneNo: selectedSupplier?.PhoneNo || '',
+      Email: selectedSupplier?.Email || '',
     }
 
-    console.log({ isAddPaymentOpen })
+
+
+
+
     if (isAddPaymentOpen) {
+
+
       validation = {
         OrderID: Yup.string().required('Required'),
         Date: Yup.string().required('Required'),
@@ -849,16 +881,40 @@ function Transactions() {
     return {
       initialValues: initialValues,
       validationSchema: Yup.object(validation),
-      validateOnMount: true,
-      validateOnChange: false,
+      // validateOnMount: true,
+      // validateOnChange: false,
       onSubmit: async (values, { setFieldError, setSubmitting }) => {
         setSubmitting(true);
 
-        console.log("here")
+
         // console.log({ isEditModalOpen })
         try {
 
+          if (isFromEdit) {
 
+            let res = await axios({
+              method: 'POST',
+              url: `supplier/edit/${selectedSupplier.SupplierID}`,
+              data: values
+            })
+            document.getElementById('editSupplierModal').close();
+            await fetchSuppliers();
+            toast.success('Supplier successfully updated!', {
+              onClose: () => {
+                setSubmitting(false);
+                // navigate('/app/suppliers');
+              },
+              position: 'top-right',
+              autoClose: 500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light'
+            });
+            return true;
+          }
 
           if (isAddPaymentOpen) {
 
@@ -1059,54 +1115,7 @@ function Transactions() {
         </form>
         <ToastContainer />
 
-        <dialog id="deleteModal" className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Confirmation</h3>
-            <p className="py-4">Are you sure you want to delete this record?</p>
-            <hr />
-            <div className="modal-action mt-12">
-              <button
-                className="btn btn-outline   "
-                type="button"
-                onClick={() => {
-                  document.getElementById('deleteModal').close();
-                }}>
-                Cancel
-              </button>
 
-              <button
-                className="btn bg-buttonPrimary text-white"
-                onClick={async () => {
-                  try {
-                    // let res = await axios({
-                    //   method: 'POST',
-                    //   url: 'user/deleteChildRecord',
-                    //   data: {
-                    //     activeChildID: activeChildID
-                    //   }
-                    // });
-
-                    // document.getElementById('deleteModal').close();
-                    // toast.success(`Deleted Successfully`, {
-                    //   onClose: () => {
-                    //     window.location.reload();
-                    //   },
-                    //   position: 'top-right',
-                    //   autoClose: 1000,
-                    //   hideProgressBar: false,
-                    //   closeOnClick: true,
-                    //   pauseOnHover: true,
-                    //   draggable: true,
-                    //   progress: undefined,
-                    //   theme: 'light'
-                    // });
-                  } catch (error) { }
-                }}>
-                Yes
-              </button>
-            </div>
-          </div>
-        </dialog>
 
         <dialog id="addSupplier" className="modal">
           <div className="modal-box">
@@ -1337,7 +1346,7 @@ function Transactions() {
                             onBlur={handleBlur}
                             options={[
                               { value: 'CASH', label: 'Cash' },
-                              // { value: 'GCASH', label: 'Gcash' },
+                              // { value: 'Cash', label: 'Cash' },
                               { value: 'BDO', label: 'BDO' },
                               { value: 'BPI', label: 'BPI' }
                             ]}
@@ -1430,6 +1439,162 @@ function Transactions() {
             </div>
           </div>
         </dialog>
+        <dialog id="deleteModal" className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Delete Confirmation</h3>
+            <p className="py-4">Are you sure you want to delete this record?</p>
+            <hr />
+            <div className="modal-action mt-12">
+              <button
+                className="btn btn-outline   "
+                type="button"
+                onClick={() => {
+                  document.getElementById('deleteModal').close();
+                }}>
+                Cancel
+              </button>
+
+              <button
+                className="btn bg-buttonPrimary text-white"
+                onClick={async () => {
+                  try {
+
+                    console.log("Dex")
+                    let res = await axios({
+                      method: 'put',
+                      url: `/archive/supplier/${activeChildID}/SupplierID`,
+                      data: {
+                        activeChildID: activeChildID
+                      }
+                    });
+                    fetchSuppliers();
+
+                    document.getElementById('deleteModal').close();
+                    toast.success(`Deleted Successfully`, {
+                      onClose: () => {
+                        // window.location.reload();
+                      },
+                      position: 'top-right',
+                      autoClose: 1000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                      theme: 'light'
+                    });
+                  } catch (error) { }
+                }}>
+                Yes
+              </button>
+            </div>
+          </div>
+        </dialog>
+
+
+        <dialog id="editSupplierModal" className="modal">
+          <div className="modal-box">
+
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => {
+                setSelectedSupplier({})
+                document.getElementById('editSupplierModal').close();
+              }}
+
+            >✕</button>
+
+            <h1 className="font-bold text-lg">Edit Supplier Form</h1>
+            <p className="text-sm text-gray-500 mt-1 font-bold">Supplier Details</p>
+            <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
+              {selectedSupplier.SupplierID &&
+                <Formik {...formikConfig(selectedSupplier, true)}>
+                  {({
+                    handleSubmit,
+                    handleChange,
+                    handleBlur, // handler for onBlur event of form elements
+                    values,
+                    touched,
+                    errors,
+                    submitForm,
+                    setFieldTouched,
+                    setFieldValue,
+                    setFieldError,
+                    setErrors,
+                    isSubmitting,
+
+                  }) => {
+
+
+                    console.log({ values })
+
+                    return (
+                      <Form className="">
+                        {/* <label
+                className={`block mb-2 text-green-400 text-left font-bold`}>
+                Child
+              </label> */}
+                        <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+                          <InputText
+
+                            label="Supplier Name"
+                            name="SupplierName"
+                            type="text"
+                            placeholder=""
+                            value={values.SupplierName}
+                            onBlur={handleBlur} // This apparently updates `touched`?
+                          />
+
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
+
+
+                          <InputText
+
+                            label="Phone Number"
+                            name="PhoneNo"
+                            type="text"
+                            placeholder=""
+                            value={values.PhoneNo}
+                            onBlur={handleBlur} // This apparently updates `touched`?
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
+
+
+                          <InputText
+
+                            label="Email"
+                            name="Email"
+                            type="text"
+                            placeholder=""
+                            value={values.Email}
+                            onBlur={handleBlur} // This apparently updates `touched`?
+                          />
+                        </div>
+
+
+
+                        <button
+                          // type="button"
+                          type="submit"
+                          className={
+                            'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
+                            (loading ? ' loading' : '')
+                          }>
+                          Submit
+                        </button>
+                      </Form>
+                    );
+                  }}
+                </Formik>
+              } </div>
+          </div>
+        </dialog>
+
+
 
       </TitleCard>
     )

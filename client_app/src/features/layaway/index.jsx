@@ -1539,13 +1539,13 @@ function Transactions() {
                     label="Payment Method"
                     name="payment_method"
                     placeholder=""
-                    value={"Gcash"}
+                    value={"Cash"}
                     setFieldValue={setFieldValue}
                     onBlur={handleBlur}
                     options={[
                       {
-                        label: "Gcash",
-                        value: "Gcash"
+                        label: "Cash",
+                        value: "Cash"
                       },
                       {
                         label: "BDO",
@@ -1814,7 +1814,7 @@ function Transactions() {
 
                       }
 
-                      size={200} />,
+                      size={200} />
                   </div>
 
                   <div className="card-actions justify-end">
