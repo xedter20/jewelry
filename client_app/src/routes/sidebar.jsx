@@ -57,12 +57,16 @@ const AppRoutes = () => {
         name: 'Dashboard',
       });
 
-      newRoutes.push({
-        path: '/app/employees',
-        icon: <IdentificationIcon className={iconClasses} />,
-        name: 'Employees',
-      });
 
+      console.log({ result })
+
+      if (result.includes('Employees Page')) {
+        newRoutes.push({
+          path: '/app/employees',
+          icon: <IdentificationIcon className={iconClasses} />,
+          name: 'Employees',
+        });
+      }
       if (result.includes('Inventory')) {
         newRoutes.push({
           path: '/app/inventory',

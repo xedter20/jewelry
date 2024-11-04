@@ -1026,7 +1026,7 @@ function Transactions() {
 
                     document.getElementById('deleteModal').close();
                     fetchAll()
-                    toast.success(`Deleted Successfully`, {
+                    toast.success(`Archived Successfully`, {
                       onClose: () => {
                         // window.location.reload();
                       },

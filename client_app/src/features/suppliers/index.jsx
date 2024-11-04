@@ -1475,7 +1475,7 @@ function Transactions() {
                     fetchSuppliers();
 
                     document.getElementById('deleteModal').close();
-                    toast.success(`Deleted Successfully`, {
+                    toast.success(`Archived Successfully`, {
                       onClose: () => {
                         // window.location.reload();
                       },
