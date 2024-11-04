@@ -210,11 +210,20 @@ function ForgotPassword() {
 
     return (
         selectedUser ? (
-            <div className="min-h-screen bg-base-200 flex items-center p-4 sm:p-8">
+            <div className="bg-base-200 flex items-center p-4 sm:p-8">
                 <div className="w-full max-w-7xl mx-auto">
+                    <div className="relative bg-cover bg-center h-40" style={{ backgroundImage: "url('/Log In Page.png')" }}>
+                        <div className="absolute inset-0 bg-black opacity-50"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="p-3 rounded-full text-white bg-customBlue">
+                                <img src="/A.V. Logo.png" alt="AV De Asis Logo" className="h-20 " />
+                            </div>
+                        </div>
+                    </div>
                     {/* Profile Details Section */}
                     <div className="">
                         <div className="flex justify-center mb-4 p-4">
+
                             <button
                                 className={`btn ${activeTabMain === 'myprofile' ? 'bg-customBrown text-white ' : 'bg-base-200'} mr-2`}
                                 onClick={() => {
