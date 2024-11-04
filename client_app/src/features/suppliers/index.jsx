@@ -839,7 +839,9 @@ function Transactions() {
 
     let validation = {
       SupplierName: Yup.string().required('Required'),
-      PhoneNo: Yup.string().required('Required'),
+      PhoneNo: Yup.string()
+        .matches(/^\d{11}$/, 'Phone number must be exactly 11 digits')
+        .required('Phone number is required'),
       Email: Yup.string().email().required('Required')
 
     };
@@ -1444,8 +1446,8 @@ function Transactions() {
         </dialog>
         <dialog id="deleteModal" className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Confirmation</h3>
-            <p className="py-4">Are you sure you want to delete this record?</p>
+            <h3 className="font-bold text-lg">Archive Confirmation</h3>
+            <p className="py-4">Do you want to archive this record? </p>
             <hr />
             <div className="modal-action mt-12">
               <button

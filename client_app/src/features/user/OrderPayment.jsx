@@ -449,6 +449,136 @@ function ForgotPassword() {
         )
     );
 
+    let totalGrams = selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).reduce((acc, current) => {
+        // Assuming current is an object with a weight property
+        return acc + (current.count || 0); // Add the weight of the current item to the accumulator
+    }, 0);
+
+
+    return <div>
+
+        <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+            {/* Header Image and Logo */}
+            <div className="relative bg-cover bg-center h-40" style={{ backgroundImage: "url('/Log In Page.png')" }}>
+                <div className="absolute inset-0 bg-black opacity-50"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="p-3 rounded-full text-white bg-customBlue">
+                        <img src="/A.V. Logo.png" alt="AV De Asis Logo" className="h-20 " />
+                    </div>
+                </div>
+            </div>
+
+            {/* Contact Information Section */}
+            <div className="p-4 bg-gray-100 text-center">
+                <h2 className="text-lg font-semibold text-gray-800 text-center mb-4">Your Contact Information</h2>
+            </div>
+            <div className="p-6 bg-white">
+
+
+                <div className="text-center">
+                    <p className="text-xl font-semibold text-gray-700">{selectedUser.CustomerName}</p>
+                </div>
+                <div className="mt-4">
+                    <div className="flex items-center mb-3">
+                        <label className="w-1/3 text-gray-500 font-medium">Address:</label>
+                        <div className="w-2/3 bg-gray-100 p-2 rounded-lg flex items-center justify-between">
+                            <span>{selectedUser.Address}</span>
+                            {/* <button className="text-gray-500 hover:text-blue-600">
+                                ✏️
+                            </button> */}
+                        </div>
+                    </div>
+                    <div className="flex items-center mb-3">
+                        <label className="w-1/3 text-gray-500 font-medium">Phone:</label>
+                        <div className="w-2/3 bg-gray-100 p-2 rounded-lg flex items-center justify-between">
+                            <span>{selectedUser.Contact}</span>
+                            {/* <button className="text-gray-500 hover:text-blue-600">
+                                ✏️
+                            </button> */}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Current Order Status Section */}
+            <div className="p-4 bg-gray-100 text-center">
+                <div className="p-4 bg-gray-100 text-center">
+                    <h2 className="text-lg font-semibold text-gray-800">Current Order Status</h2>
+                </div>
+                {/* Add your order status content here */}
+                <div className="max-w-sm mx-auto -100 rounded-xl p-6 shadow-lg bg-white">
+                    {/* Order Header */}
+                    <h2 className="text-center text-lg font-semibold text-gray-800 mb-4">Order - {selectedOrder.OrderID}</h2>
+
+                    {/* Order Items Table */}
+                    <div className="text-sm">
+                        <div className="flex justify-between border-b border-gray-300 pb-2 mb-2">
+                            <span className="font-semibold">Items:</span>
+                            <span className="font-semibold">Quantity:</span>
+                            <span className="font-semibold">Price:</span>
+                        </div>
+
+
+                        {selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).map((itemObj, index) => {
+
+
+
+
+                            return <div className="flex justify-between mb-1 text-center items-center">
+
+                                <span>{itemObj.item}</span>
+                                <span>{itemObj.count}</span>
+                                <span className="">-</span>
+
+
+                            </div>
+                        })}
+
+
+
+
+
+                        {/* Total Grams and Price */}
+                        <div className="flex justify-between border-t border-gray-300 pt-2 mb-2">
+                            <span className="font-semibold">Total Grams:</span>
+                            <span>{totalGrams}g</span>
+                            <span className="font-semibold text-red-600">{formatAmount(selectedOrder.Price)}</span>
+                        </div>
+
+                        {/* Additional Order Information */}
+                        <div className="mt-2">
+                            <div className="flex justify-between mb-1">
+                                <span className="text-gray-500">Price/g:</span>
+                                <span className="text-gray-800 font-medium">{formatAmount(selectedOrder.orinalPricePerGram)}</span>
+                            </div>
+                            <div className="flex justify-between mb-1">
+                                <span className="text-gray-500">Order Date:</span>
+                                <span className="text-gray-800 font-medium">{selectedOrder.Date_Created}</span>
+                            </div>
+                            <div className="flex justify-between mb-1">
+                                <span className="text-gray-500">Category:</span>
+                                <span className="text-gray-800 font-medium">{selectedOrder.Category}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Status:</span>
+                                <span className="text-gray-800 font-medium">      {selectedOrder.Status}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* View Previous Orders Button */}
+                    <button
+                        onClick={() => navigate(-1)} // Go back to the previous page
+                        className="btn bg-buttonPrimary text-white mb-2 sm:mb-0 w-full mt-4">
+                        View Previous Orders
+                    </button>
+                    {/* <button className="w-full mt-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800">
+                        View Previous Orders
+                    </button> */}
+                </div>
+            </div>
+        </div>
+    </div >
 }
 
 export default ForgotPassword

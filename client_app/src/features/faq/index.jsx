@@ -126,7 +126,7 @@ function Transactions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeChildID, setactiveChildID] = useState('');
-  const [selectedEmployee, setSelectedEmployee] = useState({});
+  const [selectedFaq, setselectedFaq] = useState({});
   const [isEditModalOpen, setisEditModalOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -246,9 +246,9 @@ function Transactions() {
                 <button className="btn btn-outline btn-sm" onClick={() => {
 
                   setisEditModalOpen(true)
-                  setSelectedEmployee(l);
+                  setselectedFaq(l);
 
-                  document.getElementById('editEmployee').showModal();
+                  document.getElementById('editFaq').showModal();
                   // setFieldValue('Admin_Fname', 'dex');
                 }}>
                   <i class="fa-solid fa-pen-to-square"></i>
@@ -324,15 +324,15 @@ function Transactions() {
   };
 
 
-  const formikConfig = (selectedEmployee) => {
+  const formikConfig = (selectedFaq) => {
 
 
 
-    // console.log(selectedEmployee.Admin_Fname)
+    // console.log(selectedFaq.Admin_Fname)
     return {
       initialValues: {
-        question: selectedEmployee.question || '',
-        answer: selectedEmployee.answer || ''
+        question: selectedFaq.question || '',
+        answer: selectedFaq.answer || ''
 
       },
       validationSchema: Yup.object({
@@ -351,27 +351,55 @@ function Transactions() {
 
         try {
 
-          let res = await axios({
-            method: 'POST',
-            url: 'faq/create',
-            data: values
-          })
-          document.getElementById('addFaq').close();
-          await fetchFaqList();
-          resetForm();
-          toast.success('Successfully added!', {
-            onClose: () => {
+          if (selectedFaq.question) {
+            let res = await axios({
+              method: 'put',
+              url: `faq/${selectedFaq.id}`,
+              data: values
+            })
+            document.getElementById('editFaq').close();
+            await fetchFaqList();
+            resetForm();
+            toast.success('Successfully updated!', {
+              onClose: () => {
 
-            },
-            position: 'top-right',
-            autoClose: 500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'light'
-          });
+              },
+              position: 'top-right',
+              autoClose: 500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light'
+            });
+
+          } else {
+            let res = await axios({
+              method: 'POST',
+              url: 'faq/create',
+              data: values
+            })
+            document.getElementById('addFaq').close();
+            await fetchFaqList();
+            resetForm();
+            toast.success('Successfully added!', {
+              onClose: () => {
+
+              },
+              position: 'top-right',
+              autoClose: 500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light'
+            });
+
+          }
+
+
 
         } catch (error) {
           console.log({ error });
@@ -465,8 +493,8 @@ function Transactions() {
 
         <dialog id="deleteModal" className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Confirmation</h3>
-            <p className="py-4">Are you sure you want to delete this record?</p>
+            <h3 className="font-bold text-lg">Archive Confirmation</h3>
+            <p className="py-4">Do you want to archive this record? </p>
             <hr />
             <div className="modal-action mt-12">
               <button
@@ -521,7 +549,7 @@ function Transactions() {
             <h1 className="font-bold text-lg">Create New FAQ</h1>
             <p className="text-sm text-gray-500 mt-1 font-bold"></p>
             <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-              <Formik {...formikConfig(selectedEmployee)}>
+              <Formik {...formikConfig(selectedFaq)}>
                 {({
                   handleSubmit,
                   handleChange,
@@ -556,7 +584,7 @@ function Transactions() {
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
                         <TextAreaInput
                           isRequired
-                          placeholder="Question ..."
+                          placeholder="Type a New Question"
                           label="Question"
                           name="question"
                           type="question"
@@ -571,7 +599,7 @@ function Transactions() {
 
                         <TextAreaInput
                           isRequired
-                          placeholder="Type Answer ..."
+                          placeholder="Type a New Answer"
                           label="Answer"
                           name="answer"
                           type="answer"
@@ -599,7 +627,7 @@ function Transactions() {
 
 
 
-        <dialog id="editEmployee" className="modal">
+        <dialog id="editFaq" className="modal">
           <div className="modal-box">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
@@ -612,7 +640,7 @@ function Transactions() {
             {/* <p className="text-sm text-gray-500 mt-1 font-bold">Edit Details</p> */}
             {isEditModalOpen &&
               <div className="p-0 space-y-0 md:space-y-0 sm:p-4">
-                <Formik {...formikConfig(selectedEmployee)}>
+                <Formik {...formikConfig(selectedFaq)}>
                   {({
                     handleSubmit,
                     handleChange,
@@ -640,7 +668,7 @@ function Transactions() {
                         <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
                           <TextAreaInput
                             isRequired
-                            placeholder="Question ..."
+                            placeholder="Type a New Question"
                             label="Question"
                             name="question"
                             type="question"
@@ -655,7 +683,7 @@ function Transactions() {
 
                           <TextAreaInput
                             isRequired
-                            placeholder="Question ..."
+                            placeholder="Type a New Answer"
                             label="Answer"
                             name="answer"
                             type="answer"

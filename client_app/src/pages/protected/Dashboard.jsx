@@ -177,6 +177,14 @@ function InternalPage() {
   const totalProfit = resultData.reduce((acc, item) => acc + parseFloat(item.Total_Profit), 0);
 
 
+
+  // Initialize an object to hold total counts for each item
+  const totalItemsSold = resultData.reduce((total, transaction) => {
+    return total + transaction.itemNames.reduce((subTotal, item) => subTotal + item.count, 0);
+  }, 0);
+
+
+  console.log({ totalItemsSold })
   const columns = useMemo(
     () => [
 
@@ -426,7 +434,7 @@ function InternalPage() {
           <p className="text-3xl font-semibold text-orange-600 text-center">
 
 
-            {totalGramsSold.toFixed(2)} Grams
+            {totalItemsSold}
           </p>
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={formattedDataItemsSold}>

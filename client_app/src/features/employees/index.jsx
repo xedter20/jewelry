@@ -606,7 +606,7 @@ function Transactions() {
   const formikConfig = (selectedEmployee) => {
 
 
-
+    const phoneRegExp = /^(\+?[\d\s-]{11})$/
     // console.log(selectedEmployee.Admin_Fname)
     return {
       initialValues: {
@@ -624,7 +624,9 @@ function Transactions() {
         email: Yup.string().email().required('Required'),
         Admin_Fname: Yup.string().required('Required'),
         Admin_Lname: Yup.string().required('Required'),
-        Phone: Yup.number().required('Required'),
+        Phone: Yup.string()
+          .matches(/^\d{11}$/, 'Phone number must be exactly 11 digits')
+          .required('Phone number is required'),
         Username: Yup.string().required('Required'),
         Password: Yup.string()
           .required('Required')
@@ -784,8 +786,8 @@ function Transactions() {
 
         <dialog id="deleteModal" className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Confirmation</h3>
-            <p className="py-4">Are you sure you want to delete this record?</p>
+            <h3 className="font-bold text-lg">Archive Confirmation</h3>
+            <p className="py-4">Do you want to archive this record? </p>
             <hr />
             <div className="modal-action mt-12">
               <button

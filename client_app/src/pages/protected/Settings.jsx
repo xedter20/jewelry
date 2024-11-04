@@ -81,7 +81,9 @@ const Tab1Content = () => {
       validationSchema: Yup.object({
         Admin_Fname: Yup.string().required('Required'),
         Admin_Lname: Yup.string().required('Required'),
-        Phone: Yup.string().required('Required'),
+        Phone: Yup.string()
+          .matches(/^\d{11}$/, 'Phone number must be exactly 11 digits')
+          .required('Phone number is required'),
         Username: Yup.string().required('Required'),
         Password: Yup.string().required('Required'),
       }),

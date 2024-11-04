@@ -1018,8 +1018,8 @@ function Transactions() {
 
         <dialog id="deleteModal" className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Confirmation</h3>
-            <p className="py-4">Are you sure you want to delete this record?</p>
+            <h3 className="font-bold text-lg">Archive Confirmation</h3>
+            <p className="py-4">Do you want to archive this record? </p>
             <hr />
             <div className="modal-action mt-12">
               <button

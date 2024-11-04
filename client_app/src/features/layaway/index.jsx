@@ -612,6 +612,11 @@ function Transactions() {
         .min(0, 'Must be greater than or equal to 0')
         .max(1000000, 'Price cannot exceed 1 million')
         .typeError('Price must be a number'),
+      PriceWithInterest: Yup.number()
+        .required('Price is required')
+        .min(0, 'Must be greater than or equal to 0')
+        .max(1000000, 'Price cannot exceed 1 million')
+        .typeError('Price must be a number'),
       quantity: Yup.number().required('Quantity is required').positive('Must be a positive number').integer('Must be an integer'),
       itemNames: Yup.array().of(
         Yup.number()
@@ -994,8 +999,8 @@ function Transactions() {
 
         <dialog id="deleteModal" className="modal">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Confirmation</h3>
-            <p className="py-4">Are you sure you want to delete this record?</p>
+            <h3 className="font-bold text-lg">Archive Confirmation</h3>
+            <p className="py-4">Do you want to archive this record? </p>
             <hr />
             <div className="modal-action mt-12">
               <button
@@ -1020,6 +1025,7 @@ function Transactions() {
                     });
 
                     document.getElementById('deleteModal').close();
+                    fetchAll()
                     toast.success(`Deleted Successfully`, {
                       onClose: () => {
                         // window.location.reload();
@@ -1843,7 +1849,7 @@ function Transactions() {
           </div>
         </dialog>
 
-      </TitleCard>
+      </TitleCard >
     )
   );
 }

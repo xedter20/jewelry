@@ -33,6 +33,8 @@ const AppRoutes = () => {
       let result = res.data.data.filter((item) => item[role]).map(item => item.name);
 
 
+      console.log({ role })
+
       // result = res.data.data.map(item => item.name)
 
       console.log({ result })
@@ -104,7 +106,7 @@ const AppRoutes = () => {
         name: 'FAQ',
       });
 
-      if (result.includes('Settings')) {
+      if (result.includes('Settings') && role === 'super_admin') {
         newRoutes.push({
           path: '/app/settings',
           icon: <CogIcon className={iconClasses} />,
