@@ -856,8 +856,8 @@ function Transactions() {
   console.log({ dexxx: inventoryReportDetails?.TotalGramsSold });
   const leftColumnData = [
     { key: 'Grams', value: viewedData.Grams },
-    { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold.toFixed(2) || 0 },
-    { key: 'Remaining Stocks', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold.toFixed(2) || 0 },
+    { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold },
+    { key: 'Remaining Stocks', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold || 0 },
   ];
 
   const rightColumnData = [
@@ -1261,7 +1261,7 @@ function Transactions() {
                                   className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b`}
                                 >
                                   <td className="p-4 font-semibold text-gray-700 border-r">{item.key}</td>
-                                  <td className="p-4 text-gray-600">{item.value}</td>
+                                  <td className="p-4 text-gray-600">{item.value ? item.value.toFixed(2) : 0}</td>
                                 </tr>
                               ))}
                             </tbody>
