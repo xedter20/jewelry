@@ -324,6 +324,14 @@ function ForgotPassword() {
                                     {selectedOrder.Status}
                                 </div>
                             </div>
+                            <div className="relative bg-cover bg-center h-40" style={{ backgroundImage: "url('/Log In Page.png')" }}>
+                                <div className="absolute inset-0 bg-black opacity-50"></div>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="p-3 rounded-full text-white bg-customBlue">
+                                        <img src="/A.V. Logo.png" alt="AV De Asis Logo" className="h-20 " />
+                                    </div>
+                                </div>
+                            </div>
                             <div className="p-1 space-y-4 sm:space-y-6">
                                 <div className="overflow-x-auto">
                                     <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 mx-auto">
@@ -457,7 +465,7 @@ function ForgotPassword() {
 
     return <div>
 
-        <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="max-w-sm mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
             {/* Header Image and Logo */}
             <div className="relative bg-cover bg-center h-40" style={{ backgroundImage: "url('/Log In Page.png')" }}>
                 <div className="absolute inset-0 bg-black opacity-50"></div>
