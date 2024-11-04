@@ -23,7 +23,7 @@ function LeftSidebar() {
     });
     let user = res.data.data;
 
-    console.log({ user });
+
 
     setSelectedUser(user[0]);
     setIsLoaded(true);
@@ -48,7 +48,7 @@ function LeftSidebar() {
       <hr class="border-t-2 border-white mx-auto w-1/2 my-2"></hr>
       <div className=" mx-auto flex items-center justify-center mb-3 mt-6">
         <img
-          src="/Admin Picture.png"
+          src={selectedUser.profilePic || 'https://img.freepik.com/premium-vector/young-smiling-man-avatar-man-with-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-3d-vector-people-character-illustration-cartoon-minimal-style_365941-860.jpg?w=740'}
           alt="Logo"
           className="w-24 h-24 rounded-full"
         />
@@ -73,12 +73,9 @@ function LeftSidebar() {
         <li className="flex items-center justify-between mb-3 text-white ">
           {selectedUser && (
             <label className=" text-white">
-              Hello,{' '}
-
-              <span className="font-bold">
-                {selectedUser.Admin_Fname} {selectedUser.Admin_Lname}
+              Hello,<span className="font-bold">
+                {selectedUser.Admin_Fname}
               </span>
-              !
             </label>
           )}
           <label className="bg-customBrown text-white rounded-lg text-xs p-1">

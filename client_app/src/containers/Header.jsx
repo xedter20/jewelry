@@ -21,19 +21,24 @@ function Header() {
     localStorage.getItem('theme')
   );
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
-  // const [selectedUser, setSelectedUser] = useState({});
-  // const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({});
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  // const getUser = async () => {
-  //   let res = await axios({
-  //     method: 'GET',
-  //     url: `user/${loggedInUser.userId}`
-  //   });
-  //   let user = res.data.data;
+  const getUser = async () => {
+    let res = await axios({
+      method: 'GET',
+      url: `user/${loggedInUser.userId}/details`
+    });
+    let user = res.data.data;
 
-  //   setSelectedUser(user);
-  //   setIsLoaded(true);
-  // };
+
+    setSelectedUser(user[0]);
+    setIsLoaded(true);
+  };
+  useEffect(() => {
+    getUser();
+    //console.log({ selectedUser: selectedUser });
+  }, []);
 
   useEffect(() => {
     themeChange(false);
@@ -73,7 +78,7 @@ function Header() {
   }
   const payoutCart = useSelector(state => state.cart);
   let cartItem = payoutCart.list.length;
-  return (
+  return isLoaded && (
     // navbar fixed  flex-none justify-between bg-base-300  z-10 shadow-md
 
     <div className="navbar sticky top-0 bg-white-100  z-10  bg-slate-900 text-slate-300 rounded-lg border   bg-white">
@@ -117,9 +122,7 @@ function Header() {
               <div className="">
                 <div className="mask mask-circle w-10 h-10">
                   <img
-                    src={
-                      'https://img.freepik.com/premium-vector/young-smiling-man-avatar-man-with-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-3d-vector-people-character-illustration-cartoon-minimal-style_365941-860.jpg?w=740'
-                    }
+                    src={selectedUser.profilePic || 'https://img.freepik.com/premium-vector/young-smiling-man-avatar-man-with-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-3d-vector-people-character-illustration-cartoon-minimal-style_365941-860.jpg?w=740'}
                     alt="Avatar"
                   />
                 </div>

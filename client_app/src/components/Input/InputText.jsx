@@ -23,7 +23,7 @@ const MyTextInput = ({
   // message if the field is invalid and it has been touched (i.e. visited)
   const [field, meta] = useField(props);
 
-  console.log({ field, meta })
+
 
   let controlClassName = [
     'px-3 py-2 max-w-full border-gray-700 rounded w-full dark:placeholder-gray-400',

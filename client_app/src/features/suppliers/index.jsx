@@ -148,6 +148,7 @@ function Transactions() {
 
 
 
+
     setInventoryList(list.map((s) => {
       return {
         label: `${s.OrderID}`,
@@ -181,7 +182,7 @@ function Transactions() {
   useEffect(() => {
     fetchInventoryOrders()
     // setSelectedSupplier(selectedSupplier)
-  }, []);
+  }, [selectedSupplier.SupplierID]);
 
   const appSettings = useSelector(state => state.appSettings);
   let { codeTypeList, packageList } = appSettings;

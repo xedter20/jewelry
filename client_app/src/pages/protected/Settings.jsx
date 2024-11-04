@@ -64,6 +64,25 @@ const Tab1Content = () => {
     fetchAccountSettings()
 
   }, []);
+
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhotoPreview, setprofilePhotoPreview] = useState(null);
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+
+    console.log({ file })
+    setProfilePhoto(file)
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setprofilePhotoPreview(reader.result); // Set the image preview
+
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+
   const formikConfig = (selectedEmployee) => {
 
 
@@ -94,11 +113,31 @@ const Tab1Content = () => {
 
         try {
 
-          console.log({ acccountSetttings, decoded })
+
           let isDoable = acccountSetttings.find(item => item.name === 'Edit Details')[decoded.role]
 
 
           if (!!isDoable) {
+
+
+            if (profilePhoto) {
+              const data = new FormData();
+
+              // console.log({ profilePhoto })
+              data.append('profilePic', profilePhoto);
+              await axios({
+                // headers: {
+                //   'content-type': 'multipart/form-data'
+                // },
+                method: 'POST',
+                url: 'user/uploadProfilePicture',
+                data
+              });
+
+            }
+
+
+
 
             let { type, ...others } = values
             let res = await axios({
@@ -110,16 +149,22 @@ const Tab1Content = () => {
               }
             });
 
-            toast.success('Updated successfully', {
-              position: 'top-right',
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: 'light'
-            });
+            toast.success('Updated successfully',
+
+              {
+                onclose: () => {
+
+                },
+                position: 'top-right',
+                autoClose: 500,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'light'
+              });
+            window.location.reload(); // Reloads the current window
           }
           else {
             toast.error('Access denied: You do not have permission to update these details.', {
@@ -185,7 +230,24 @@ const Tab1Content = () => {
             className={`block mb-2 text-green-400 text-left font-bold`}>
             Child
           </label> */}
-
+                <div className="flex items-center justify-center">
+                  <label className="relative cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                    />
+                    <img
+                      src={profilePhotoPreview || selectedEmployee.profilePic || 'https://via.placeholder.com/150'}
+                      alt="Profile"
+                      className="w-32 h-32 rounded-full border-4 border-gray-300 shadow-md"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-gray-600 text-sm">{selectedEmployee.profilePic || profilePhoto ? '' : 'Upload Photo'}</span>
+                    </span>
+                  </label>
+                </div>
                 <InputText
                   disabled
 
@@ -348,7 +410,7 @@ const PricingTab = () => {
 
 
 
-          console.log({ values })
+
           let res = await axios({
             method: 'put',
             url: `settings/pricing/1`,
