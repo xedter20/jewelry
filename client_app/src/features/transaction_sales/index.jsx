@@ -1489,7 +1489,7 @@ function Transactions() {
                                       </ul>
 
                                     </td>
-                                    <td className="py-4 text-gray-700">{selectedOrder.Grams}</td>
+                                    <td className="py-4 text-gray-700">{!!selectedOrder.Grams ? selectedOrder.Grams.toFixed(2) : 0}</td>
                                     <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
                                     <td className="py-4 text-gray-700">
 

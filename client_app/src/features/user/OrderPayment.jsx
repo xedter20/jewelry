@@ -37,6 +37,7 @@ function ForgotPassword() {
     const [userObj, setUserObj] = useState(INITIAL_USER_OBJ)
     const [isLoaded, setIsLoaded] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState({});
+    const [preview, setPreview] = useState('');
     const params = useParams()
 
     let userId = params.userId;
@@ -369,7 +370,7 @@ function ForgotPassword() {
                                                             ))}
                                                         </ul>
                                                     </td>
-                                                    <td className="py-4">{selectedOrder.Grams} grams</td>
+                                                    <td className="py-4">{selectedOrder.Grams ? selectedOrder.Grams.toFixed(2) : 0} grams</td>
                                                     <td className="py-4">{formatAmount(selectedOrder.Price)}</td>
                                                 </tr>
                                             </tbody>
@@ -432,7 +433,7 @@ function ForgotPassword() {
                                                         onBlur={handleBlur}
                                                     />
                                                     <div className="flex justify-center">
-                                                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" />
+                                                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
                                                     </div>
                                                     <InputText label="Comments" name="Comments" type="text" value={values.Comments} onBlur={handleBlur} />
                                                     <button type="submit" className="btn w-full bg-buttonPrimary font-bold text-white">Submit</button>

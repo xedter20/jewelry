@@ -856,8 +856,8 @@ function Transactions() {
   console.log({ dexxx: inventoryReportDetails?.TotalGramsSold });
   const leftColumnData = [
     { key: 'Grams', value: viewedData.Grams },
-    { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold || 0 },
-    { key: 'Remaining Stocks', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold || 0 },
+    { key: 'Total Grams Sold', value: inventoryReportDetails?.TotalGramsSold.toFixed(2) || 0 },
+    { key: 'Remaining Stocks', value: viewedData.Grams - inventoryReportDetails?.TotalGramsSold.toFixed(2) || 0 },
   ];
 
   const rightColumnData = [
