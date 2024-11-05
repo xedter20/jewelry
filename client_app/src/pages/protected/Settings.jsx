@@ -1083,18 +1083,28 @@ const AuditTrailTab = () => {
   );
 };
 function InternalPage() {
+  const token = checkAuth();
+
+  const decoded = jwtDecode(token);
+
   const dispatch = useDispatch();
   const [selectedTab, setSelectedTab] = useState('Account');
-  const categories = {
+  let categories = {
     General: ['Account', 'Pricing', 'Notifications', 'Audit Trail'],
     'Access Control': ['Accounts', 'Record Management'],
   };
 
-  const content = {
-    Tab1: 'Accounts',
-    Tab2: 'Record Management',
+  // let content = {
+  //   Tab1: 'Accounts',
+  //   Tab2: 'Record Management',
 
-  };
+  // };
+
+  if (decoded.role === 'admin') {
+    categories = {
+      General: ['Account']
+    };
+  }
 
   // Map selectedTab to the corresponding component
   const tabComponents = {
