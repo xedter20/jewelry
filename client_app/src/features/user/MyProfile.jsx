@@ -208,6 +208,25 @@ function ForgotPassword() {
         };
     };
 
+    const MessengerButton = () => {
+        return (
+            <div className="fixed bottom-4 right-4 flex items-center space-x-2 p-2">
+                <a
+                    href="https://www.messenger.com/t/avdeasisjewelry" // Replace with your Messenger link
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+                    aria-label="Chat with us on Messenger"
+                >
+                    <i className="fa-brands fa-facebook-messenger"></i>
+                </a>
+                <span className="text-blue-600 font-bold">
+                    Live Chat
+                </span>
+            </div>
+        );
+    };
+
     return (
         selectedUser ? (
             <div className="bg-base-200 flex items-center p-4 sm:p-8">
@@ -356,6 +375,7 @@ function ForgotPassword() {
                         }
                     </div>
                 </div>
+                <MessengerButton />
                 <ToastContainer />
 
                 <dialog id="updateCustomer" className="modal">
