@@ -131,7 +131,7 @@ function Transactions() {
     { value: 'Rings', label: 'Rings' }
   ];
 
-
+  const [preview, setPreview] = useState('');
 
   const [file, setFile] = useState(null);
   const [users, setCustomers] = useState([]);
@@ -684,7 +684,7 @@ function Transactions() {
         .required('Required')
         .moreThan(0, 'Downpayment must be greater than 0') // Downpayment must be greater than 0
         .lessThan(Yup.ref('PriceWithInterest'), 'Downpayment must be less than Price'), // Downpayment must be less than Price
-
+      Payment_Method: Yup.string().required('Required'),
     };
 
     let initialValues = {
@@ -703,7 +703,8 @@ function Transactions() {
       Grams: '',
       Price: '',
       // ItemName: '',
-      Downpayment: ''
+      Downpayment: '',
+      Payment_Method: ''
     }
 
 
@@ -739,6 +740,9 @@ function Transactions() {
         // console.log("here")
         // console.log({ isEditModalOpen })
 
+        if (!file) {
+          setFieldError('Proof_Payment', 'Required');
+        }
 
 
 
@@ -760,6 +764,28 @@ function Transactions() {
             url: 'layaway/create',
             data: finalData
           })
+
+
+
+          let result = res.data.data;
+
+          console.log({ result })
+          const updateData = new FormData();
+
+          updateData.append('layAwayID', result.LayawayID);
+          updateData.append('Proof_Payment', file);
+          updateData.append('Payment_Method', values.Payment_Method);
+          await axios({
+
+            method: 'POST',
+            url: 'layaway/addInitialPaymentProof',
+            data: updateData
+          });
+
+
+
+
+
           fetchOrders()
           document.getElementById('addOrder').close();
           toast.success('Added Successfully!', {
@@ -1476,10 +1502,49 @@ function Transactions() {
                         value={values.Downpayment}
                         onBlur={handleBlur} // This apparently updates `touched`?
                       />
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
+                        <RadioText
+                          isRequired
+                          // icons={mdiAccount}
+                          label="Payment Method *"
+                          name="Payment_Method"
+                          placeholder=""
+                          value={values.Payment_Method}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            { value: 'CASH', label: 'Cash' },
+                            // { value: 'Cash', label: 'Cash' },
+                            { value: 'BDO', label: 'BDO' },
+                            { value: 'BPI', label: 'BPI' }
+                          ]}
+                        />
+
+
+                      </div>
+                      <InputText
+                        label="Proof of Payment"
+                        name="Proof_Payment"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          setFile(file);
+                          if (file) {
+                            setPreview(URL.createObjectURL(file));
+                          }
+                        }}
+                        onBlur={handleBlur}
+                      />
+                      <div className="flex justify-center">
+                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
+                      </div>
+
                       * All fields are required.
                       <button
                         // type="button"
                         type="submit"
+                        disabled={isSubmitting}
                         className={
                           'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
                           (loading ? ' loading' : '')
