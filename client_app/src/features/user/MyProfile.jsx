@@ -210,19 +210,17 @@ function ForgotPassword() {
 
     const MessengerButton = () => {
         return (
-            <div className="fixed bottom-4 right-4 flex items-center space-x-2 p-2">
+            <div className="fixed bottom-4 right-4 flex items-center">
                 <a
                     href="https://www.messenger.com/t/avdeasisjewelry" // Replace with your Messenger link
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center justify-center bg-blue-600 text-white rounded-full w-16 h-16 shadow-lg hover:bg-blue-700 transition-colors"
                     aria-label="Chat with us on Messenger"
                 >
-                    <i className="fa-brands fa-facebook-messenger"></i>
+                    <i className="fa-brands fa-facebook-messenger text-2xl"></i>
                 </a>
-                <span className="text-blue-600 font-bold">
-                    Live Chat
-                </span>
+                <span className="ml-3 text-blue-600 font-bold">Chat Us Now</span>
             </div>
         );
     };
