@@ -132,7 +132,7 @@ function Transactions() {
   ];
 
   const [preview, setPreview] = useState('');
-
+  const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [users, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -787,6 +787,8 @@ function Transactions() {
 
           setFile(null);
           setPreview(null);
+          // document.getElementById('fileInput').value = '';
+          // fileInputRef.current.value = '';
           fetchOrders()
           document.getElementById('addOrder').close();
           toast.success('Added Successfully!', {
@@ -832,7 +834,17 @@ function Transactions() {
   }, 0) : 0;
   console.log({ totalAmountPaid })
 
+  let amountPaid = parseFloat(parseFloat(totalAmountPaid).toFixed(2));
 
+  let originalPrice = parseFloat(parseFloat(selectedOrder?.Price).toFixed(2));
+
+
+  console.log(amountPaid === originalPrice)
+  let mainStatus = selectedOrder.status;
+  if (amountPaid === originalPrice) {
+    mainStatus = 'PAID'
+
+  }
   const formikConfigAddPayment = () => {
 
     let remainingBalance = parseInt(selectedOrder?.Price) - totalAmountPaid;
@@ -1528,6 +1540,7 @@ function Transactions() {
                         name="Proof_Payment"
                         type="file"
                         accept="image/*"
+                        ref={fileInputRef}
                         onChange={(e) => {
                           const file = e.target.files[0];
                           setFile(file);
@@ -1706,7 +1719,7 @@ function Transactions() {
               <div className="p-4">
                 <div className="flex justify-between font-bold">
                   <span>Status:</span>
-                  <span className='font-2xl'><StatusPill value={selectedOrder.status} /></span>
+                  <span className='font-2xl'><StatusPill value={mainStatus} /></span>
                 </div>
                 <div className="flex justify-between font-bold">
                   <span>Customer Name:</span>

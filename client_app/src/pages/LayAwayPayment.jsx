@@ -334,7 +334,21 @@ function LayAwayPayment({ layAwayID }) {
 
 
 
-  console.log({ isLoaded })
+  let amountPaid = parseFloat(parseFloat(totalAmountPaid).toFixed(2));
+
+  let originalPrice = parseFloat(parseFloat(selectedOrder?.Price).toFixed(2));
+
+
+  console.log(amountPaid === originalPrice)
+  let mainStatus = selectedOrder.status;
+  if (amountPaid === originalPrice) {
+    mainStatus = 'PAID'
+
+  } else {
+    mainStatus = 'IN_PROGRESS'
+  }
+
+
   return (
     isLoaded && selectedOrder && (
 
@@ -497,7 +511,8 @@ function LayAwayPayment({ layAwayID }) {
             <div className="p-4">
               <div className="flex justify-between font-bold">
                 <span>Status:</span>
-                <span className='font-2xl'><StatusPill value={selectedOrder.status} /></span>
+
+                <span className='font-2xl'><StatusPill value={mainStatus} /></span>
               </div>
               <div className="flex justify-between font-bold">
                 <span>Customer Name:</span>
