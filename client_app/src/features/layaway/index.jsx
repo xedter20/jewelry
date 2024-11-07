@@ -844,6 +844,8 @@ function Transactions() {
   if (amountPaid === originalPrice) {
     mainStatus = 'PAID'
 
+  } else {
+    mainStatus = 'IN_PROGRESS'
   }
   const formikConfigAddPayment = () => {
 
