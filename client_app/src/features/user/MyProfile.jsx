@@ -140,7 +140,7 @@ function ForgotPassword() {
             Header: 'Amount To Pay',
             accessor: 'Price',
             Cell: ({ row }) => {
-                const totalAmount = row.original.Price * row.original.Grams;
+                const totalAmount = row.original.Price;
                 return formatAmount(totalAmount);
             },
         },
