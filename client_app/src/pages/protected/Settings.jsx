@@ -710,12 +710,16 @@ const NotificationsTab = () => {
           </li>
         })}
       </ul>
-      <button
-        onClick={handleSeeMore}
-        className="text-center mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
-      >
-        See More
-      </button>
+
+      {
+        notifications.length > 0 && <button
+          onClick={handleSeeMore}
+          className="text-center mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
+        >
+          See More
+        </button>
+      }
+
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
@@ -1102,7 +1106,7 @@ function InternalPage() {
 
   if (decoded.role === 'admin') {
     categories = {
-      General: ['Account']
+      General: ['Account', 'Notifications']
     };
   }
 

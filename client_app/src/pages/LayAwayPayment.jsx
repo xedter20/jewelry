@@ -299,9 +299,13 @@ function LayAwayPayment({ layAwayID }) {
             data
           });
 
-          fetchPayments()
+          setIsLoaded(false)
+          fetchPayments();
+          fetchAll();
+
+          setIsLoaded(true)
           document.getElementById('addPayment').close();
-          await fetchAll();
+
           // document.getElementById('addOrder').close();
           // // await fetchSuppliers();
           document.getElementById('viewReceipt').close();
@@ -319,8 +323,6 @@ function LayAwayPayment({ layAwayID }) {
             progress: undefined,
             theme: 'light'
           });
-
-          fetchAll();
 
 
         } catch (error) {

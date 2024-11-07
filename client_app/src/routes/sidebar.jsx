@@ -110,7 +110,7 @@ const AppRoutes = () => {
         name: 'FAQ',
       });
 
-      if (result.includes('Settings') && role === 'super_admin') {
+      if (result.includes('Settings')) {
         newRoutes.push({
           path: '/app/settings',
           icon: <CogIcon className={iconClasses} />,
