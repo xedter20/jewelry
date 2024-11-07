@@ -222,6 +222,7 @@ function Transactions() {
 
 
     setPayments(list);
+
     // calculateTotalPaid(samplePayments);
   };
 
@@ -232,7 +233,9 @@ function Transactions() {
   };
 
   useEffect(() => {
+    setIsLoaded(false);
     fetchPayments();
+    setIsLoaded(true);
   }, [selectedOrder]);
 
 
@@ -301,6 +304,7 @@ function Transactions() {
     fetchCustomers();
     fetchOrders();
     fetchInventoryOrders()
+    fetchPayments();
   }
 
   useEffect(() => {
@@ -406,7 +410,7 @@ function Transactions() {
       },
       {
         Header: 'Layaway ID',
-        accessor: 'OrderID',
+        accessor: 'LayawayID',
         Cell: ({ row, value }) => {
           return <span className="">{value}</span>;
         }
@@ -840,7 +844,7 @@ function Transactions() {
 
 
   console.log(amountPaid === originalPrice)
-  let mainStatus = selectedOrder.status;
+  let mainStatus = selectedOrder?.status;
   if (amountPaid === originalPrice) {
     mainStatus = 'PAID'
 
@@ -1721,7 +1725,7 @@ function Transactions() {
               <div className="p-4">
                 <div className="flex justify-between font-bold">
                   <span>Status:</span>
-                  <span className='font-2xl'><StatusPill value={mainStatus} /></span>
+                  <span className='font-2xl'><StatusPill value={selectedOrder.status} /></span>
                 </div>
                 <div className="flex justify-between font-bold">
                   <span>Customer Name:</span>
@@ -1746,7 +1750,11 @@ function Transactions() {
                     </tr>
                   </thead>
                   <tbody>
-                    {payments.map(payment => {
+
+                    {
+                      console.log({ payments, selectedOrder })
+                    }
+                    {payments.filter(p => p.layAwayID === selectedOrder.LayawayID).map(payment => {
 
                       let forApproval = payment.status === 'PAYMENT_FOR_APPROVAL'
                       return <tr key={payment.layAwayID} className="border-b">
@@ -1782,6 +1790,7 @@ function Transactions() {
                               className="btn btn-success btn-sm flex items-center mr-2"
 
                               onClick={async () => {
+
                                 let result = await axios({
                                   // headers: {
                                   //   'content-type': 'multipart/form-data'
@@ -1791,10 +1800,11 @@ function Transactions() {
                                   data: {
                                     LayawayID: selectedOrder.LayawayID,
                                     paymentID: payment.id,
-                                    status: 'PAID'
+                                    status: 'PAID',
+                                    mainStatus
                                   }
                                 });
-                                fetchPayments()
+                                fetchAll();
                               }}
                             >
                               <i className="fa-solid fa-check"></i>
@@ -1811,10 +1821,11 @@ function Transactions() {
                                   data: {
                                     LayawayID: selectedOrder.LayawayID,
                                     paymentID: payment.id,
-                                    status: 'REJECTED'
+                                    status: 'REJECTED',
+                                    mainStatus
                                   }
                                 });
-                                fetchPayments()
+                                fetchAll();
                               }}
                             >
                               <i className="fa-solid fa-times"></i>

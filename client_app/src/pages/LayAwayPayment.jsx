@@ -284,7 +284,7 @@ function LayAwayPayment({ layAwayID }) {
 
           data.append('OrderID', selectedOrder.OrderID);
 
-          let updatedStatus = remainingBalance - values.amount === 0 ? 'PAID' : 'PAYMENT_FOR_APPROVAL';
+          let updatedStatus = remainingBalance - values.amount === 0 ? 'PAYMENT_FOR_APPROVAL' : 'PAYMENT_FOR_APPROVAL';
 
 
 
@@ -342,7 +342,7 @@ function LayAwayPayment({ layAwayID }) {
 
 
   console.log(amountPaid === originalPrice)
-  let mainStatus = selectedOrder.status;
+  let mainStatus = selectedOrder?.status;
   if (amountPaid === originalPrice) {
     mainStatus = 'PAID'
 
@@ -514,7 +514,7 @@ function LayAwayPayment({ layAwayID }) {
               <div className="flex justify-between font-bold">
                 <span>Status:</span>
 
-                <span className='font-2xl'><StatusPill value={mainStatus} /></span>
+                <span className='font-2xl'><StatusPill value={selectedOrder.status} /></span>
               </div>
               <div className="flex justify-between font-bold">
                 <span>Customer Name:</span>
