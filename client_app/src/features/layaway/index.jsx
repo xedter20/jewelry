@@ -785,7 +785,8 @@ function Transactions() {
 
 
 
-
+          setFile(null);
+          setPreview(null);
           fetchOrders()
           document.getElementById('addOrder').close();
           toast.success('Added Successfully!', {

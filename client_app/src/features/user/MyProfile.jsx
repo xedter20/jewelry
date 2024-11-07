@@ -122,7 +122,19 @@ function ForgotPassword() {
         },
         {
             Header: 'Item Name',
-            accessor: 'ItemName',
+            accessor: 'itemNames',
+            Cell: ({ row, value }) => {
+                const data = JSON.parse(value);
+                return <div className="p-4">
+                    <ul className="list-disc pl-5 space-y-2">
+                        {data.map((entry, index) => (
+                            <li key={index} className="text-gray-700">
+                                {entry.item}: <span className="font-bold">{entry.count}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            },
         },
         {
             Header: 'Amount To Pay',

@@ -117,8 +117,8 @@ const TopSideButtons = ({ removeFilter, applyFilter, applySearch, users }) => {
 };
 
 function Transactions() {
-  const qrCodeRef = useRef();
-  const downloadQRCode = () => {
+
+  const downloadQRCode = (ref) => {
     // Create a canvas element to convert SVG to image  
     const canvas = document.createElement('canvas');
     const size = 200; // size of the QR code  
@@ -126,7 +126,7 @@ function Transactions() {
     canvas.height = size;
 
     // Get the SVG data  
-    const svg = qrCodeRef.current.querySelector('svg'); // Adjust to get the SVG element  
+    const svg = ref.current.querySelector('svg'); // Adjust to get the SVG element  
     const svgData = new XMLSerializer().serializeToString(svg);
 
     // Convert SVG to data URL  
@@ -235,13 +235,13 @@ function Transactions() {
         accessor: '',
         Cell: ({ row }) => {
           const url = `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${row.original.CustomerID}`;
-          console.log({ row: url })
 
+          const qrCodeRef = useRef();
           return <div>
             <div
               ref={qrCodeRef}
               onClick={() => {
-                downloadQRCode()
+                downloadQRCode(qrCodeRef)
               }}
               className=' flex justify-center items-center mt-4 h-20 w-20'>
               <QRCodeSVG value={
@@ -254,7 +254,7 @@ function Transactions() {
               size="sm"
               type="submit"
               onClick={() => {
-                downloadQRCode()
+                downloadQRCode(qrCodeRef)
               }}
             >
               Download
