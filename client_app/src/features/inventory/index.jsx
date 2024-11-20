@@ -484,7 +484,7 @@ function Transactions() {
 
 
 
-                <button
+                {/* <button
                   className="btn btn-outline btn-sm ml-2"
                   onClick={() => {
 
@@ -495,7 +495,7 @@ function Transactions() {
                     document.getElementById('deleteModal').showModal();
                   }}>
                   <i class="fa-solid fa-archive"></i>
-                </button>
+                </button> */}
               </div>
             )
           );
@@ -738,7 +738,8 @@ function Transactions() {
         .min(0, 'Must be greater than or equal to 0')
         // .max(1000000, 'Amount cannot exceed 1 million')
         .typeError('Amount must be a number'),
-      Date: Yup.date().required('Required')
+      Date: Yup.date().required('Required'),
+      Karat_Value: Yup.array().required('Required')
     };
 
 
@@ -755,7 +756,8 @@ function Transactions() {
       Grams: selectedSupplier?.Grams || '',
       Price: selectedSupplier?.Price || '',
       Amount: selectedSupplier?.Amount || '',
-      Date: formattedDate
+      Date: formattedDate,
+      Karat_Value: JSON.parse(selectedSupplier?.Karat_Value || `[]`) || ''
     }
 
 
@@ -1101,6 +1103,31 @@ function Transactions() {
                           ]}
                         />
                       </div>
+
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+
+                        <RadioText
+                          isRequired
+                          // icons={mdiAccount}
+                          label="Karat Value"
+                          name="Karat_Value"
+                          placeholder=""
+                          value={values.Karat_Value}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            { value: '21K', label: '21K' },
+                            { value: '18K', label: '18K' },
+                            { value: '18K Diamond', label: '18K Diamond' },
+                            { value: '14K', label: '14K' },
+                            { value: '14K Diamond', label: '14K Diamond' },
+
+                          ]}
+                        />
+
+                      </div>
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                         <InputText
                           isRequired
@@ -1396,6 +1423,30 @@ function Transactions() {
                           { value: 'SUBASTA', label: 'SUBASTA' },
                         ]}
                       />
+                    </div>
+
+
+
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                      <RadioText
+                        isRequired
+                        // icons={mdiAccount}
+                        label="Karat Value"
+                        name="Karat_Value"
+                        placeholder=""
+                        value={values.Karat_Value}
+                        setFieldValue={setFieldValue}
+                        onBlur={handleBlur}
+                        options={[
+                          { value: '21K', label: '21K' },
+                          { value: '18K', label: '18K' },
+                          { value: '18K Diamond', label: '18K Diamond' },
+                          { value: '14K', label: '14K' },
+                          { value: '14K Diamond', label: '14K Diamond' },
+
+                        ]}
+                      />
+
                     </div>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
                       <InputText

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
 import Icon from '../Icon/index.tsx';
+import { values } from 'lodash';
 
 const MyTextInput = ({
   label,
@@ -10,6 +11,7 @@ const MyTextInput = ({
   hasTextareaHeight,
   labelFor,
   options,
+  type = '',
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -30,6 +32,9 @@ const MyTextInput = ({
     ''
   ].join(' ');
 
+
+  console.log(Array.isArray(meta.value))
+  // console.log({ values: meta.value })
   return (
     <>
       <div
@@ -47,19 +52,63 @@ const MyTextInput = ({
         )}
         {/* border-solid border-2 border-red-500 */}
         {options.map(({ label, value }) => {
+          let parsedValue;
+
+          try {
+            parsedValue = JSON.parse(meta.value || ""); // Try parsing the value
+          } catch (error) {
+            parsedValue = meta.value; // If invalid, return the original string
+          }
+
           return (
             <div className="inline-flex items-center mr-4 ">
 
               <label className="label cursor-pointer">
                 <input
-                  type="radio"
-                  className="radio checked:bg-blue-500"
+                  type="checkbox"
+                  className="checked:bg-blue-500"
                   {...field}
                   {...props}
-                  checked={meta.value === value}
+                  // checked={meta.value === value}
+                  //  checked={Array.isArray(meta.value) && meta.value.includes(value)}
+
+                  //  type={Array.isArray(meta.value) ? "checkbox" : "radio"}
+                  checked={
+                    Array.isArray(parsedValue)
+                      ? meta.value.includes(value) // For checkboxes
+                      : meta.value === value      // For radio buttons
+                  }
+
                   value={value}
-                  onChange={() => {
-                    props.setFieldValue(field.name, value);
+                  // onChange={() => {
+                  //   props.setFieldValue(field.name, value);
+                  // }}
+
+                  onChange={(e) => {
+
+
+                    let selected = meta.value;
+
+
+                    if (type !== 'radio') {
+                      if (e.target.checked) {
+                        console.log({ value })
+                        selected.push(value);
+                      } else {
+                        const index = selected.indexOf(value);
+                        if (index > -1) {
+                          selected.splice(index, 1); // Remove value if unchecked
+                        }
+
+                        console.log({ selected })
+                      }
+                    } else {
+                      selected = value;
+                    }
+
+                    console.log({ selected })
+
+                    props.setFieldValue(field.name, selected);
                   }}
                 />
                 <span className="label-text ml-2">{label}</span>

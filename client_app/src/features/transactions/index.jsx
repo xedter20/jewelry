@@ -225,9 +225,9 @@ function Transactions() {
 
       {
         Header: 'Customer ID',
-        accessor: '',
-        Cell: ({ row }) => {
-          return <span className="">{row.index + 1}</span>;
+        accessor: 'CustomerID',
+        Cell: ({ row, value }) => {
+          return <span className="">{value}</span>;
         }
       },
       {
@@ -265,6 +265,22 @@ function Transactions() {
       {
         Header: 'Name',
         accessor: 'CustomerName',
+
+        Cell: ({ row, value }) => {
+          return (
+            <div className="flex items-center space-x-3">
+
+
+              <div>
+                <div className="font-bold text-neutral-500">{value}</div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'Email',
+        accessor: 'Email',
 
         Cell: ({ row, value }) => {
           return (
@@ -381,6 +397,50 @@ function Transactions() {
                 </Link> */}
                 <button
                   className="btn btn-outline btn-sm ml-2"
+                  onClick={async () => {
+                    // setactiveChildID(l.CustomerID);
+                    // document.getElementById('deleteModal').showModal();
+
+                    try {
+
+                      console.log(l.Email)
+                      let res = await axios({
+
+                        method: 'POST',
+                        url: 'auth/sendQRCOde',
+                        data: {
+                          email: l.Email
+                        }
+                      });
+                      toast.success(`Email Sent Successfully`, {
+                        position: 'top-right',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light'
+                      });
+
+                    } catch (error) {
+                      toast.error(`Something went wrong`, {
+                        position: 'top-right',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light'
+                      });
+                    }
+                  }}>
+                  <i class="fa-solid fa-envelope"></i>
+                </button>
+
+                <button
+                  className="btn btn-outline btn-sm ml-2"
                   onClick={() => {
                     setactiveChildID(l.CustomerID);
                     document.getElementById('deleteModal').showModal();
@@ -473,14 +533,15 @@ function Transactions() {
         CustomerName: '',
         Facebook: '',
         Contact: '',
-        Address: ''
-
+        Address: '',
+        Email: ''
       },
       validationSchema: Yup.object({
         CustomerName: Yup.string().required('Required'),
         Facebook: Yup.string().required('Required'),
         Contact: Yup.number().required('Required'),
         Address: Yup.string().required('Required'),
+        Email: Yup.string().required('Required'),
       }),
       validateOnMount: true,
       validateOnChange: false,
@@ -528,7 +589,8 @@ function Transactions() {
         CustomerName: viewedUser.CustomerName || '',
         Facebook: viewedUser.Facebook || '',
         Contact: viewedUser.Contact || '',
-        Address: viewedUser.Address || ''
+        Address: viewedUser.Address || '',
+        Email: viewedUser.Email || ''
 
       },
       validationSchema: Yup.object({
@@ -536,6 +598,7 @@ function Transactions() {
         Facebook: Yup.string().required('Required'),
         Contact: Yup.number().required('Required'),
         Address: Yup.string().required('Required'),
+        Email: Yup.string().required('Required'),
       }),
       validateOnMount: true,
       validateOnChange: false,
@@ -758,6 +821,19 @@ function Transactions() {
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                       </div>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+                        <InputText
+                          isRequired
+                          label="Email"
+                          name="Email"
+                          type="text"
+                          placeholder=""
+                          value={values.Email}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+                      </div>
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
 
                         <InputText
@@ -861,6 +937,19 @@ function Transactions() {
                           type="text"
                           placeholder=""
                           value={values.CustomerName}
+                          onBlur={handleBlur} // This apparently updates `touched`?
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+
+
+                        <InputText
+                          isRequired
+                          label="Email"
+                          name="Email"
+                          type="text"
+                          placeholder=""
+                          value={values.Email}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
                       </div>

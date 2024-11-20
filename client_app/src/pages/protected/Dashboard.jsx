@@ -245,7 +245,7 @@ function InternalPage() {
                   className="flex justify-between items-center bg-white p-3 rounded-lg shadow"
                 >
                   <span className="font-semibold text-gray-800 text-sm">{item}</span>
-                  <span className="text-gray-600 text-sm">Count: {count}</span>
+                  <span className="text-gray-600 text-sm ml-2">Total: {count}</span>
                 </li>
               ))}
             </ul>

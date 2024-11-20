@@ -21,7 +21,7 @@ import Table, {
     StatusPill,
     DateCell
 } from '../../pages/protected/DataTables/Table';
-
+import RadioText from '../../components/Input/Radio';
 function ForgotPassword() {
 
 
@@ -229,13 +229,15 @@ function ForgotPassword() {
 
         let validation = {
             Comments: Yup.string().required('Required'),
+            Via: Yup.string().required('Required'),
             // Proof_Payment: Yup.string().required('Required')
         };
 
         let initialValues = {
 
             Proof_Payment: '',
-            Comments: ''
+            Comments: '',
+            Via: ''
         }
 
 
@@ -255,7 +257,7 @@ function ForgotPassword() {
 
                 console.log({ file })
 
-                if (!file) {
+                if (!file && values.Via === 'ATTACHMENTS') {
                     setFieldError('Proof_Payment', 'Required');
                 }
 
@@ -298,6 +300,37 @@ function ForgotPassword() {
                     navigate(`/myprofile/${userId}`);
                 }
 
+                else {
+
+
+
+                    let res = await axios({
+                        // headers: {
+                        //   'content-type': 'multipart/form-data'
+                        // },
+                        method: 'POST',
+                        url: 'transactions/makePaymentNoAttachments',
+                        data: {
+                            Comments: values.Comments,
+                            TransactionID: selectedOrder.TransactionID
+                        }
+                    });
+
+
+
+                    toast.success(`Submitted Successfully`, {
+                        position: 'top-right',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'light'
+                    });
+
+                    navigate(`/myprofile/${userId}`);
+                }
 
 
 
@@ -357,6 +390,7 @@ function ForgotPassword() {
                                                     <th className="font-bold uppercase py-2">Description</th>
                                                     <th className="font-bold uppercase py-2">Grams</th>
                                                     <th className="font-bold uppercase py-2">Price</th>
+                                                    <th className="font-bold uppercase py-2">Items Photo</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -372,6 +406,21 @@ function ForgotPassword() {
                                                     </td>
                                                     <td className="py-4">{selectedOrder.Grams ? selectedOrder.Grams.toFixed(2) : 0} grams</td>
                                                     <td className="py-4">{formatAmount(selectedOrder.Price)}</td>
+
+                                                    <td className="py-4">
+
+                                                        <div className="flex justify-start">
+
+                                                            {
+                                                                selectedOrder.items_photo && <img
+                                                                    src={selectedOrder.items_photo}
+                                                                    alt="Item Photo"
+                                                                    className="max-w-full h-auto rounded-md"
+                                                                />
+                                                            }
+
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -418,23 +467,50 @@ function ForgotPassword() {
                                                 handleSubmit, handleBlur, values, setFieldValue,
                                             }) => (
                                                 <Form className="space-y-4 sm:space-y-6">
-                                                    <InputText
-                                                        label="Upload"
-                                                        name="Proof_Payment"
-                                                        type="file"
-                                                        accept="image/*"
-                                                        onChange={(e) => {
-                                                            const file = e.target.files[0];
-                                                            setFile(file);
-                                                            if (file) {
-                                                                setPreview(URL.createObjectURL(file));
-                                                            }
-                                                        }}
-                                                        onBlur={handleBlur}
-                                                    />
-                                                    <div className="flex justify-center">
-                                                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
+
+                                                    <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
+                                                        <RadioText
+                                                            isRequired
+                                                            // icons={mdiAccount}
+                                                            label="Via"
+                                                            name="Via"
+                                                            placeholder=""
+                                                            type='radio'
+                                                            value={values.Via}
+                                                            setFieldValue={setFieldValue}
+                                                            onBlur={handleBlur}
+                                                            options={[
+                                                                { value: 'ATTACHMENTS', label: 'Attachment' },
+                                                                { value: 'MESSENGER', label: 'Messenger' }
+
+                                                            ]}
+                                                        />
                                                     </div>
+
+
+
+
+                                                    {values.Via === 'ATTACHMENTS' && (
+                                                        <InputText
+                                                            label="Upload"
+                                                            name="Proof_Payment"
+                                                            type="file"
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files[0];
+                                                                setFile(file);
+                                                                if (file) {
+                                                                    setPreview(URL.createObjectURL(file));
+                                                                }
+                                                            }}
+                                                            onBlur={handleBlur}
+                                                        />
+                                                    )}
+                                                    {values.Method === 'ATTACHMENTS' && (
+                                                        <div className="flex justify-center">
+                                                            <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
+                                                        </div>)}
+
                                                     <InputText label="Comments" name="Comments" type="text" value={values.Comments} onBlur={handleBlur} />
                                                     <button type="submit" className="btn w-full bg-buttonPrimary font-bold text-white">Submit</button>
                                                 </Form>

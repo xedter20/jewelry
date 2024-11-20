@@ -524,6 +524,15 @@ function LayAwayPayment({ layAwayID }) {
                 <span>Customer ID</span>
                 <span>{selectedOrder.CustomerID}</span>
               </div>
+
+              <div className="flex justify-between font-bold">
+                <span>Item(s) Photo</span>
+                <img
+                  src={selectedOrder.items_photo}
+                  alt="Sample"
+                  className="w-20 h-20 object-cover rounded-md"
+                />
+              </div>
             </div>
             <div className="bg-white shadow-md rounded-lg overflow-hidden">
               <table className="min-w-full">

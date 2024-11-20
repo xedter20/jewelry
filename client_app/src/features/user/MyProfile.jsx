@@ -11,6 +11,7 @@ import InputText from '../../components/Input/InputText';
 import Dropdown from '../../components/Input/Dropdown';
 import { Formik, useField, useFormik, Form } from 'formik';
 import * as Yup from 'yup';
+import { QRCodeSVG } from 'qrcode.react';
 function ForgotPassword() {
     const [activeTab, setActiveTab] = useState(1); // State to control active tab
     const [activeTabMain, setactiveTabMain] = useState('myprofile'); // State to control active tab
@@ -301,6 +302,14 @@ function ForgotPassword() {
                                             <p className="text-gray-600">{selectedUser.Facebook}</p>
                                             <p className="mt-2 text-gray-500">{selectedUser.Contact} | {selectedUser.Address}</p>
                                         </div>
+
+                                        <QRCodeSVG
+
+
+                                            value={
+                                                `${import.meta.env.VITE_REACT_APP_FRONTEND_URL}/myprofile/${selectedOrder.CustomerID}`
+                                            }
+                                            size={100} />
                                     </div>
                                 </div>
                                 <div className="mt-8 grid gap-4">

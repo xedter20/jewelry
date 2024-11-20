@@ -134,6 +134,11 @@ function Transactions() {
   const [preview, setPreview] = useState('');
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
+
+
+  const [filePhotoOfItems, setfilePhotoOfItems] = useState(null);
+
+  const [previewPhotoOfItems, setpreviewPhotoOfItems] = useState('');
   const [users, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [paymentHistoryList, setActivePaymentHistory] = useState([]);
@@ -183,7 +188,7 @@ function Transactions() {
       method: 'POST',
       url: 'inventory/list',
       data: {
-        SupplierID: selectedSupplierID
+        // SupplierID: selectedSupplierID
       }
     });
 
@@ -608,90 +613,103 @@ function Transactions() {
       CustomerID: Yup.string().required('Required'),
       Facebook: Yup.string().required('Required'),
       // ItemName: Yup.string().required('Required'),
-      Category: Yup.string().required('Required'),
-      SupplierID: Yup.string().required('Required'),
+      // Category: Yup.string().required('Required'),
+      // SupplierID: Yup.string().required('Required'),
       Grams: Yup.number().required('Required').min(1, 'Must be greater than or equal to 1'),
-      Price: Yup.number()
-        .required('Price is required')
-        .min(0, 'Must be greater than or equal to 0')
-        .max(1000000, 'Price cannot exceed 1 million')
-        .typeError('Price must be a number'),
+      // Price: Yup.number()
+      //   .required('Price is required')
+      //   .min(0, 'Must be greater than or equal to 0')
+      //   .max(1000000, 'Price cannot exceed 1 million')
+      //   .typeError('Price must be a number'),
       PriceWithInterest: Yup.number()
         .required('Price is required')
         .min(0, 'Must be greater than or equal to 0')
         .max(1000000, 'Price cannot exceed 1 million')
         .typeError('Price must be a number'),
       quantity: Yup.number().required('Quantity is required').positive('Must be a positive number').integer('Must be an integer'),
-      itemNames: Yup.array().of(
-        Yup.number()
-          // .required('Item count is required')
-          .test(
-            'max-toTal-quantity',
-            'The item count must not exceed the total quantity available',
-            function (value) {
+      // itemNames: Yup.array().of(
+      //   Yup.number()
+      //     // .required('Item count is required')
+      //     .test(
+      //       'max-toTal-quantity',
+      //       'The item count must not exceed the total quantity available',
+      //       function (value) {
 
-              let total = this.parent.reduce((acc, current) => {
-                let sum = current;
-                if (!current) {
-                  sum = 0;
-                }
-                return acc + sum
-              }, 0)
-
-
-
-
-              const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
-
-
-              if (total > quantity) {
-                return false
-              }
-              return true
-            }
-          )
-          .test(
-            'max-to-quantity',
-            'The item count must not exceed or less than the quantity',
-            function (value) {
-
-              let total = this.parent.reduce((acc, current) => {
-                let sum = current;
-                if (!current) {
-                  sum = 0;
-                }
-                return acc + sum
-              }, 0)
+      //         let total = this.parent.reduce((acc, current) => {
+      //           let sum = current;
+      //           if (!current) {
+      //             sum = 0;
+      //           }
+      //           return acc + sum
+      //         }, 0)
 
 
 
 
-              const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
+      //         const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
 
-              if (total === 0) {
-                return false
-              }
-              else if (total < quantity) {
 
-                return false
+      //         if (total > quantity) {
+      //           return false
+      //         }
+      //         return true
+      //       }
+      //     )
+      //     .test(
+      //       'max-to-quantity',
+      //       'The item count must not exceed or less than the quantity',
+      //       function (value) {
 
-              }
-              else if (value > quantity) {
-                return false
-              }
-              return true
-            }
-          )
+      //         let total = this.parent.reduce((acc, current) => {
+      //           let sum = current;
+      //           if (!current) {
+      //             sum = 0;
+      //           }
+      //           return acc + sum
+      //         }, 0)
 
-      ),
+
+
+
+      //         const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
+
+      //         if (total === 0) {
+      //           return false
+      //         }
+      //         else if (total < quantity) {
+
+      //           return false
+
+      //         }
+      //         else if (value > quantity) {
+      //           return false
+      //         }
+      //         return true
+      //       }
+      //     )
+
+      // ),
       Downpayment: Yup.number()
         .required('Required')
         .moreThan(0, 'Downpayment must be greater than 0') // Downpayment must be greater than 0
         .lessThan(Yup.ref('PriceWithInterest'), 'Downpayment must be less than Price'), // Downpayment must be less than Price
       Payment_Method: Yup.string().required('Required'),
+      Karat_Value: Yup.array().min(1, 'Please select at least one Karat value').required('Required'),
     };
 
     let initialValues = {
+      Karat_Value: [],
+      items: [
+        {
+          SupplierID: '',
+          orderID: '',
+          Category: '',
+          quantity: 0,
+          Grams: 0,
+          Price: 0,
+          itemCodes: [],
+        }
+      ],
       PriceWithInterest: '',
       quantity: 1,
       itemNames: [
@@ -741,7 +759,7 @@ function Transactions() {
       onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
         setSubmitting(true);
 
-        // console.log("here")
+        console.log("here")
         // console.log({ isEditModalOpen })
 
         if (!file) {
@@ -752,13 +770,35 @@ function Transactions() {
 
         try {
 
-          const itemNames = allItemOptions.map((item, index) => ({
-            item: item.label,
-            count: values.itemNames[index] || 0 // Default to0 if the count is empty}));  
-          })).filter((item) => {
-            return item.count > 0
-          });
-          let finalData = { ...values, Due_Date: endDate, Price: values.PriceWithInterest, itemNames };
+
+
+          let items = values.items;
+          console.log(items)
+          const itemNames = items.reduce((acc, item) => {
+            // Loop through each itemCode in itemCodes
+            item.itemCodes.forEach(code => {
+              // Check if the item already exists in the accumulator
+              const existingItem = acc.find(i => i.item === code);
+              if (existingItem) {
+                // If item exists, increase the count
+                existingItem.count += 1;
+              } else {
+                // If item does not exist, add it with a count of 1
+                acc.push({
+                  item: code,  // The item name
+                  count: 1      // Set count as 1 for each new item
+                });
+              }
+            });
+
+            return acc; // Return the accumulated array
+          }, []);
+
+          values.ItemName = items;
+          values.itemNames = itemNames;
+
+
+          let finalData = { ...values, Due_Date: endDate, Price: values.PriceWithInterest };
 
 
 
@@ -773,7 +813,7 @@ function Transactions() {
 
           let result = res.data.data;
 
-          console.log({ result })
+          // console.log({ result })
           const updateData = new FormData();
 
           updateData.append('layAwayID', result.LayawayID);
@@ -783,6 +823,19 @@ function Transactions() {
 
             method: 'POST',
             url: 'layaway/addInitialPaymentProof',
+            data: updateData
+          });
+
+
+
+
+          const updateData1 = new FormData();
+          updateData1.append('layAwayID', result.LayawayID);
+          updateData1.append('Thumbnail', file);
+          await axios({
+
+            method: 'POST',
+            url: 'layaway/addPhotoOfItems',
             data: updateData
           });
 
@@ -1124,14 +1177,34 @@ function Transactions() {
                   isSubmitting,
 
                 }) => {
-                  const checkValidateTab = () => {
-                    // submitForm();
-                  };
-                  const errorMessages = () => {
-                    // you can add alert or console.log or any thing you want
-                    alert('Please fill in the required fields');
-                  };
 
+                  console.log({ errors })
+                  useEffect(() => {
+                    if (values.items) {
+                      const sumPrices = values.items.reduce((total, item) => total + parseFloat(item.Price), 0);
+                      const sumGrams = values.items.reduce((total, item) => total + parseFloat(item.Grams), 0);
+
+
+                      setFieldValue('PriceWithInterest', sumPrices.toFixed(2)); // Update items dynamically based on Karat_Value length
+                      setFieldValue('Grams', sumGrams.toFixed(2));
+
+                    }
+                  }, [values.items, setFieldValue]); // Re-run whenever Karat_Value changes
+
+
+                  useEffect(() => {
+                    if (values.Karat_Value) {
+                      const numberOfItems = values.Karat_Value.length; // Assuming Karat_Value length determines the number of items
+                      const newItems = Array.from({ length: numberOfItems }).map(() => ({
+                        orderID: '',
+                        Category: '',
+                        quantity: 0,
+                        Grams: 0,
+                        Price: 0,
+                      }));
+                      setFieldValue('items', newItems); // Update items dynamically based on Karat_Value length
+                    }
+                  }, [values.Karat_Value.length, setFieldValue]); // Re-run whenever Karat_Value changes
                   // console.log({ values })
                   let selectString = {
                     'SUBASTA': 'Amount_Per_Gram_Subasta',
@@ -1153,6 +1226,7 @@ function Transactions() {
 
 
 
+
                     let interestTimeMonthsToPay = interestPerGramInDb * monthsToPay;
 
 
@@ -1160,18 +1234,14 @@ function Transactions() {
 
 
 
-
-
-
-
-                    setFieldValue('interestPrice', interestTimeMonthsToPay);
-
-
                     let basicPrice = parseFloat(grams * pricingSettingsSelected)
 
 
 
-                    setFieldValue('PriceWithInterest', basicPrice + interestTimeMonthsToPay)
+
+                    return interestTimeMonthsToPay
+
+                    //setFieldValue('PriceWithInterest', basicPrice + interestTimeMonthsToPay)
 
                     // console.log({ interestPrice, price: price })
                     // setFieldValue('PriceWithInterest', 2); //
@@ -1184,54 +1254,7 @@ function Transactions() {
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
-                        <Dropdown
-                          isRequired
-                          // icons={mdiAccount}
-                          label="Supplier Name"
-                          name="SupplierID"
-                          placeholder=""
-                          value={values.SupplierID}
-                          setFieldValue={setFieldValue}
-                          onBlur={handleBlur}
-                          options={suppliers}
-                          affectedInput={
-                            'orderID'
-                          }
-                          functionToCalled={(value) => {
-                            setFieldValue('orderID', '');
-                            setSelectedSupplier(value);
 
-
-
-                            // if (inventoryList.length === 0) {
-                            //   setFieldValue('orderID', '')
-                            // }
-                            // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
-
-                            // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
-                          }}
-                        // onChange={() => {
-                        //   // setFieldValue('SupplierName', values.SupplierID)
-
-                        //   console.log({
-                        //     inventoryList
-                        //   })
-                        // }}
-                        />
-
-                        < Dropdown
-                          isRequired
-                          // icons={mdiAccount}
-                          label="Inventory Order ID"
-                          name="orderID"
-                          placeholder=""
-                          value={values.orderID}
-                          setFieldValue={setFieldValue}
-                          onBlur={handleBlur}
-                          options={inventoryList}
-                        />
-                      </div>
 
 
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
@@ -1269,7 +1292,12 @@ function Transactions() {
                               // })
                               setPlan(value)
                               setFieldValue('MonthsToPay', value);
-                              await calculatePriceInterest(values.Grams, value)
+                              let interestAmount = await calculatePriceInterest(values.Grams, value)
+
+
+
+
+
                             }}
                           />
                         </div>
@@ -1346,172 +1374,262 @@ function Transactions() {
                         />
 
                       </div>
-
-
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols- ">
-
-
-                        <InputText
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
+                        <RadioText
                           isRequired
-                          label={`Item Quantity`}
-                          name="quantity"
-                          type="number"
+                          // icons={mdiAccount}
+                          label="Karat Value"
+                          name="Karat_Value"
                           placeholder=""
-                          value={values.quantity}
+                          value={values.Karat_Value}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            { value: '21K', label: '21K' },
+                            { value: '18K', label: '18K' },
+                            { value: '18K Diamond', label: '18K Diamond' },
+                            { value: '14K', label: '14K' },
+                            { value: '14K Diamond', label: '14K Diamond' },
 
-                          onBlur={handleBlur} // This apparently updates `touched`?
+                          ]}
                         />
-
-
                       </div>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
-                        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                          {allItemOptions.map((item, index) => (
-                            <InputText
+                      {values.Karat_Value.length > 0 && (
+                        <>
+                          {values.items.map((_, index) => (
+                            <div key={index} className="border p-4 mb-4 rounded-lg">
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                                {/* <InputText
+
+                                  label="supp id"
+                                  name={`items[${index}].SupplierID`}
+                                  type="hiddent"
+                                  value={values.items[index].SupplierID}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                /> */}
+                                <Dropdown
+                                  isRequired
+                                  label="Inventory Order ID"
+                                  name={`items[${index}].orderID`}
+                                  value={values.items[index].orderID}
+                                  setFieldValue={setFieldValue}
+                                  onBlur={handleBlur}
+                                  options={inventoryList}
+                                  functionToCalled={(value) => {
+                                    let suppID = inventoryList.find(i => i.value === value).SupplierID
+
+                                    setFieldValue(`items[${index}].SupplierID`, suppID);
+                                  }}
+                                />
+                                <Dropdown
+                                  isRequired
+                                  label="Category"
+                                  name={`items[${index}].Category`}
+                                  value={values.items[index].Category}
+                                  setFieldValue={setFieldValue}
+                                  onBlur={handleBlur}
+                                  options={[
+                                    { value: 'BRAND NEW', label: 'BRAND NEW' },
+                                    { value: 'SUBASTA', label: 'SUBASTA' },
+                                  ]}
+                                  functionToCalled={(value) => {
+
+                                    let selectString = {
+                                      'SUBASTA': 'Amount_Per_Gram_Subasta',
+                                      'BRAND NEW': 'Amount_Per_Gram_Brand_New'
+                                    }
+
+                                    let multiplyBry = pricingSettings[selectString[value]];
 
 
-                              itemClass={true}
-                              key={item.value} // Unique key for each input
-                              label={`${item.label}`}
-                              name={`itemNames[${index}]`}
-                              type="number"
-                              placeholder=""
-                              value={values.itemNames[index]}
-                              onChange={(e) => {
-                                const newValue = e.target.value;
-                                if (/^\d*$/.test(newValue)) { // Check if the value is a whole number
-                                  handleChange(e); // Update the form state
-                                }
-                              }}
-                              onBlur={handleBlur} // This updates `touched`
-                              error={errors.itemNames?.[index]} // Show error if touched
+                                    setPricingSettingsSelected(multiplyBry)
 
-                            />
+                                    setFieldValue(`items[${index}].Price`, (values[`items[${index}].Grams}`] * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+
+                                    // setSelectedSupplier(value);
+
+
+
+                                    // if (inventoryList.length === 0) {
+                                    //   setFieldValue('orderID', '')
+                                    // }
+                                    // //console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+
+                                    // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
+                                  }}
+
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
+                                <InputText
+                                  isRequired
+                                  label="Item Quantity"
+                                  name={`items[${index}].quantity`}
+                                  type="number"
+                                  value={values.items[index].quantity}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                />
+                              </div>
+
+                              {values.items[index].quantity > 0 && (
+                                <>
+                                  <label className="mt-2 font-bold text-neutral-600 block mb-2">
+                                    Item Codes *
+                                  </label>
+                                  <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                                    {Array.from({ length: values.items[index].quantity }).map((_, nestedIndex) => (
+                                      <div key={nestedIndex}>
+                                        <InputText
+                                          isRequired
+                                          name={`items[${index}].itemCodes[${nestedIndex}]`}
+                                          type="text"
+
+                                          onBlur={handleBlur}
+                                          onChange={(e) => {
+                                            const orderID = values.items[index].orderID || '';
+                                            const inputValue = e.target.value;
+
+                                            // console.log(e.target.value)
+                                            // setFieldValue(`items[${index}].itemCodes[${nestedIndex}]`, e.target.value);
+                                            handleChange({
+                                              target: {
+                                                name: `items[${index}].itemCodes[${nestedIndex}]`,
+                                                value: inputValue
+                                              },
+                                            });
+                                          }}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 mt-2">
+                                <InputText
+                                  isRequired
+                                  label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
+                                  name={`items[${index}].Grams`}
+                                  type="number"
+                                  value={values.items[index].Grams}
+                                  onChange={(e) => {
+
+                                    let findTotal_Grams_Sold = inventoryList.find(i => i.value === values.items[index].orderID);
+
+
+
+
+                                    //console.log({ findTotal_Grams_Sold })
+
+
+                                    let maxOrder = findTotal_Grams_Sold.maxGramsOffer;
+
+
+
+                                    if (maxOrder < 1) {
+                                      setFieldError(
+                                        `items[${index}].Grams`, `Stock is already 0`
+                                      );
+                                    }
+
+
+                                    const grams = e.target.value;
+
+                                    //console.log({ grams })
+
+                                    // Regex to allow only numbers and up to 2 decimal places
+                                    const gramsRegex = /^\d*\.?\d{0,2}$/;
+
+                                    if (gramsRegex.test(grams) || grams === "") {
+                                      setFieldValue(`items[${index}].Grams`, grams); // Update grams directly as a string
+                                      let gramsNumber = parseFloat(grams);
+
+                                      //console.log({ gramsNumber })
+
+                                      if (!isNaN(gramsNumber) && gramsNumber >= 0) {
+
+                                        let interestAmount = calculatePriceInterest(grams, values.MonthsToPay, values.items[index].Category)
+
+
+
+
+                                        setFieldValue(`items[${index}].InterestAmount`, (interestAmount).toFixed(2)); // Update price based on grams
+
+
+
+                                        setFieldValue(`items[${index}].OriginalPrice`, (gramsNumber * parseFloat(pricingSettingsSelected)).toFixed(2));
+
+
+
+                                        let tentativeAmount = (gramsNumber * parseFloat(pricingSettingsSelected)) + interestAmount;
+
+
+
+                                        console.log({ tentativeAmount })
+                                        setFieldValue(`items[${index}].Price`, tentativeAmount.toFixed(2)); // Update price based on grams
+
+
+                                        console.log({
+                                          dex: values.items[index].OriginalPrice, ter: values.items[index].InterestAmount
+                                        }
+                                        )
+                                        // console.log({sumPrices, sumGrams})
+                                        // setFieldValue('Price', sumPrices.toFixed(2))
+                                        // setFieldValue('Grams', sumGrams.toFixed(2))
+                                      } else {
+                                        setFieldValue(`items[${index}].Price`, '0.00'); // Reset price if grams is invalid
+                                      }
+                                    }
+                                  }}
+                                  onBlur={handleBlur}
+                                />
+                                <InputText
+                                  isRequired
+                                  disabled
+                                  label={`Price ${values.items[index].OriginalPrice} + ${values.items[index].InterestAmount} (Interest)`}
+                                  name={`items[${index}].Price`}
+                                  type="number"
+                                  value={values.items[index].Price}
+                                  onBlur={handleBlur}
+                                />
+                              </div>
+                            </div>
                           ))}
-                        </div>
-
-                        <div className='mt-2'>
-                          <Dropdown
-                            isRequired
-                            // icons={mdiAccount}
-                            label="Category"
-                            name="Category"
-                            placeholder=""
-                            value={values.Category}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            // affectedInput={
-                            //   'orderID'
-                            // }
-                            functionToCalled={async (value) => {
-
-
-                              let multiplyBry = pricingSettings[selectString[value]];
-
-
-                              setPricingSettingsSelected(multiplyBry)
-
-                              setSelectedSupplier(value);
-
-                              setFieldValue('Category', value);
-
-                              await calculatePriceInterest(values.Grams, values.MonthsToPay, value)
-
-                              // if (inventoryList.length === 0) {
-                              //   setFieldValue('orderID', '')
-                              // }
-                              // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
-
-                              // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
-                            }}
-                            options={[
-                              // { value: 'Pendant', label: 'Pendant' },
-                              // { value: 'Bangle', label: 'Bangle' },
-                              // { value: 'Earrings', label: 'Earrings' },
-                              // { value: 'Bracelet', label: 'Bracelet' },
-                              // { value: 'Necklace', label: 'Necklace' },
-                              // { value: 'Rings', label: 'Rings' },
-                              { value: 'BRAND NEW', label: 'BRAND NEW' },
-                              { value: 'SUBASTA', label: 'SUBASTA' },
-                            ]}
-                          />
-                        </div>
-
-                      </div>
-
-
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                        <InputText
-                          isRequired
-                          label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
-                          name="Grams"
-                          type="number"
-                          placeholder=""
-                          onChange={(e) => {
-
-                            const grams = e.target.value;
+                        </>
+                      )}
 
 
 
-                            let findTotal_Grams_Sold = inventoryList.find(i => i.value === values.orderID);
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
 
-
-
-                            let maxOrder = findTotal_Grams_Sold.maxGramsOffer;
-
-
-
-
-
-                            // Regex to allow only numbers and up to 2 decimal places
-                            const gramsRegex = /^\d*\.?\d{0,2}$/;
-
-                            if (gramsRegex.test(grams) || grams === "") {
-                              setFieldValue('Grams', grams); // Update grams directly as a string
-                              let gramsNumber = parseFloat(grams);
-
-
-                              if (gramsNumber > parseFloat(maxOrder)) {
-                                gramsNumber = maxOrder;
-                                setFieldError(
-                                  'Grams', `Mininum order is ${maxOrder} as per inventory`
-                                );
-                                setFieldValue(
-                                  'Grams', maxOrder
-                                )
-
-                              }
-
-                              setFieldValue('Price', parseFloat(gramsNumber * pricingSettingsSelected).toFixed(2)); // Update price based on grams
-                              let interestPrice = calculatePriceInterest(gramsNumber, values.MonthsToPay, values.Category);
-
-                            }
-                          }}
-                          value={values.Grams}
-                          onBlur={handleBlur} // This apparently updates `touched`?
-                        />
 
                         <InputText
                           isRequired
-                          label="Price"
-                          name="Price"
+                          className="py-3 border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          label={`Total Price`}
+                          name="PriceWithInterest"
                           type="number"
                           placeholder=""
                           disabled
-                          value={values.Price}
+                          value={values.PriceWithInterest}
                           onBlur={handleBlur} // This apparently updates `touched`?
                         />
+                        <InputText
+                          className="py-3 border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          disabled
+                          label={'Total Grams'}
+                          name="Grams"
+                          type="number"
+                          placeholder=""
+                          value={values.Grams}
+
+
+                        />
                       </div>
-                      <InputText
-                        isRequired
-                        label={`Total Price (₱${values.Price} + ₱${(values.interestPrice || 0).toFixed(2)})`}
-                        name="PriceWithInterest"
-                        type="number"
-                        placeholder=""
-                        disabled
-                        value={values.PriceWithInterest}
-                        onBlur={handleBlur} // This apparently updates `touched`?
-                      />
+
                       <InputText
                         isRequired
                         label="Initial Downpayment"
@@ -1521,9 +1639,31 @@ function Transactions() {
                         value={values.Downpayment}
                         onBlur={handleBlur} // This apparently updates `touched`?
                       />
+
+
+                      <InputText
+                        label="Upload Photo of Items"
+                        name="Thumbnail"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          setfilePhotoOfItems(file);
+                          if (file) {
+                            setpreviewPhotoOfItems(URL.createObjectURL(file));
+                          }
+                        }}
+                        onBlur={handleBlur}
+                      />
+
+                      <div className="flex justify-center">
+                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={previewPhotoOfItems} />
+                      </div>
+
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
                         <RadioText
                           isRequired
+                          type='radio'
                           // icons={mdiAccount}
                           label="Payment Method *"
                           name="Payment_Method"

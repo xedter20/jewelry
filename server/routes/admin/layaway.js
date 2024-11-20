@@ -66,8 +66,6 @@ router.post('/create', authenticateUserMiddleware, async (req, res) => {
     const OrderID = createID(formatDate(), rowIndex);
     let loggedInUser = req.user;
 
-    console.log({ OrderID });
-
     const queryText = `INSERT INTO layaway 
     (
     LayawayID ,
@@ -110,6 +108,15 @@ router.post('/create', authenticateUserMiddleware, async (req, res) => {
     let result = await mySqlDriver.query(queryText, values, (err, result) => {
       return result;
     });
+
+    const queryUpdateLayAway = `UPDATE layaway SET status = ? 
+      
+    where  LayawayID  = ?
+    
+    `;
+    const valuesUpdate = ['IN_PROGRESS', result[0].LayawayID];
+
+    await mySqlDriver.query(queryUpdateLayAway, valuesUpdate);
 
     await mySqlDriver.query(queryPaymentText, paymentValues);
     res

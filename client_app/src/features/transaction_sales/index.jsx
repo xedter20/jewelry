@@ -125,14 +125,15 @@ function Transactions() {
 
   const allItemOptions = [
     { value: 'Pendant', label: 'Pendant' },
-    { value: 'Bangle', label: 'Bangle' },
-    { value: 'Earrings', label: 'Earrings' },
-    { value: 'Bracelet', label: 'Bracelet' },
-    { value: 'Necklace', label: 'Necklace' },
-    { value: 'Rings', label: 'Rings' }
+    // { value: 'Bangle', label: 'Bangle' },
+    // { value: 'Earrings', label: 'Earrings' },
+    // { value: 'Bracelet', label: 'Bracelet' },
+    // { value: 'Necklace', label: 'Necklace' },
+    // { value: 'Rings', label: 'Rings' }
   ];
 
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState('');
   const [users, setCustomers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [paymentHistoryList, setActivePaymentHistory] = useState([]);
@@ -157,7 +158,7 @@ function Transactions() {
       const settings = res.data.data; // Changed variable name here
       setPricingSettings(settings); // Changed function call here
     } catch (err) {
-      console.error('Error fetching pricing settings:', err); // Log the error
+      //console.error('Error fetching pricing settings:', err); // Log the error
       setError('Failed to fetch pricing settings'); // Changed error message here
     } finally {
       setIsLoaded(true); // Ensure isLoaded is set to true regardless of success or error
@@ -174,7 +175,7 @@ function Transactions() {
       method: 'POST',
       url: 'inventory/list',
       data: {
-        SupplierID: selectedSupplierID
+        // SupplierID: selectedSupplierID
       }
     });
 
@@ -182,7 +183,7 @@ function Transactions() {
 
 
 
-
+    //console.log({ list })
     setInventoryList(list.map((s) => {
       return {
         label: `${s.OrderID}`,
@@ -224,8 +225,10 @@ function Transactions() {
 
 
     setCustomers(list.map((s) => {
+
+      console.log({ s })
       return {
-        label: `${s.CustomerName} - ${s.Contact}`,
+        label: `${s.CustomerID} - ${s.CustomerName} - ${s.Contact}`,
         value: s.CustomerID,
         Facebook: s.Facebook
       }
@@ -263,7 +266,7 @@ function Transactions() {
 
   useEffect(() => {
     fetchInventoryOrders()
-  }, [selectedSupplierID]);
+  }, []);
   useEffect(() => {
 
     fetchAll();
@@ -284,7 +287,7 @@ function Transactions() {
     // });
     // let list = res.data.data;
 
-    // console.log({ list });
+    // //console.log({ list });
     // setUser(list);
   };
 
@@ -311,7 +314,7 @@ function Transactions() {
     return classes.filter(Boolean).join(' ');
   }
 
-  // console.log(users);
+  // //console.log(users);
   let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   const columns = useMemo(
     () => [
@@ -521,7 +524,7 @@ function Transactions() {
             'CANCELLED': 'bg-red-500'
           }
 
-          console.log(value)
+          //console.log(value)
           return (
             <div className="flex items-center space-x-3">
 
@@ -544,7 +547,7 @@ function Transactions() {
 
 
   const handleOnChange = e => {
-    console.log(e.target.files[0]);
+    //console.log(e.target.files[0]);
     setFile(e.target.files[0]);
   };
 
@@ -601,108 +604,72 @@ function Transactions() {
     let validation = {
       CustomerID: Yup.string().required('Required'),
       Facebook: Yup.string().required('Required'),
-      Category: Yup.string().required('Required'),
-      SupplierID: Yup.string().required('Required'),
+      // Category: Yup.string().required('Required'),
+      // SupplierID: Yup.string().required('Required'),
       Grams: Yup.number().required('Required').min(1, 'Must be greater than or equal to 1'),
-      orderID: Yup.string().required('Required'),
+      // orderID: Yup.string().required('Required'),
       Price: Yup.number()
         .required('Price is required')
         .min(1, 'Must be greater than or equal to 1')
         .max(1000000, 'Price cannot exceed 1 million')
         .typeError('Price must be a number'),
 
-      quantity: Yup.number().required('Quantity is required').positive('Must be a positive number').integer('Must be an integer'),
-      itemNames: Yup.array().of(
-        Yup.number()
-          // .required('Item count is required')
-          .test(
-            'max-toTal-quantity',
-            'The item count must not exceed the total quantity available',
-            function (value) {
 
-              let total = this.parent.reduce((acc, current) => {
-                let sum = current;
-                if (!current) {
-                  sum = 0;
-                }
-                return acc + sum
-              }, 0)
+      Karat_Value: Yup.array().min(1, 'Please select at least one Karat value').required('Required'),
+
+      // Dynamically validate `quantity_{index}` and `itemCodes{index}_{nestedIndex}` fields
+      // ...Array.from({ length: 5 }).reduce((acc, _, index) => {
+      //   acc[`quantity_${index}`] = Yup.number().required(`Quantity ${index + 1} is required`).min(1, 'Quantity must be at least 1');
 
 
 
+      //   // // Dynamically generate validation for nested items
+      //   for (let nestedIndex = 0; nestedIndex < 4; nestedIndex++) {
+      //     acc[`itemCodes${index}_${nestedIndex}`] = Yup.string()
+      //       .required(`Nested item ${nestedIndex + 1} is required for Quantity ${index + 1}`)
+      //       .min(1, `Nested item must be at least 1`);
+      //   }
 
-              const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
+      //   return acc;
+      // }, {}),
 
-
-              if (total > quantity) {
-                return false
-              }
-              return true
-            }
-          )
-          .test(
-            'max-to-quantity',
-            'The item count must not exceed or less than the quantity',
-            function (value) {
-
-              let total = this.parent.reduce((acc, current) => {
-                let sum = current;
-                if (!current) {
-                  sum = 0;
-                }
-                return acc + sum
-              }, 0)
-
-
-
-
-              const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
-
-              if (total === 0) {
-                return false
-              }
-              else if (total < quantity) {
-
-                return false
-
-              }
-              else if (value > quantity) {
-                return false
-              }
-              return true
-            }
-          )
-        // .test(
-        //   'max-to-quantity',
-        //   'The item count must not exceed the total quantity available',
-        //   function (value) {
-
-        //     let total = this.parent.reduce((acc, current) => {
-        //       let sum = current;
-        //       if (!current) {
-        //         sum = 0;
-        //       }
-        //       return acc + sum
-        //     }, 0)
-
-
-
-
-        //     const quantity = this.from[0].value.quantity; // Access sibling value return value <= quantity; 
-
-
-        //     if (total === 0) {
-        //       return false
-        //     }
-        //     return true
-        //   }
-        // )
+      items: Yup.array().of(
+        Yup.object({
+          orderID: Yup.string().required('Inventory Order ID is required'),
+          Category: Yup.string().required('Category is required'),
+          quantity: Yup.number()
+            .required('Item Quantity is required')
+            .min(1, 'Quantity must be at least 1')
+            .positive('Quantity must be a positive number'),
+          Grams: Yup.number()
+            .required('Grams per item is required')
+            .min(0.1, 'Grams must be greater than 0')
+            // .max(Yup.ref('maxGrams'), 'Grams cannot exceed available stock')
+            .positive('Grams must be a positive number'),
+          Price: Yup.number().required('Price is required').positive('Price must be a positive number'),
+        })
       ),
+
 
     };
 
-    let initialValues = {
 
+
+
+
+    let initialValues = {
+      Karat_Value: [],
+      items: [
+        {
+          SupplierID: '',
+          orderID: '',
+          Category: '',
+          quantity: 0,
+          Grams: 0,
+          Price: 0,
+          itemCodes: []
+        }
+      ],
       quantity: 1,
       itemNames: [
 
@@ -714,7 +681,7 @@ function Transactions() {
       Grams: '',
       Price: '',
       ItemName: '',
-      orderID: ''
+      orderID: '',
 
 
     }
@@ -745,34 +712,70 @@ function Transactions() {
       initialValues: initialValues,
       validationSchema: Yup.object(validation),
       validateOnMount: true,
-      validateOnChange: false,
+      validateOnChange: true,
       onSubmit: async (values, { setFieldError, setSubmitting, resetForm }) => {
         setSubmitting(true);
 
-        // console.log("here")
-        // console.log({ isEditModalOpen })
+        let items = values.items;
 
+        const itemNames = items.reduce((acc, item) => {
+          // Loop through each itemCode in itemCodes
+          item.itemCodes.forEach(code => {
+            // Check if the item already exists in the accumulator
+            const existingItem = acc.find(i => i.item === code);
+            if (existingItem) {
+              // If item exists, increase the count
+              existingItem.count += 1;
+            } else {
+              // If item does not exist, add it with a count of 1
+              acc.push({
+                item: code,  // The item name
+                count: 1      // Set count as 1 for each new item
+              });
+            }
+          });
+
+          return acc; // Return the accumulated array
+        }, []);
+
+        values.ItemName = items;
+        values.itemNames = itemNames;
 
 
 
         try {
 
 
-          const itemNames = allItemOptions.map((item, index) => ({
-            item: item.label,
-            count: values.itemNames[index] || 0 // Default to0 if the count is empty}));  
-          })).filter((item) => {
-            return item.count > 0
-          });
 
 
-          values.itemNames = itemNames;
 
           let res = await axios({
             method: 'POST',
             url: 'transactions/addOrder',
             data: { orderId: values.orderID, ...values }
           })
+
+
+          const TransactionID = res.data.TransactionID;
+
+
+          const data = new FormData();
+
+
+          data.append('Thumbnail', file);
+          data.append('TransactionID', TransactionID);
+
+          await axios({
+            // headers: {
+            //   'content-type': 'multipart/form-data'
+            // },
+            method: 'POST',
+            url: 'transactions/uploadPhotoOfItems',
+            data
+          });
+
+
+
           await fetchAll();
           document.getElementById('addOrder').close();
           // await fetchSuppliers();
@@ -793,9 +796,11 @@ function Transactions() {
 
 
           resetForm()
-
+          setPreview(null);
+          setFile(null)
+          setSubmitting(false)
         } catch (error) {
-          console.log({ error });
+          //console.log({ error });
         } finally {
 
         }
@@ -809,14 +814,16 @@ function Transactions() {
 
     let validation = {
       Comments: Yup.string().required('Required'),
-      Status: Yup.string().required('Required')
+      Status: Yup.string().required('Required'),
+
     };
 
     let initialValues = {
 
 
-      Comments: '',
-      Status: ''
+      Comments: selectedOrder.Comments || '',
+      Status: selectedOrder.Status || '',
+      proof_of_payment: selectedOrder.proof_of_payment
     }
 
 
@@ -837,42 +844,84 @@ function Transactions() {
 
 
 
+          console.log({ selectedOrder })
+
+          if (!file && values.proof_of_payment === 'VIA_MESSENGER') {
+            setFieldError('Proof_Payment', 'Required');
+          }
+
+
+          if (file) {
+            const data = new FormData();
+            data.append('Proof_Payment', file);
+            data.append('Comments', values.Comments);
+
+            data.append('TransactionID', selectedOrder.TransactionID);
+
+
+            let res = await axios({
+              // headers: {
+              //   'content-type': 'multipart/form-data'
+              // },
+              method: 'POST',
+              url: 'transactions/makePayment',
+              data
+            });
+
+            toast.success(`Submitted Successfully`, {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light'
+            });
+
+
+          } else {
+
+            let res = await axios({
+              method: 'POST',
+              url: 'admin/transactions/updateOrder',
+              data: {
+                ...values,
+                transactionId: selectedOrder.TransactionID
+              }
+            })
+            // await fetchAll();
+            // document.getElementById('addOrder').close();
+            // // await fetchSuppliers();
+
+            toast.success('Updated successfully!', {
+              // onClose: () => {
+              //   setSubmitting(false);
+              //   navigate('/app/transactions');
+              // },
+              position: 'top-right',
+              autoClose: 500,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light'
+            });
+
+          }
 
 
 
 
-          let res = await axios({
-            method: 'POST',
-            url: 'admin/transactions/updateOrder',
-            data: {
-              ...values,
-              transactionId: selectedOrder.TransactionID
-            }
-          })
-          // await fetchAll();
-          // document.getElementById('addOrder').close();
-          // // await fetchSuppliers();
+          setFile(null)
+          setPreview(null);
           document.getElementById('viewReceipt').close();
-          toast.success('Updated successfully!', {
-            // onClose: () => {
-            //   setSubmitting(false);
-            //   navigate('/app/transactions');
-            // },
-            position: 'top-right',
-            autoClose: 500,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'light'
-          });
-
           fetchAll();
 
 
         } catch (error) {
-          console.log({ error });
+          //console.log({ error });
         } finally {
         }
       }
@@ -1098,33 +1147,47 @@ function Transactions() {
 
                 }) => {
 
-                  // console.log(errors)
-                  const checkValidateTab = () => {
-                    // submitForm();
-                  };
-                  const errorMessages = () => {
-                    // you can add alert or console.log or any thing you want
-                    alert('Please fill in the required fields');
-                  };
+                  //console.log({ values })
 
-                  // console.log({ values })
+                  // //console.log(errors)
 
 
-                  // // Calculate the total of item quantities
-                  // const totalItems = values.itemNames.reduce((acc, curr) => {
-                  //   const num = parseInt(curr) || 0; // Convert to number, default to 0
-                  //   return acc + num;
-                  // }, 0);
+
+                  useEffect(() => {
+                    if (values.items) {
+                      const sumPrices = values.items.reduce((total, item) => total + parseFloat(item.Price), 0);
+                      const sumGrams = values.items.reduce((total, item) => total + parseFloat(item.Grams), 0);
+                      setFieldValue('Price', sumPrices); // Update items dynamically based on Karat_Value length
+                      setFieldValue('Grams', sumGrams);
+
+                    }
+                  }, [values.items, setFieldValue]); // Re-run whenever Karat_Value changes
 
 
+                  // Effect to update the number of items based on Karat_Value length
+                  useEffect(() => {
+                    if (values.Karat_Value) {
+                      const numberOfItems = values.Karat_Value.length; // Assuming Karat_Value length determines the number of items
+                      const newItems = Array.from({ length: numberOfItems }).map(() => ({
+                        orderID: '',
+                        Category: '',
+                        quantity: 0,
+                        Grams: 0,
+                        Price: 0,
+                      }));
+
+                      console.log({ newItems })
+                      setFieldValue('items', newItems); // Update items dynamically based on Karat_Value length
+                    }
+                  }, [values.Karat_Value.length, setFieldValue]); // Re-run whenever Karat_Value changes
                   return (
                     <Form className="">
                       {/* <label
                         className={`block mb-2 text-green-400 text-left font-bold`}>
                         Child
                       </label> */}
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
-                        <Dropdown
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                        {/* <Dropdown
                           isRequired
                           // icons={mdiAccount}
                           label="Supplier Name"
@@ -1146,19 +1209,13 @@ function Transactions() {
                             // if (inventoryList.length === 0) {
                             //   setFieldValue('orderID', '')
                             // }
-                            // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+                            // //console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
 
                             // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
                           }}
-                        // onChange={() => {
-                        //   // setFieldValue('SupplierName', values.SupplierID)
 
-                        //   console.log({
-                        //     inventoryList
-                        //   })
-                        // }}
-                        />
-
+                        /> */}
+                        {/* 
                         < Dropdown
                           isRequired
                           // icons={mdiAccount}
@@ -1169,7 +1226,20 @@ function Transactions() {
                           setFieldValue={setFieldValue}
                           onBlur={handleBlur}
                           options={inventoryList}
-                        />
+                          functionToCalled={(value) => {
+                            // setFieldValue('orderID', '');
+                            // setSelectedSupplier(value);
+                            let suppID = inventoryList.find((i) => {
+                              return i.value === value
+
+                            })
+                            let supplierID = suppID.SupplierID
+                            setSelectedSupplier(supplierID);
+                            setFieldValue('SupplierID', supplierID);
+
+                          }}
+
+                        /> */}
                       </div>
 
                       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 ">
@@ -1209,25 +1279,206 @@ function Transactions() {
                         />
 
                       </div>
-
                       <div className="grid grid-cols-1 gap-2 md:grid-cols-1 ">
-                        <InputText
+                        <RadioText
                           isRequired
-                          label={`Item Quantity`}
-                          name="quantity"
-                          type="number"
+                          // icons={mdiAccount}
+                          label="Karat Value"
+                          name="Karat_Value"
                           placeholder=""
-                          value={values.quantity}
+                          value={values.Karat_Value}
+                          setFieldValue={setFieldValue}
+                          onBlur={handleBlur}
+                          options={[
+                            { value: '21K', label: '21K' },
+                            { value: '18K', label: '18K' },
+                            { value: '18K Diamond', label: '18K Diamond' },
+                            { value: '14K', label: '14K' },
+                            { value: '14K Diamond', label: '14K Diamond' },
 
-                          onBlur={handleBlur} // This apparently updates `touched`?
+                          ]}
                         />
-
-
                       </div>
 
+                      {console.log({ dex: values.Karat_Value.length })}
+                      {values.Karat_Value.length > 0 && (
+                        <>
+                          {values.items.map((_, index) => (
+                            <div key={index} className="border p-4 mb-4 rounded-lg">
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                                <Dropdown
+                                  isRequired
+                                  label="Inventory Order ID"
+                                  name={`items[${index}].orderID`}
+                                  value={values.items[index].orderID}
+                                  setFieldValue={setFieldValue}
+                                  onBlur={handleBlur}
+                                  options={inventoryList}
+                                  functionToCalled={(value) => {
+                                    let suppID = inventoryList.find(i => i.value === value).SupplierID
+
+                                    setFieldValue(`items[${index}].SupplierID`, suppID);
+                                  }}
+                                />
+                                <Dropdown
+                                  isRequired
+                                  label="Category"
+                                  name={`items[${index}].Category`}
+                                  value={values.items[index].Category}
+                                  setFieldValue={setFieldValue}
+                                  onBlur={handleBlur}
+                                  options={[
+                                    { value: 'BRAND NEW', label: 'BRAND NEW' },
+                                    { value: 'SUBASTA', label: 'SUBASTA' },
+                                  ]}
+                                  functionToCalled={(value) => {
+
+                                    let selectString = {
+                                      'SUBASTA': 'Amount_Per_Gram_Subasta',
+                                      'BRAND NEW': 'Amount_Per_Gram_Brand_New'
+                                    }
+
+                                    let multiplyBry = pricingSettings[selectString[value]];
 
 
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                                    setPricingSettingsSelected(multiplyBry)
+
+                                    setFieldValue(`items[${index}].Price`, (values[`items[${index}].Grams}`] * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+
+                                    // setSelectedSupplier(value);
+
+
+
+                                    // if (inventoryList.length === 0) {
+                                    //   setFieldValue('orderID', '')
+                                    // }
+                                    // //console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+
+                                    // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
+                                  }}
+
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
+                                <InputText
+                                  isRequired
+                                  label="Item Quantity"
+                                  name={`items[${index}].quantity`}
+                                  type="number"
+                                  value={values.items[index].quantity}
+                                  onBlur={handleBlur}
+                                  onChange={handleChange}
+                                />
+                              </div>
+
+                              {values.items[index].quantity > 0 && (
+                                <>
+                                  <label className="mt-2 font-bold text-neutral-600 block mb-2">
+                                    Item Codes *
+                                  </label>
+                                  <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+                                    {Array.from({ length: values.items[index].quantity }).map((_, nestedIndex) => (
+                                      <div key={nestedIndex}>
+                                        <InputText
+                                          isRequired
+                                          name={`items[${index}].itemCodes[${nestedIndex}]`}
+                                          type="text"
+
+                                          onBlur={handleBlur}
+                                          onChange={(e) => {
+                                            const orderID = values.items[index].orderID || '';
+                                            const inputValue = e.target.value;
+
+                                            // console.log(e.target.value)
+                                            // setFieldValue(`items[${index}].itemCodes[${nestedIndex}]`, e.target.value);
+                                            handleChange({
+                                              target: {
+                                                name: `items[${index}].itemCodes[${nestedIndex}]`,
+                                                value: inputValue
+                                              },
+                                            });
+                                          }}
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+
+                              <div className="grid grid-cols-1 gap-2 md:grid-cols-2 mt-2">
+                                <InputText
+                                  isRequired
+                                  label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
+                                  name={`items[${index}].Grams`}
+                                  type="number"
+                                  value={values.items[index].Grams}
+                                  onChange={(e) => {
+
+                                    let findTotal_Grams_Sold = inventoryList.find(i => i.value === values.items[index].orderID);
+
+
+
+
+                                    //console.log({ findTotal_Grams_Sold })
+
+
+                                    let maxOrder = findTotal_Grams_Sold.maxGramsOffer;
+
+
+
+                                    if (maxOrder < 1) {
+                                      setFieldError(
+                                        `items[${index}].Grams`, `Stock is already 0`
+                                      );
+                                    }
+
+
+                                    const grams = e.target.value;
+
+                                    //console.log({ grams })
+
+                                    // Regex to allow only numbers and up to 2 decimal places
+                                    const gramsRegex = /^\d*\.?\d{0,2}$/;
+
+                                    if (gramsRegex.test(grams) || grams === "") {
+                                      setFieldValue(`items[${index}].Grams`, grams); // Update grams directly as a string
+                                      let gramsNumber = parseFloat(grams);
+
+                                      //console.log({ gramsNumber })
+
+                                      if (!isNaN(gramsNumber) && gramsNumber >= 0) {
+                                        setFieldValue(`items[${index}].Price`, (gramsNumber * pricingSettingsSelected).toFixed(2)); // Update price based on grams
+
+
+
+                                        // console.log({ sumPrices, sumGrams })
+                                        // setFieldValue('Price', sumPrices.toFixed(2))
+                                        // setFieldValue('Grams', sumGrams.toFixed(2))
+                                      } else {
+                                        setFieldValue(`items[${index}].Price`, '0.00'); // Reset price if grams is invalid
+                                      }
+                                    }
+                                  }}
+                                  onBlur={handleBlur}
+                                />
+                                <InputText
+                                  isRequired
+                                  disabled
+                                  label="Price"
+                                  name={`items[${index}].Price`}
+                                  type="number"
+                                  value={values.items[index].Price}
+                                  onBlur={handleBlur}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      )}
+
+
+                      {/* <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                         {allItemOptions.map((item, index) => (
                           <InputText
 
@@ -1250,13 +1501,35 @@ function Transactions() {
 
                           />
                         ))}
-                      </div>
+                      </div> */}
 
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-1 ">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
 
 
-                        <div className='mt-2'>
-                          <Dropdown
+
+                        <InputText
+                          className="py-3 border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          disabled
+                          label={'Total Price'}
+                          name="Price"
+                          type="number"
+                          placeholder=""
+                          value={values.Price}
+
+
+                        />
+                        <InputText
+                          className="py-3 border-2 border-none focus:border-purple-500 rounded-lg p-2 w-full"
+                          disabled
+                          label={'Total Grams'}
+                          name="Grams"
+                          type="number"
+                          placeholder=""
+                          value={values.Grams}
+
+
+                        />
+                        {/* <Dropdown
                             isRequired
                             // icons={mdiAccount}
                             label="Category"
@@ -1296,83 +1569,34 @@ function Transactions() {
                               // if (inventoryList.length === 0) {
                               //   setFieldValue('orderID', '')
                               // }
-                              // console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
+                              // //console.log(inventoryList.filter(i => i.SupplierID === `${value}`))
 
                               // setInventoryList(inventoryList.filter(i => i.SupplierID === `${value}`))
                             }}
-                          />
-                        </div>
+                          /> */}
+
 
                       </div>
 
 
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 ">
-                        <InputText
-                          isRequired
-                          label={`Grams per Items * ₱${pricingSettingsSelected || 0}`}
-                          name="Grams"
-                          type="number"
-                          placeholder=""
-                          value={values.Grams}
-                          onChange={(e) => {
+                      <InputText
+                        label="Upload Photo of Items"
+                        name="Thumbnail"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          setFile(file);
+                          if (file) {
+                            setPreview(URL.createObjectURL(file));
+                          }
+                        }}
+                        onBlur={handleBlur}
+                      />
 
-                            let findTotal_Grams_Sold = inventoryList.find(i => i.value === values.orderID);
-
-
-
-                            let maxOrder = findTotal_Grams_Sold.maxGramsOffer;
-
-
-                            console.log({ maxOrder })
-                            if (maxOrder < 1) {
-                              setFieldError(
-                                'Grams', `Stock is already 0`
-                              );
-                            }
-
-
-                            const grams = e.target.value;
-
-                            // Regex to allow only numbers and up to 2 decimal places
-                            const gramsRegex = /^\d*\.?\d{0,2}$/;
-
-                            if (gramsRegex.test(grams) || grams === "") {
-                              setFieldValue('Grams', grams); // Update grams directly as a string
-                              let gramsNumber = parseFloat(grams);
-
-                              if (gramsNumber > parseFloat(maxOrder)) {
-                                gramsNumber = maxOrder;
-                                setFieldError(
-                                  'Grams', `Mininum order is ${maxOrder} as per inventory`
-                                );
-                                // setFieldValue(
-                                //   'Grams', maxOrder
-                                // )
-
-                              }
-                              if (!isNaN(gramsNumber) && gramsNumber >= 0) {
-                                setFieldValue('Price', (gramsNumber * pricingSettingsSelected).toFixed(2)); // Update price based on grams
-                              } else {
-                                setFieldValue('Price', '0.00'); // Reset price if grams is invalid
-                              }
-                            }
-                          }}
-                          onBlur={handleBlur} // This apparently updates `touched`?
-                        />
-
-                        <InputText
-                          isRequired
-                          disabled
-                          label="Price"
-                          name="Price"
-                          type="number"
-                          placeholder=""
-                          value={values.Price}
-                          onBlur={handleBlur} // This apparently updates `touched`?
-
-                        />
+                      <div className="flex justify-center">
+                        <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
                       </div>
-
 
                       * All fields are required.
                       <button
@@ -1409,219 +1633,280 @@ function Transactions() {
               } />,
             </div> */}
             <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-              <Formik {...formikConfigViewReciept(selectedOrder)}>
-                {({
-                  handleSubmit,
-                  handleChange,
-                  handleBlur, // handler for onBlur event of form elements
-                  values,
-                  touched,
-                  errors,
-                  submitForm,
-                  setFieldTouched,
-                  setFieldValue,
-                  setFieldError,
-                  setErrors,
-                  isSubmitting,
+              {selectedOrder.TransactionID &&
+                <Formik {...formikConfigViewReciept(selectedOrder)}>
+                  {({
+                    handleSubmit,
+                    handleChange,
+                    handleBlur, // handler for onBlur event of form elements
+                    values,
+                    touched,
+                    errors,
+                    submitForm,
+                    setFieldTouched,
+                    setFieldValue,
+                    setFieldError,
+                    setErrors,
+                    isSubmitting,
 
-                }) => {
-                  const checkValidateTab = () => {
-                    // submitForm();
-                  };
-                  const errorMessages = () => {
-                    // you can add alert or console.log or any thing you want
-                    alert('Please fill in the required fields');
-                  };
+                  }) => {
+                    const checkValidateTab = () => {
+                      // submitForm();
+                    };
+                    const errorMessages = () => {
+                      // you can add alert or //console.log or any thing you want
+                      alert('Please fill in the required fields');
+                    };
 
-                  // console.log({ values })
+                    // //console.log({ values })
 
-                  // console.log({ selectedOrder })
+                    // //console.log({ selectedOrder })
 
-                  return (
-                    <Form className="">
+                    return (
+                      <Form className="">
 
 
-                      <div className={
-                        `grid md: grid-cols-3 grid-cols-1  bg-base-100 rounded-xl`}>
-                        <div className=''>
+                        <div className={
+                          `grid md: grid-cols-3 grid-cols-1  bg-base-100 rounded-xl`}>
+                          <div className=''>
 
-                          <div className="bg-gray-100 p-2 bg-base-100 rounded-xl">
-                            <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
-                              <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center">
-                                  {/* <!-- <img className="h-8 w-8 mr-2" src="https://tailwindflex.com/public/images/logos/favicon-32x32.png"
+                            <div className="bg-gray-100 p-2 bg-base-100 rounded-xl">
+                              <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
+                                <div className="flex items-center justify-between mb-8">
+                                  <div className="flex items-center">
+                                    {/* <!-- <img className="h-8 w-8 mr-2" src="https://tailwindflex.com/public/images/logos/favicon-32x32.png"
                                 alt="Logo" /> --> */}
-                                  <div className="text-gray-700 font-semibold text-lg"> A.V De Asis</div>
+                                    <div className="text-gray-700 font-semibold text-lg"> A.V De Asis</div>
+                                  </div>
+                                  <div className="text-gray-700">
+                                    <div className="font-bold text-xl mb-2">INVOICE</div>
+                                    <div className="text-sm">Date: {selectedOrder.Date_Created}</div>
+                                    <div className="text-sm">Invoice #: INV-{selectedOrder.TransactionID}</div>
+                                  </div>
                                 </div>
-                                <div className="text-gray-700">
-                                  <div className="font-bold text-xl mb-2">INVOICE</div>
-                                  <div className="text-sm">Date: {selectedOrder.Date_Created}</div>
-                                  <div className="text-sm">Invoice #: INV-{selectedOrder.TransactionID}</div>
+                                <div className="border-b-2 border-gray-300 pb-8 mb-8">
+                                  <h2 className="text-2xl font-bold mb-4">Bill To:</h2>
+                                  <div className="text-gray-700 mb-2">{selectedOrder.CustomerName}</div>
+                                  <div className="text-gray-700 mb-2">{selectedOrder.Address}</div>
+                                  <div className="text-gray-700 mb-2">{selectedOrder.Contact}</div>
+                                  <div className="text-gray-700">{selectedOrder.Email}</div>
                                 </div>
-                              </div>
-                              <div className="border-b-2 border-gray-300 pb-8 mb-8">
-                                <h2 className="text-2xl font-bold mb-4">Bill To:</h2>
-                                <div className="text-gray-700 mb-2">{selectedOrder.CustomerName}</div>
-                                <div className="text-gray-700 mb-2">{selectedOrder.Address}</div>
-                                <div className="text-gray-700 mb-2">{selectedOrder.Contact}</div>
-                                <div className="text-gray-700">{selectedOrder.Email}</div>
-                              </div>
-                              <table className="w-full text-left mb-8">
-                                <thead>
-                                  <tr>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Description</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Grams</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Price</th>
-                                    <th className="text-gray-700 font-bold uppercase py-2">Total</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td className="py-4 text-gray-700">{selectedOrder.ItemNames}
+                                <table className="w-full text-left mb-8">
+                                  <thead>
+                                    <tr>
+                                      <th className="text-gray-700 font-bold uppercase py-2">Description</th>
+                                      <th className="text-gray-700 font-bold uppercase py-2">Grams</th>
+                                      <th className="text-gray-700 font-bold uppercase py-2">Price</th>
+                                      <th className="text-gray-700 font-bold uppercase py-2">Total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td className="py-4 text-gray-700">{selectedOrder.ItemNames}
 
 
-                                      <ul className="list-disc pl-5">
-                                        {selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).map((itemObj, index) => (
-                                          <li key={index} className="mb-1">
-                                            {itemObj.item}: <span className="font-semibold">{itemObj.count}</span>
-                                          </li>
-                                        ))}
-                                      </ul>
+                                        <ul className="list-disc pl-5">
+                                          {selectedOrder && JSON.parse(selectedOrder?.itemNames || `[]`).map((itemObj, index) => (
+                                            <li key={index} className="mb-1">
+                                              {itemObj.item}: <span className="font-semibold">{itemObj.count}</span>
+                                            </li>
+                                          ))}
+                                        </ul>
 
-                                    </td>
-                                    <td className="py-4 text-gray-700">{!!selectedOrder.Grams ? selectedOrder.Grams.toFixed(2) : 0}</td>
-                                    <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
-                                    <td className="py-4 text-gray-700">
+                                      </td>
+                                      <td className="py-4 text-gray-700">{!!selectedOrder.Grams ? selectedOrder.Grams.toFixed(2) : 0}</td>
+                                      <td className="py-4 text-gray-700">{formatAmount(selectedOrder.Price)}</td>
+                                      <td className="py-4 text-gray-700">
 
-                                      <span className='font-bold'>
-                                        {formatAmount(selectedOrder.Price)}
-                                      </span>
-                                    </td>
-                                  </tr>
+                                        <span className='font-bold'>
+                                          {formatAmount(selectedOrder.Price)}
+                                        </span>
+                                      </td>
+                                    </tr>
 
-                                </tbody>
-                              </table>
-                              {/* <div className="flex justify-end mb-8">
+                                  </tbody>
+                                </table>
+                                {/* <div className="flex justify-end mb-8">
                             <div className="text-gray-700 mr-2">Subtotal:</div>
                             <div className="text-gray-700">$425.00</div>
                           </div> */}
-                              {/* <div className="text-right mb-8">
+                                {/* <div className="text-right mb-8">
                             <div className="text-gray-700 mr-2">Tax:</div>
                             <div className="text-gray-700">$25.50</div>
 
                           </div> */}
-                              <div className="flex justify-end mb-8">
-                                <div className="text-gray-700 mr-2">Grand Total:</div>
-                                <div className="text-gray-700 font-bold text-xl"> <span className='font-bold text-green-500'>
-                                  {formatAmount(selectedOrder.Price)}
-                                </span></div>
-                              </div>
-                              {/* <div className="border-t-2 border-gray-300 pt-8 mb-8">
+                                <div className="flex justify-end mb-8">
+                                  <div className="text-gray-700 mr-2">Grand Total:</div>
+                                  <div className="text-gray-700 font-bold text-xl"> <span className='font-bold text-green-500'>
+                                    {formatAmount(selectedOrder.Price)}
+                                  </span></div>
+                                </div>
+                                {/* <div className="border-t-2 border-gray-300 pt-8 mb-8">
                             <div className="text-gray-700 mb-2">Payment is due within 30 days. Late payments are subject to fees.</div>
                             <div className="text-gray-700 mb-2">Please make checks payable to Your Company Name and mail to:</div>
                             <div className="text-gray-700"></div>
                           </div> */}
-                            </div>
-
-                          </div>
-
-
-
-                        </div>
-                        <div className="">
-                          {/* Profile Header */}
-                          <div className="flex items-center justify-center">
-                            {/* <h2 className='text-2xl font-bold mb-4'>
-                                TO PAY</h2> */}
-
-
-                            <div className={`text-2xl font-bold`}>
-                              Proof of Payment
-                            </div>
-                          </div>
-                          <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
-                            <div className="overflow-x-auto">
-                              <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
-
-                                {
-                                  selectedOrder.proof_of_payment && <div class="max-w-sm mx-auto">
-                                    <img src={
-                                      selectedOrder.proof_of_payment
-                                    } alt="Responsive Image" class="w-full h-90 object-fit" />
-
-                                  </div>
-                                }
-
-
-                                {
-                                  !selectedOrder.proof_of_payment && <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
-                                    <p class="font-bold">Payment Pending</p>
-                                    <p>System haven't received the payment yet.
-                                    </p>
-                                  </div>
-                                }
-
-
                               </div>
 
                             </div>
 
 
 
+                          </div>
+                          <div className="">
+                            {/* Profile Header */}
+                            <div className="flex items-center justify-center">
+                              {/* <h2 className='text-2xl font-bold mb-4'>
+                                TO PAY</h2> */}
 
+
+                              <div className={`text-2xl font-bold`}>
+                                Item(s) Photo
+                              </div>
+                            </div>
+                            <div className="p-2 space-y-4 md:space-y-6 sm:p-4">
+                              <div className="overflow-x-auto">
+                                <div className="bg-white rounded-lg shadow-lg px-8 py-10 max-w-xl mx-auto">
+
+
+                                  {
+                                    selectedOrder.items_photo && <div class="max-w-sm mx-auto">
+                                      <img src={
+                                        selectedOrder.items_photo
+                                      } alt="Responsive Image"
+                                        className="w-20 h-20 object-cover rounded-md"
+
+                                      />
+
+                                    </div>
+                                  }
+
+
+                                  {/* {
+                                    !selectedOrder.proof_of_payment && <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                                      <p class="font-bold">Payment Pending</p>
+                                      <p>System haven't received the payment yet.
+                                      </p>
+                                    </div>
+                                  } */}
+
+
+                                </div>
+
+                              </div>
+
+
+
+
+                            </div>
+                          </div>
+                          <div className='mt-2'>
+
+
+
+
+
+                            {selectedOrder.proof_of_payment === 'VIA_MESSENGER' && <h1 className="font-bold text-lg">
+
+
+                              Payment is sent via messenger kindly check ang upload the image here</h1>
+                            }
+
+                            {selectedOrder.proof_of_payment === 'VIA_MESSENGER' &&
+                              <InputText
+                                label="Upload Proof of Payment"
+                                name="Proof_Payment"
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files[0];
+                                  setFile(file);
+                                  if (file) {
+                                    setPreview(URL.createObjectURL(file));
+                                  }
+                                }}
+                                onBlur={handleBlur}
+                              />
+                            }
+                            {selectedOrder.proof_of_payment === 'VIA_MESSENGER' &&
+
+                              <div className="flex justify-center">
+                                <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
+                              </div>
+
+                            }
+
+
+                            {
+                              console.log({ Dex: values.Status })
+                            }
+                            <Dropdown
+                              // icons={mdiAccount}
+                              label="Status"
+                              name="Status"
+                              placeholder=""
+                              value={values.Status}
+                              setFieldValue={setFieldValue}
+                              onBlur={handleBlur}
+
+                              options={[
+                                { value: 'PAID', label: 'Paid' },
+                                { value: 'CANCELLED', label: 'Cancelled' },
+                                { value: 'IN_PROGRESS', label: 'In-Progress' },
+
+                              ]}
+                            />
+
+                            {
+                              selectedOrder.proof_of_payment && <div class="max-w-sm mx-auto">
+                                <img src={
+                                  selectedOrder.proof_of_payment
+                                } alt="Responsive Image" class="w-full h-90 object-fit" />
+
+                              </div>
+                            }
+
+
+                            {
+                              !selectedOrder.proof_of_payment && <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                                <p class="font-bold">Payment Pending</p>
+                                <p>System haven't received the payment yet.
+                                </p>
+                              </div>
+                            }
+
+                            <InputText
+
+                              label="Comments"
+                              name="Comments"
+                              type="text"
+                              placeholder=""
+                              value={values.Comments}
+
+                              onBlur={handleBlur} // This apparently updates `touched`?
+                            />
+
+                            <button
+                              type="submits"
+                              // onClick={(e) => {
+                              //   //console.log("dex")
+
+
+                              // }}
+                              // type="submit"
+                              className={
+                                'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
+                                (loading ? ' loading' : '')
+                              }>
+                              Update
+                            </button>
                           </div>
                         </div>
-                        <div className='mt-2'>
 
-
-                          <Dropdown
-                            // icons={mdiAccount}
-                            label="Status"
-                            name="Status"
-                            placeholder=""
-                            value={values.Status}
-                            setFieldValue={setFieldValue}
-                            onBlur={handleBlur}
-                            v
-                            options={[
-                              { value: 'PAID', label: 'Paid' },
-                              { value: 'CANCELLED', label: 'Cancelled' },
-                              { value: 'IN_PROGRESS', label: 'In-Progress' },
-
-                            ]}
-                          />
-                          <InputText
-
-                            label="Comments"
-                            name="Comments"
-                            type="text"
-                            placeholder=""
-                            value={values.Comments}
-
-                            onBlur={handleBlur} // This apparently updates `touched`?
-                          />
-
-                          <button
-                            type="submits"
-                            // onClick={(e) => {
-                            //   console.log("dex")
-
-
-                            // }}
-                            // type="submit"
-                            className={
-                              'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
-                              (loading ? ' loading' : '')
-                            }>
-                            Update
-                          </button>
-                        </div>
-                      </div>
-
-                    </Form>
-                  );
-                }}
-              </Formik> </div>
+                      </Form>
+                    );
+                  }}
+                </Formik>}</div>
           </div>
         </dialog>
 
@@ -1704,7 +1989,7 @@ function Transactions() {
             </div>
           </div>
         </dialog>
-
+        Grams per Items
       </TitleCard>
     )
   );
