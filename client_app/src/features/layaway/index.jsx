@@ -1221,7 +1221,7 @@ function Transactions() {
                     let categoryDropdownValue = categoryCalue || values.Category;
 
 
-                    const interestPerGramInDb = parseFloat(pricingSettings[selectStringinterest[categoryDropdownValue]]);
+                    const interestPerGramInDb = parseFloat(pricingSettings[`${selectStringinterest[categoryDropdownValue]}_Layaway`]);
 
 
 
@@ -1589,7 +1589,7 @@ function Transactions() {
                                 <InputText
                                   isRequired
                                   disabled
-                                  label={`Price ${values.items[index].OriginalPrice} + ${values.items[index].InterestAmount} (Interest)`}
+                                  label={`Price ${values.items[index].OriginalPrice || ''} + ${values.items[index].InterestAmount || ''} (Interest)`}
                                   name={`items[${index}].Price`}
                                   type="number"
                                   value={values.items[index].Price}
@@ -1702,15 +1702,19 @@ function Transactions() {
 
                       * All fields are required.
                       <button
-                        // type="button"
                         type="submit"
                         disabled={isSubmitting}
                         className={
-                          'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white' +
-                          (loading ? ' loading' : '')
+                          'btn mt-4 shadow-lg w-full bg-buttonPrimary font-bold text-white flex justify-center items-center'
+
                         }>
-                        Submit
+                        {isSubmitting ? (
+                          <div><span className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full"></span> Processing </div>
+                        ) : (
+                          'Submit'
+                        )}
                       </button>
+
                     </Form>
                   );
                 }}
