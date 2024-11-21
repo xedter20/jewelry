@@ -1227,7 +1227,7 @@ function Transactions() {
 
 
 
-                    let interestTimeMonthsToPay = interestPerGramInDb * monthsToPay;
+                    let interestTimeMonthsToPay = interestPerGramInDb * monthsToPay * grams;
 
 
 
