@@ -1662,6 +1662,8 @@ function Transactions() {
 
                     // //console.log({ selectedOrder })
 
+                    const displayAttachmentUpload = (selectedOrder.proof_of_payment === 'VIA_MESSENGER' || selectedOrder.proof_of_payment === "")
+
                     return (
                       <Form className="">
 
@@ -1770,17 +1772,16 @@ function Transactions() {
 
 
                                   {
-                                    selectedOrder.items_photo && <div class="max-w-sm mx-auto">
-                                      <img src={
-                                        selectedOrder.items_photo
-                                      } alt="Responsive Image"
-                                        className="w-20 h-20 object-cover rounded-md"
-
-                                      />
-
-                                    </div>
+                                    selectedOrder.items_photo && (
+                                      <div className="max-w-full mx-auto text-center">
+                                        <img
+                                          src={selectedOrder.items_photo}
+                                          alt="Responsive Image"
+                                          className="w-full h-auto object-cover rounded-md"
+                                        />
+                                      </div>
+                                    )
                                   }
-
 
                                   {/* {
                                     !selectedOrder.proof_of_payment && <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
@@ -1806,13 +1807,13 @@ function Transactions() {
 
 
 
-                            {selectedOrder.proof_of_payment === 'VIA_MESSENGER' && <h1 className="font-bold text-lg">
+                            {displayAttachmentUpload && <h1 className="font-bold text-lg">
 
 
                               Payment is sent via messenger kindly check ang upload the image here</h1>
                             }
 
-                            {selectedOrder.proof_of_payment === 'VIA_MESSENGER' &&
+                            {displayAttachmentUpload &&
                               <InputText
                                 label="Upload Proof of Payment"
                                 name="Proof_Payment"
@@ -1828,7 +1829,7 @@ function Transactions() {
                                 onBlur={handleBlur}
                               />
                             }
-                            {selectedOrder.proof_of_payment === 'VIA_MESSENGER' &&
+                            {displayAttachmentUpload && preview &&
 
                               <div className="flex justify-center">
                                 <img id="blah" alt="" className="h-40 w-28 sm:h-60 sm:w-40 object-contain" src={preview} />
@@ -1837,9 +1838,7 @@ function Transactions() {
                             }
 
 
-                            {
-                              console.log({ Dex: values.Status })
-                            }
+
                             <Dropdown
                               // icons={mdiAccount}
                               label="Status"
