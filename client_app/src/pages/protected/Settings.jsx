@@ -507,11 +507,19 @@ const PricingTab = () => {
                     value={values.Interest_Brand_New}
                     onBlur={handleBlur} // This apparently updates `touched`?
                   />
+                  <InputText
+                    label="Interest Per Gram (Layaway)"
+                    name="Interest_Brand_New_Layaway"
+                    type="number"
+                    placeholder=""
+                    value={values.Interest_Brand_New_Layaway}
+                    onBlur={handleBlur} // This apparently updates `touched`?
+                  />
                 </div>
-                <h1 className="text-2xl font-bold text-orange-300">
+                <h1 className="text-2xl font-bold text-orange-300 mt-4">
                   Subasta
                 </h1>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3 ">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
 
 
                   <InputText
@@ -539,6 +547,15 @@ const PricingTab = () => {
                     type="number"
                     placeholder=""
                     value={values.Interest_Subasta}
+                    onBlur={handleBlur} // This apparently updates `touched`?
+                  />
+                  <InputText
+
+                    label="Interest Per Gram (Layaway)"
+                    name="Interest_Subasta_Layaway"
+                    type="number"
+                    placeholder=""
+                    value={values.Interest_Subasta_Layaway}
                     onBlur={handleBlur} // This apparently updates `touched`?
                   />
                 </div>
