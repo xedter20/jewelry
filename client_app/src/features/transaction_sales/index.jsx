@@ -1810,7 +1810,7 @@ function Transactions() {
                             {displayAttachmentUpload && <h1 className="font-bold text-lg">
 
 
-                              Payment is sent via messenger kindly check ang upload the image here</h1>
+                              Payment is sent via messenger kindly check the image and upload it here</h1>
                             }
 
                             {displayAttachmentUpload &&
