@@ -425,7 +425,7 @@ function ForgotPassword() {
                                                                 selectedOrder.items_photo && <img
                                                                     src={selectedOrder.items_photo}
                                                                     alt="Item Photo"
-                                                                    className="max-w-full h-auto rounded-md"
+                                                                    className="w-24 h-24 object-cover rounded-md"
                                                                 />
                                                             }
 
