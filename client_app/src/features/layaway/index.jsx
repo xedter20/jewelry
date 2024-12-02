@@ -836,7 +836,7 @@ function Transactions() {
 
             method: 'POST',
             url: 'layaway/addPhotoOfItems',
-            data: updateData
+            data: updateData1
           });
 
 
