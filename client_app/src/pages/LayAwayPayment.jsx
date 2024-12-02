@@ -351,6 +351,8 @@ function LayAwayPayment({ layAwayID }) {
   }
 
 
+
+  console.log({ selectedOrder })
   return (
     isLoaded && selectedOrder && (
 

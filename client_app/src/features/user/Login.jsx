@@ -133,7 +133,7 @@ function Login() {
                   <Form className="space-y-4 md:space-y-6">
                     <InputText
                       icons={mdiAccount}
-                      label="Email"
+                      label="Username"
                       labelColor="text-white"
                       name="email"
                       type="text"
