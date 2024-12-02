@@ -529,6 +529,10 @@ function LayAwayPayment({ layAwayID }) {
 
               <div className="flex justify-between font-bold">
                 <span>Item(s) Photo</span>
+
+                {
+                  console.log({ selectedOrder })
+                }
                 <img
                   src={selectedOrder.items_photo}
                   alt="Sample"

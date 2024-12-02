@@ -831,7 +831,7 @@ function Transactions() {
 
           const updateData1 = new FormData();
           updateData1.append('layAwayID', result.LayawayID);
-          updateData1.append('Thumbnail', file);
+          updateData1.append('Thumbnail', filePhotoOfItems);
           await axios({
 
             method: 'POST',
