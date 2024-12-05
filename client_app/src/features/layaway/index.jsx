@@ -445,7 +445,21 @@ function Transactions() {
         Header: 'Category',
         accessor: 'Category',
         Cell: ({ row, value }) => {
-          return <span className="">{value}</span>;
+          let category = value;
+
+
+
+          if (!category) {
+            let found = JSON.parse(row.original.ItemName);
+
+
+
+            category = found[0].Category;
+            // category = found && found.ItemName[0;
+
+          }
+
+          return <span className="">{category}</span>;
         }
       },
       {

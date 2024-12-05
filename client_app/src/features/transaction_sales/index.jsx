@@ -499,12 +499,13 @@ function Transactions() {
         Cell: ({ row, value }) => {
 
           let category = value;
+
+
           if (!value) {
-            let found = JSON.stringify(row.original.ItemName);
+            let found = JSON.parse(row.original.ItemName);
             category = found[0].Category;
 
           }
-
           return (
             <div className="flex items-center space-x-3">
 
