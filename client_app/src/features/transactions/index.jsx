@@ -299,12 +299,20 @@ function Transactions() {
         accessor: 'Facebook',
 
         Cell: ({ row, value }) => {
+
+          let category = value;
+          if (!value) {
+            let found = JSON.stringify(row.original.ItemName);
+            category = found[0].Category;
+
+          }
+
           return (
             <div className="flex items-center space-x-3">
 
 
               <div>
-                <div className="font-bold text-neutral-500">{value}</div>
+                <div className="font-bold text-neutral-500">{category}</div>
               </div>
             </div>
           );
