@@ -300,6 +300,8 @@ function Transactions() {
 
         Cell: ({ row, value }) => {
 
+          console.log(row.original)
+          console.log(JSON.stringify(row.original.ItemName))
           let category = value;
           if (!value) {
             let found = JSON.stringify(row.original.ItemName);
